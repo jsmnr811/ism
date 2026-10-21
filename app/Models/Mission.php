@@ -43,6 +43,11 @@ class Mission extends Model
         return $this->hasMany(MissionRegistration::class);
     }
 
+    public function photos(): HasMany
+    {
+        return $this->hasMany(MissionPhoto::class);
+    }
+
     public function meetings(): HasMany
     {
         return $this->hasMany(Meeting::class);

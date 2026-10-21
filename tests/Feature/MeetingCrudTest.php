@@ -88,6 +88,79 @@ test('user can edit an existing meeting', function () {
     ]);
 });
 
+test('user can create a meeting with structured reports', function () {
+    Livewire::test(Meetings::class)
+        ->call('createMeeting')
+        ->set('title', 'Report Meeting')
+        ->set('date', '2026-10-15')
+        ->set('time_from', '09:00')
+        ->set('time_to', '10:00')
+        ->set('type', 'technical_discussions')
+        ->set('reportLinks', [
+            ['title' => 'Minutes of the Meeting', 'description' => 'Signed minutes and attendance sheet.', 'url' => 'https://example.com/minutes.pdf'],
+            ['title' => '', 'description' => '', 'url' => 'https://example.com/deck.pdf'],
+        ])
+        ->call('saveMeeting')
+        ->assertHasNoErrors();
+
+    $meeting = Meeting::where('title', 'Report Meeting')->first();
+
+    $this->assertNotNull($meeting);
+    $this->assertCount(2, $meeting->report_documents);
+    $this->assertSame('Minutes of the Meeting', $meeting->report_documents[0]['title']);
+    $this->assertSame('Signed minutes and attendance sheet.', $meeting->report_documents[0]['description']);
+    $this->assertSame('https://example.com/minutes.pdf', $meeting->report_documents[0]['url']);
+    $this->assertNull($meeting->report_documents[1]['title']);
+});
+
+test('reports without a url are discarded', function () {
+    Livewire::test(Meetings::class)
+        ->call('createMeeting')
+        ->set('title', 'Empty Report Meeting')
+        ->set('date', '2026-10-15')
+        ->set('time_from', '09:00')
+        ->set('time_to', '10:00')
+        ->set('type', 'technical_discussions')
+        ->set('reportLinks', [
+            ['title' => 'No link', 'description' => 'Missing url', 'url' => ''],
+        ])
+        ->call('saveMeeting')
+        ->assertHasNoErrors();
+
+    $meeting = Meeting::where('title', 'Empty Report Meeting')->first();
+
+    $this->assertNotNull($meeting);
+    $this->assertNull($meeting->reports);
+});
+
+test('report url must be a valid url', function () {
+    Livewire::test(Meetings::class)
+        ->call('createMeeting')
+        ->set('title', 'Bad Link Meeting')
+        ->set('date', '2026-10-15')
+        ->set('time_from', '09:00')
+        ->set('time_to', '10:00')
+        ->set('type', 'technical_discussions')
+        ->set('reportLinks', [
+            ['title' => 'Bad', 'description' => 'Bad url', 'url' => 'not-a-url'],
+        ])
+        ->call('saveMeeting')
+        ->assertHasErrors('reportLinks.0.url');
+});
+
+test('legacy report links are exposed as structured documents', function () {
+    $meeting = Meeting::factory()->create([
+        'reports' => ['https://example.com/legacy.pdf'],
+    ]);
+
+    $documents = $meeting->report_documents;
+
+    $this->assertCount(1, $documents);
+    $this->assertSame('https://example.com/legacy.pdf', $documents[0]['url']);
+    $this->assertNull($documents[0]['title']);
+    $this->assertNull($documents[0]['description']);
+});
+
 test('user can delete a meeting through the livewire alert confirmation', function () {
     $meeting = Meeting::factory()->create(['title' => 'Delete Me']);
 

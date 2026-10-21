@@ -48,6 +48,8 @@ class SiteVisits extends Component
 
     public ?string $virtual_site_visit_link = '';
 
+    public ?string $date = null;
+
     public ?int $mission_id = null;
 
     /** @var TemporaryFileUpload[]|null */
@@ -177,7 +179,7 @@ class SiteVisits extends Component
     {
         abort_if(! auth()->user()?->can('create site visits'), 403);
 
-        $this->reset('sp_name', 'cluster', 'component', 'location', 'funding_source', 'document_link', 'virtual_site_visit_link', 'mission_id', 'images', 'existingImages', 'removedImages', 'editingId', 'showModal');
+        $this->reset('sp_name', 'cluster', 'component', 'location', 'funding_source', 'document_link', 'virtual_site_visit_link', 'date', 'mission_id', 'images', 'existingImages', 'removedImages', 'editingId', 'showModal');
         $activeMission = $this->activeMission;
         $this->mission_id = $activeMission?->id;
         $this->showModal = true;
@@ -199,6 +201,7 @@ class SiteVisits extends Component
         $this->funding_source = $siteVisit->funding_source?->value ?? null;
         $this->document_link = $siteVisit->document_link;
         $this->virtual_site_visit_link = $siteVisit->virtual_site_visit_link;
+        $this->date = $siteVisit->date?->format('Y-m-d');
         $this->mission_id = $siteVisit->mission_id;
         $this->existingImages = $siteVisit->images ?? null;
         $this->removedImages = [];
@@ -248,6 +251,10 @@ class SiteVisits extends Component
                 'nullable',
                 'string',
                 'max:255',
+            ],
+            'date' => [
+                'nullable',
+                'date',
             ],
             'mission_id' => [
                 'nullable',
@@ -304,6 +311,7 @@ class SiteVisits extends Component
             'funding_source' => $validated['funding_source'] ?: null,
             'document_link' => $validated['document_link'],
             'virtual_site_visit_link' => $validated['virtual_site_visit_link'],
+            'date' => $validated['date'] ?: null,
             'images' => empty($allImages) ? null : $allImages,
             'mission_id' => $validated['mission_id'],
         ];
@@ -321,7 +329,7 @@ class SiteVisits extends Component
                 ? __('Site visit updated.')
                 : __('Site visit created.')
         );
-        $this->reset('sp_name', 'cluster', 'component', 'location', 'funding_source', 'document_link', 'virtual_site_visit_link', 'images', 'existingImages', 'removedImages', 'editingId', 'showModal');
+        $this->reset('sp_name', 'cluster', 'component', 'location', 'funding_source', 'document_link', 'virtual_site_visit_link', 'date', 'images', 'existingImages', 'removedImages', 'editingId', 'showModal');
     }
 
     /**
@@ -391,6 +399,6 @@ class SiteVisits extends Component
      */
     public function closeModal(): void
     {
-        $this->reset('sp_name', 'cluster', 'component', 'location', 'funding_source', 'document_link', 'virtual_site_visit_link', 'mission_id', 'images', 'existingImages', 'removedImages', 'editingId', 'showModal');
+        $this->reset('sp_name', 'cluster', 'component', 'location', 'funding_source', 'document_link', 'virtual_site_visit_link', 'date', 'mission_id', 'images', 'existingImages', 'removedImages', 'editingId', 'showModal');
     }
 }

@@ -36,8 +36,16 @@ class MeetingFactory extends Factory
             'meeting_id' => $this->faker->boolean(60) ? $this->faker->numerify('#######') : null,
             'passcode' => $this->faker->boolean(60) ? $this->faker->numerify('######') : null,
             'reports' => $this->faker->boolean(50) ? [
-                $this->faker->url(),
-                $this->faker->url(),
+                [
+                    'title' => $this->faker->sentence(4),
+                    'description' => $this->faker->sentence(8),
+                    'url' => $this->faker->url(),
+                ],
+                [
+                    'title' => $this->faker->sentence(4),
+                    'description' => $this->faker->sentence(8),
+                    'url' => $this->faker->url(),
+                ],
             ] : null,
             'report_name' => $this->faker->boolean(50) ? $this->faker->sentence(3) : null,
         ];

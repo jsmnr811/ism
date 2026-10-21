@@ -9,7 +9,9 @@
   <meta name="keywords" content="DA-PRDP, PRDP, PRDP ISM, ISM Portal, Implementation Support Mission, Philippine Rural Development Project, Department of Agriculture, DA PRDP, WB ISM">
   <meta name="author" content="Department of Agriculture - Philippine Rural Development Project">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="{{ config('app.url') }}">
+  <link rel="canonical" href="{{ url('/') }}">
+
+  @include('partials.favicon')
 
   <!-- Fonts: Inter & Roboto Mono for AGT engineering telemetry -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -64,25 +66,8 @@
       <div class="flex items-center justify-between h-[60px] sm:h-[76px]">
 
         <!-- Agency Logo & Title -->
-        <a href="#banner-section" class="flex items-center gap-2 sm:gap-3.5 group min-w-0">
-          <div class="relative w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl bg-gradient-to-br from-emerald-700 via-emerald-800 to-slate-950 flex items-center justify-center shadow-lg shadow-emerald-900/15 ring-1 ring-emerald-700/20 transition-all duration-300 group-hover:shadow-emerald-900/25 group-hover:scale-[1.03]">
-            <i class="fa-solid fa-shield-alt w-5 h-5 sm:w-6 sm:h-6 text-emerald-200"></i>
-            <span class="absolute -right-0.5 -bottom-0.5 w-2.5 h-2.5 rounded-full bg-phgold-500 ring-2 ring-white"></span>
-          </div>
-
-          <div class="min-w-0">
-            <div class="flex items-center gap-1">
-              <span class="text-[17px] sm:text-[19px] font-black tracking-tight text-slate-900">
-                ISM <span class="text-phgold-600">PORTAL</span>
-              </span>
-            </div>
-
-            <div class="hidden sm:flex items-center gap-1.5 mt-0.5">
-              <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                Philippine Rural Development Project
-              </span>
-            </div>
-          </div>
+        <a href="#banner-section" class="flex items-center group min-w-0">
+          <img src="/assets/scale-up-letterhead.png" alt="Department of Agriculture — Philippine Rural Development Project" class="h-10 sm:h-12 w-auto object-contain object-left transition-transform duration-300 group-hover:scale-[1.02]" />
         </a>
 
         <!-- Desktop Navigation -->
@@ -214,33 +199,137 @@
 
   <main class="flex-grow">
     <!-- ================= ACTIVE MISSION HERO BANNER ================= -->
-    <section id="banner-section" class="relative pt-6 pb-12 border-b border-slate-200 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative rounded-3xl overflow-hidden border border-slate-800 shadow-xl bg-govnavy-950 min-h-[420px] flex items-end">
-          <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=1800&q=80"
-            alt="Mission Banner"
-            class="absolute inset-0 w-full h-full object-cover" />
+    <section id="banner-section" class="relative border-b border-slate-200/80 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8" >
+        <div class="mx-auto max-w-7xl">
 
-          <div class="relative z-10 p-6 sm:p-10 lg:p-12 w-full text-white space-y-4">
-            <div class="flex flex-wrap items-center gap-3">
-              <a href="#agenda-section" class="px-5 py-2.5 rounded-xl bg-slate-700/90 hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold shadow-lg transition flex items-center gap-2">
-                <i class="fa-solid fa-calendar-days w-4 h-4 text-slate-300"></i>
-                <span>Agenda</span>
-              </a>
+            {{-- Mission Banner Container --}}
+            <div
+                class="group relative isolate flex min-h-[340px] flex-col
+                      justify-end overflow-hidden rounded-2xl
+                      bg-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.22)]
+                      ring-1 ring-slate-900/5
+                      sm:min-h-[380px] sm:rounded-3xl
+                      lg:min-h-[420px]"
+            >
 
-              <a href="#site-visits-section" class="px-5 py-2.5 rounded-xl bg-slate-700/90 hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold shadow-lg transition flex items-center gap-2">
-                <i class="fa-solid fa-map-pin w-4 h-4 text-slate-300"></i>
-                <span>Virtual Site Visits</span>
-              </a>
+                {{-- Dynamic Banner Image --}}
+                <img
+                    src="{{ $bannerMission && $bannerMission->banner
+                        ? (
+                            Str::startsWith($bannerMission->banner, ['http://', 'https://'])
+                                ? $bannerMission->banner
+                                : asset('storage/' . ltrim($bannerMission->banner, '/'))
+                        )
+                        : 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=1800&q=85'
+                    }}"
+                    alt="5th World Bank Implementation Support Mission to the DA-PRDP Scale-Up"
+                    class="absolute inset-0 -z-20 h-full w-full
+                          object-cover object-center"
+                    fetchpriority="high"
+                />
 
-              <a href="#meetings-section" class="px-5 py-2.5 rounded-xl bg-slate-700/90 hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold shadow-lg transition flex items-center gap-2">
-                <i class="fa-solid fa-video w-4 h-4 text-slate-300"></i>
-                <span>Meeting Links</span>
-              </a>
+                {{-- Subtle Contrast Overlay --}}
+                <div
+                    aria-hidden="true"
+                    class="absolute inset-0 -z-10
+                          bg-gradient-to-t
+                          from-slate-950/25 via-slate-900/[0.02]
+                          to-transparent"
+                ></div>
+
+                {{-- Mission Navigation --}}
+                <div class="relative z-10 w-full p-5 sm:p-8 lg:p-10">
+                  <nav
+                      aria-label="Mission navigation"
+                      class="flex flex-wrap items-center gap-2 sm:gap-3"
+                  >
+                      {{-- Agenda --}}
+                      <a
+                          href="#agenda-section"
+                          class="group inline-flex min-h-10 items-center gap-2
+                                rounded-lg border border-white/15
+                                bg-[#142B4D]/95 px-3.5 py-2
+                                text-sm font-semibold text-white shadow-sm
+                                backdrop-blur-md
+                                transition duration-200 ease-out
+                                hover:-translate-y-0.5 hover:bg-[#1D3A63]
+                                hover:border-white/30 hover:shadow-md
+                                focus-visible:outline-none focus-visible:ring-2
+                                focus-visible:ring-white focus-visible:ring-offset-2
+                                focus-visible:ring-offset-[#142B4D]"
+                      >
+                          <i
+                              class="fa-solid fa-calendar-days text-white/80"
+                              aria-hidden="true"
+                          ></i>
+                          <span>Agenda</span>
+                          <i
+                              class="fa-solid fa-arrow-right ml-1 text-[10px] text-white/50
+                                    transition-transform group-hover:translate-x-0.5
+                                    group-hover:text-white"
+                              aria-hidden="true"
+                          ></i>
+                      </a>
+
+                      {{-- Virtual Site Visits --}}
+                      <a
+                          href="#site-visits-section"
+                          class="group inline-flex min-h-10 items-center gap-2
+                                rounded-lg border border-white/15
+                                bg-[#142B4D]/95 px-3.5 py-2
+                                text-sm font-semibold text-white shadow-sm
+                                backdrop-blur-md
+                                transition duration-200 ease-out
+                                hover:-translate-y-0.5 hover:bg-[#1D3A63]
+                                hover:border-white/30 hover:shadow-md
+                                focus-visible:outline-none focus-visible:ring-2
+                                focus-visible:ring-white focus-visible:ring-offset-2
+                                focus-visible:ring-offset-[#142B4D]"
+                      >
+                          <i
+                              class="fa-solid fa-map-pin text-white/80"
+                              aria-hidden="true"
+                          ></i>
+                          <span>Virtual Site Visits</span>
+                          <i
+                              class="fa-solid fa-arrow-right ml-1 text-[10px] text-white/50
+                                    transition-transform group-hover:translate-x-0.5
+                                    group-hover:text-white"
+                              aria-hidden="true"
+                          ></i>
+                      </a>
+
+                      {{-- Meeting Links --}}
+                      <a
+                          href="#meetings-section"
+                          class="group inline-flex min-h-10 items-center gap-2
+                                rounded-lg border border-white/15
+                                bg-[#142B4D]/95 px-3.5 py-2
+                                text-sm font-semibold text-white shadow-sm
+                                backdrop-blur-md
+                                transition duration-200 ease-out
+                                hover:-translate-y-0.5 hover:bg-[#1D3A63]
+                                hover:border-white/30 hover:shadow-md
+                                focus-visible:outline-none focus-visible:ring-2
+                                focus-visible:ring-white focus-visible:ring-offset-2
+                                focus-visible:ring-offset-[#142B4D]"
+                      >
+                          <i
+                              class="fa-solid fa-video text-white/80"
+                              aria-hidden="true"
+                          ></i>
+                          <span>Meeting Links</span>
+                          <i
+                              class="fa-solid fa-arrow-right ml-1 text-[10px] text-white/50
+                                    transition-transform group-hover:translate-x-0.5
+                                    group-hover:text-white"
+                              aria-hidden="true"
+                          ></i>
+                      </a>
+                  </nav>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </section>
 
     <!-- ================= DYNAMIC AGENDA SECTION ================= -->
@@ -356,11 +445,15 @@
                   <div>
                     <div class="flex flex-wrap items-center gap-2 mb-1">
                       <span :class="`px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'meeting' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'}`" x-text="item.categoryLabel"></span>
-                      <span class="text-xs text-slate-500 font-medium">
-                        <i class="fa-solid fa-clock w-3 h-3 inline mr-1 text-slate-400"></i>
-                        <span x-text="item.time"></span>
-                      </span>
-                      <span class="text-xs text-slate-400">•</span>
+                      <template x-if="item.time">
+                        <span class="text-xs text-slate-500 font-medium">
+                          <i class="fa-solid fa-clock w-3 h-3 inline mr-1 text-slate-400"></i>
+                          <span x-text="item.time"></span>
+                        </span>
+                      </template>
+                      <template x-if="item.time">
+                        <span class="text-xs text-slate-400">•</span>
+                      </template>
                       <span class="text-xs text-slate-500 font-medium" x-text="formatDate(item.date)"></span>
                     </div>
                     <h3 class="text-sm sm:text-base font-bold text-slate-900" x-text="item.title"></h3>
@@ -374,18 +467,32 @@
                 <div class="flex items-center md:flex-col md:items-end gap-2 shrink-0">
                   <template x-if="item.type === 'meeting'">
                     <div class="flex flex-col md:items-end gap-2">
-                      <a :href="item.link" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-video w-3.5 h-3.5"></i> Join Session
-                      </a>
-                      <span class="text-[10px] text-slate-400 font-mono" x-text="`ID: ${item.meeting_id}`"></span>
+                      <template x-if="item.isToday">
+                        <a :href="item.link || '#'" :target="item.link ? '_blank' : null"
+                           :class="item.link ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm' : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+                           class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition">
+                          <i class="fa-solid fa-video w-3.5 h-3.5"></i> Join Session
+                        </a>
+                      </template>
+                      <template x-if="!item.isToday">
+                        <span class="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs font-semibold inline-flex items-center gap-1.5">
+                          <i class="fa-regular fa-clock w-3.5 h-3.5"></i>
+                          <span x-text="item.isPast ? 'Session concluded' : 'Opens on the session date'"></span>
+                        </span>
+                      </template>
+                      <span class="text-[10px] text-slate-400 font-mono" x-show="item.meeting_id" x-text="`ID: ${item.meeting_id}`"></span>
                     </div>
                   </template>
                   <template x-if="item.type === 'site_visit'">
                     <div class="flex flex-col md:items-end gap-2">
-                      <button @click="openGeotagModal(item.sp_id)" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-camera w-3.5 h-3.5"></i> Inspect Photos
-                      </button>
-                      <span class="text-[10px] text-slate-400">AGT Station Dossier</span>
+                      <template x-if="item.hasPhotos">
+                        <button @click="openGeotagModal(item.sp_id)" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-sm">
+                          <i class="fa-solid fa-camera w-3.5 h-3.5"></i> Inspect Photos
+                        </button>
+                      </template>
+                      <template x-if="item.hasPhotos">
+                        <span class="text-[10px] text-slate-400">AGT Station Dossier</span>
+                      </template>
                     </div>
                   </template>
                 </div>
@@ -398,93 +505,208 @@
     </section>
 
     <!-- ================= MEETINGS DIRECTORY ================= -->
-    <section id="meetings-section" class="py-8 bg-slate-50 border-b border-slate-200"
+    <section id="meetings-section" class="py-12 bg-slate-50 border-b border-slate-200"
       x-data="meetingsDirectory()"
       @keydown.escape.window="descModalOpen = false">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Meetings Directory</h2>
-            <p class="text-slate-600 text-sm mt-1"> Virtual breakout links, meeting IDs, passcodes, and attached reports mapped to <code>meetings</code>. </p>
+            <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+              {{ $meetingsMission ? $meetingsMission->title : 'No Mission' }}
+            </span>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Meetings Directory ({{ $meetings->count() }})</h2>
+            <p class="text-slate-600 text-sm mt-1">Your session guide — dates, times, venues, and join details mapped to <code>meetings</code>. </p>
           </div>
-          <div class="w-full md:w-72 relative">
-            <i class="fa-solid fa-search w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
-            <input type="text" x-model="searchQuery" placeholder="Search {{ $meetings->count() }} meetings..." class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-300 text-sm bg-white focus:border-emerald-600 outline-none" />
+          <div class="w-full md:w-80">
+            <div class="relative">
+              <i class="fa-solid fa-search w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+              <input type="text" x-model="searchQuery" placeholder="Search title, type, venue, or description..." class="w-full pl-9 pr-9 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:border-emerald-600 outline-none" />
+              <button x-show="searchQuery" @click="searchQuery = ''" class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+                <i class="fa-solid fa-x w-3 h-3"></i>
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1.5 text-right" x-text="`Showing ${filteredMeetings.length} of ${allMeetings.length} meeting${allMeetings.length === 1 ? '' : 's'}`"></p>
           </div>
         </div>
-        <div class="flex items-center gap-2 mb-4" id="meetingsCarouselWrapper">
-          <button x-show="isCarousel" @click="scrollPrev()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shadow">
-            <i class="fa-solid fa-chevron-left text-sm"></i>
-          </button>
-          <div :class="isCarousel ? 'flex flex-1 overflow-x-auto scroll-px-4 gap-4 pb-4 custom-scrollbar scroll-smooth' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'"
-               id="meetingsGridContainer" x-ref="gridContainer">
-            <template x-for="m in filteredMeetings" :key="m.id">
-              <div :class="isCarousel ? 'bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition shrink-0 w-full sm:w-[calc(50%-1rem)] lg:w-[calc(100%/3-1rem)] scroll-snap-align-start flex flex-col min-h-[280px]' : 'bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition h-full flex flex-col'">
-                <span :class="`w-fit inline-flex items-center px-2.5 py-1 rounded-full text-[9px] font-bold border ${getTypeBadgeClass(m.type)}`" x-text="m.type"></span>
-                <h3 class="text-sm font-bold text-slate-900 line-clamp-2 mt-1" x-text="m.title"></h3>
-                <div class="flex items-end gap-1 mt-1">
-                  <p class="text-xs text-slate-600 line-clamp-1 flex-1 overflow-hidden" x-text="(m.description || '—')"></p>
-                  <button x-show="(m.description || '').length > 50"
-                          @click="openModal(m)"
-                          class="shrink-0 w-6 h-6 flex items-center justify-center text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg">
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
+
+        <!-- Group By Toggle -->
+        <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start">
+            <button type="button" @click="groupBy = 'date'"
+                    :class="groupBy === 'date' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
+                    class="px-4 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-calendar-days w-3.5 h-3.5"></i> Group by Date
+            </button>
+            <button type="button" @click="groupBy = 'type'"
+                    :class="groupBy === 'type' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
+                    class="px-4 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-layer-group w-3.5 h-3.5"></i> Group by Type
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            AGT Coordinates Certified by Regional Engineering Units
+          </div>
+        </div>
+
+        <div id="meetingsGroupsContainer" class="space-y-10">
+          <template x-for="group in meetingGroups" :key="group.key">
+            <div class="space-y-4">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b"
+                   :class="group.isToday ? 'border-emerald-300' : 'border-slate-200'">
+                <div class="flex items-start gap-3">
+                  <span class="mt-0.5 w-9 h-9 rounded-xl border flex items-center justify-center shrink-0"
+                        :class="group.isToday ? 'bg-emerald-600 text-white border-emerald-600' : group.soft">
+                    <i class="fa-solid w-4 h-4" :class="group.icon"></i>
+                  </span>
+                  <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <h3 class="text-base font-extrabold text-slate-900 leading-tight" x-text="group.label"></h3>
+                      <span x-show="group.isToday"
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-600 text-white">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                        Today
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5" x-text="group.blurb"></p>
+                  </div>
                 </div>
-                <div class="p-2.5 bg-slate-50 rounded-xl space-y-1 font-mono text-[11px] border border-slate-100 mt-3 min-h-[120px]">
-                  <div class="flex justify-between">
-                    <span class="text-slate-400">Date:</span>
-                    <span class="font-bold text-slate-800" x-text="formatDate(m.date) || '—'"></span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-slate-400">Duration:</span>
-                    <span class="font-bold text-slate-800" x-text="(formatTime(m.time_from) || '—') + ' - ' + (formatTime(m.time_to) || '—')"></span>
-                  </div>
-                  <div class="flex justify-between font-sans text-slate-600">
-                    <span class="text-slate-400">Venue:</span>
-                    <span class="truncate max-w-[160px]" x-text="m.venue || '—'"></span>
-                  </div>
-                  <template x-if="m.meeting_id || m.passcode">
-                    <div class="mt-1 space-y-1">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <template x-for="chip in group.chips" :key="chip.label">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold" :class="group.soft">
+                      <i class="fa-solid w-3 h-3" :class="chip.icon"></i>
+                      <span x-text="chip.label"></span>
+                      <span class="opacity-60" x-text="chip.count"></span>
+                    </span>
+                  </template>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    <i class="fa-solid fa-video w-3 h-3"></i>
+                    <span x-text="`${group.meetings.length} meeting${group.meetings.length > 1 ? 's' : ''}`"></span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+                   :class="group.isToday ? 'rounded-2xl bg-emerald-50/50 ring-1 ring-emerald-200/70 p-4 -m-1' : ''">
+                <template x-for="m in group.meetings" :key="m.id">
+                  <article class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition h-full flex flex-col overflow-hidden">
+                    <div class="flex items-start justify-between gap-2 p-5 pb-3">
+                      <span :class="`w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold border ${getTypeBadgeClass(m.type)}`">
+                        <i class="fa-solid fa-tag w-2.5 h-2.5"></i>
+                        <span x-text="m.type"></span>
+                      </span>
+                      <span x-show="isUpcoming(m)"
+                            class="w-fit inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Upcoming
+                      </span>
+                    </div>
+
+                    <div class="px-5">
+                      <h4 class="text-sm font-bold text-slate-900 leading-snug" x-text="m.title"></h4>
+                      <div class="flex items-start gap-1 mt-1" x-show="m.description">
+                        <p class="text-xs text-slate-600 line-clamp-2 flex-1" x-text="m.description"></p>
+                        <button x-show="(m.description || '').length > 50"
+                                @click="openModal(m)"
+                                class="shrink-0 w-5 h-5 flex items-center justify-center text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md"
+                                title="Read full description">
+                          <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="px-5 pt-4">
+                      <div class="flex items-stretch gap-3 bg-slate-50 border border-slate-100 rounded-xl p-3">
+                        <div class="flex flex-col items-center justify-center shrink-0 w-12 rounded-lg bg-white border border-slate-200 py-1.5">
+                          <span class="text-lg font-extrabold text-slate-900 leading-none" x-text="dayOfMonth(m.date)"></span>
+                          <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5" x-text="monthShort(m.date)"></span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs font-bold text-slate-800 leading-tight" x-text="formatDate(m.date) || 'Date to be confirmed'"></p>
+                          <p class="text-[11px] text-slate-400 mt-0.5" x-show="weekdayOf(m.date)" x-text="weekdayOf(m.date)"></p>
+                          <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-clock w-3 h-3 text-slate-400"></i>
+                            <span x-text="(formatTime(m.time_from) || '—') + ' – ' + (formatTime(m.time_to) || '—')"></span>
+                          </p>
+                          <p class="text-[11px] text-slate-600 mt-1 flex items-start gap-1 leading-snug">
+                            <i class="fa-solid fa-location-dot w-3 h-3 text-slate-400 mt-0.5"></i>
+                            <span class="break-words" x-text="m.venue || 'Venue to be announced'"></span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="px-5 pt-3 flex-1">
                       <template x-if="m.meeting_id">
-                        <div class="flex justify-between items-center">
-                          <span class="text-slate-400">Meeting ID:</span>
-                          <span class="font-bold text-slate-800 flex items-center gap-1">
+                        <div class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-100">
+                          <span class="text-[11px] text-slate-400 flex items-center gap-1.5"><i class="fa-solid fa-id-card w-3.5 h-3.5"></i>Meeting ID</span>
+                          <span class="font-mono text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <span x-text="m.meeting_id"></span>
-                            <button @click="copyToClipboard(m.meeting_id, 'Copied Meeting ID!')" class="text-slate-400 hover:text-emerald-700">
+                            <button @click="copyToClipboard(m.meeting_id, 'Copied Meeting ID!')" class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-md" title="Copy meeting ID">
                               <i class="fa-solid fa-copy w-3 h-3"></i>
                             </button>
                           </span>
                         </div>
                       </template>
                       <template x-if="m.passcode">
-                        <div class="flex justify-between items-center">
-                          <span class="text-slate-400">Passcode:</span>
-                          <span class="font-bold text-slate-800 flex items-center gap-1">
+                        <div class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-100">
+                          <span class="text-[11px] text-slate-400 flex items-center gap-1.5"><i class="fa-solid fa-lock w-3.5 h-3.5"></i>Passcode</span>
+                          <span class="font-mono text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <span x-text="m.passcode"></span>
-                            <button @click="copyToClipboard(m.passcode, 'Copied Passcode!')" class="text-slate-400 hover:text-emerald-700">
+                            <button @click="copyToClipboard(m.passcode, 'Copied Passcode!')" class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-md" title="Copy passcode">
                               <i class="fa-solid fa-copy w-3 h-3"></i>
                             </button>
                           </span>
                         </div>
                       </template>
+                      <template x-if="m.reports_count > 0">
+                        <button type="button"
+                                @click="focusMeetingReports(m.id)"
+                                class="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/60 hover:shadow-sm transition-all">
+                          <span class="w-8 h-8 shrink-0 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center transition group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600">
+                            <i class="fa-solid fa-file-lines w-3.5 h-3.5"></i>
+                          </span>
+                          <span class="min-w-0 flex-1 text-left">
+                            <span class="block text-[11px] font-bold text-slate-800 leading-tight group-hover:text-emerald-900"
+                                  x-text="`${m.reports_count} report${m.reports_count > 1 ? 's' : ''} available`"></span>
+                            <span class="block text-[10px] text-slate-500 leading-tight mt-0.5 group-hover:text-emerald-700">View in Reports &amp; Presentations</span>
+                          </span>
+                          <i class="fa-solid fa-chevron-right w-3 h-3 text-slate-300 shrink-0 transition-all group-hover:text-emerald-600 group-hover:translate-x-0.5"></i>
+                        </button>
+                      </template>
                     </div>
-                  </template>
-                </div>
-                <a :href="m.link || ''" target="_blank"
-                   :class="isCarousel ? 'mt-3' : 'mt-auto'"
-                   class="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition">
-                  <i class="fa-solid fa-video w-3.5 h-3.5"></i>
-                  <span>Join Room</span>
-                </a>
+
+                    <div class="p-5 pt-4">
+                      <template x-if="isToday(m)">
+                        <a :href="m.link || '#'"
+                           :class="m.link ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+                           :target="m.link ? '_blank' : null"
+                           class="w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition">
+                          <i class="fa-solid fa-video w-3.5 h-3.5"></i>
+                          <span x-text="m.link ? 'Join Room' : 'Link not available'"></span>
+                        </a>
+                      </template>
+                      <template x-if="!isToday(m)">
+                        <div class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center gap-1.5">
+                          <i class="fa-regular fa-clock w-3.5 h-3.5"></i>
+                          <span x-text="isPast(m) ? 'Session concluded' : 'Opens on the session date'"></span>
+                        </div>
+                      </template>
+                    </div>
+                  </article>
+                </template>
               </div>
-            </template>
-            <div x-show="filteredMeetings.length === 0" class="col-span-full p-8 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200" x-cloak>
-              No meetings match your query.
             </div>
+          </template>
+
+          <div x-show="meetingGroups.length === 0" class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+            <span class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <i class="fa-solid fa-video w-5 h-5"></i>
+            </span>
+            <p class="text-sm font-bold text-slate-700" x-text="searchQuery ? 'No meetings match your search' : 'No meetings recorded yet'"></p>
+            <p class="text-xs text-slate-500 mt-1" x-text="searchQuery ? 'Try a different title, type, or venue.' : 'Session schedules for this mission will appear here once logged.'"></p>
           </div>
-          <button x-show="isCarousel" @click="scrollNext()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shadow">
-            <i class="fa-solid fa-chevron-right text-sm"></i>
-          </button>
         </div>
       </div>
 
@@ -504,23 +726,23 @@
               <h3 class="text-lg font-bold text-slate-900 mb-3" x-text="selectedMeeting.title"></h3>
               <p class="text-sm text-slate-700 leading-relaxed mb-4" x-text="(selectedMeeting.description || 'No description available.')"></p>
               <div class="p-3 bg-slate-50 rounded-xl space-y-2 font-mono text-xs border border-slate-100">
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Date:</span>
-                  <span class="font-bold text-slate-800" x-text="formatDate(selectedMeeting.date) || '—'"></span>
+                <div class="flex justify-between gap-4">
+                  <span class="text-slate-400 shrink-0">Date:</span>
+                  <span class="font-bold text-slate-800 text-right" x-text="formatDate(selectedMeeting.date) || '—'"></span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Duration:</span>
-                  <span class="font-bold text-slate-800" x-text="(formatTime(selectedMeeting.time_from) || '—') + ' - ' + (formatTime(selectedMeeting.time_to) || '—')"></span>
+                <div class="flex justify-between gap-4">
+                  <span class="text-slate-400 shrink-0">Duration:</span>
+                  <span class="font-bold text-slate-800 text-right" x-text="(formatTime(selectedMeeting.time_from) || '—') + ' - ' + (formatTime(selectedMeeting.time_to) || '—')"></span>
                 </div>
-                <div class="flex justify-between font-sans text-slate-600">
-                  <span class="text-slate-400">Venue:</span>
-                  <span class="truncate max-w-[200px]" x-text="selectedMeeting.venue || '—'"></span>
+                <div class="flex justify-between gap-4 font-sans text-slate-600">
+                  <span class="text-slate-400 shrink-0">Venue:</span>
+                  <span class="font-semibold text-slate-700 text-right break-words" x-text="selectedMeeting.venue || 'To be announced'"></span>
                 </div>
                 <template x-if="selectedMeeting.meeting_id || selectedMeeting.passcode">
                   <div class="mt-2 space-y-1">
                     <template x-if="selectedMeeting.meeting_id">
-                      <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Meeting ID:</span>
+                      <div class="flex justify-between items-center gap-4">
+                        <span class="text-slate-400 shrink-0">Meeting ID:</span>
                         <span class="font-bold text-slate-800 flex items-center gap-1">
                           <span x-text="selectedMeeting.meeting_id"></span>
                           <button @click="copyToClipboard(selectedMeeting.meeting_id, 'Copied Meeting ID!')" class="text-slate-400 hover:text-emerald-700">
@@ -530,8 +752,8 @@
                       </div>
                     </template>
                     <template x-if="selectedMeeting.passcode">
-                      <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Passcode:</span>
+                      <div class="flex justify-between items-center gap-4">
+                        <span class="text-slate-400 shrink-0">Passcode:</span>
                         <span class="font-bold text-slate-800 flex items-center gap-1">
                           <span x-text="selectedMeeting.passcode"></span>
                           <button @click="copyToClipboard(selectedMeeting.passcode, 'Copied Passcode!')" class="text-slate-400 hover:text-emerald-700">
@@ -542,12 +764,37 @@
                     </template>
                   </div>
                 </template>
+                <template x-if="selectedMeeting.reports_count > 0">
+                  <button type="button"
+                          @click="descModalOpen = false; focusMeetingReports(selectedMeeting.id)"
+                          class="group mt-4 w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/60 hover:shadow-sm transition-all">
+                    <span class="w-9 h-9 shrink-0 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center transition group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600">
+                      <i class="fa-solid fa-file-lines w-4 h-4"></i>
+                    </span>
+                    <span class="min-w-0 flex-1 text-left">
+                      <span class="block text-xs font-bold text-slate-800 leading-tight group-hover:text-emerald-900"
+                            x-text="`${selectedMeeting.reports_count} report${selectedMeeting.reports_count > 1 ? 's' : ''} available`"></span>
+                      <span class="block text-[11px] text-slate-500 leading-tight mt-0.5 group-hover:text-emerald-700">View in Reports &amp; Presentations</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right w-3.5 h-3.5 text-slate-300 shrink-0 transition-all group-hover:text-emerald-600 group-hover:translate-x-0.5"></i>
+                  </button>
+                </template>
               </div>
-              <a :href="selectedMeeting.link || '#'" target="_blank"
-                 class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition mt-4">
-                <i class="fa-solid fa-video"></i>
-                <span>Join Room</span>
-              </a>
+              <template x-if="isToday(selectedMeeting)">
+                <a :href="selectedMeeting.link || '#'"
+                   :class="selectedMeeting.link ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+                   :target="selectedMeeting.link ? '_blank' : null"
+                   class="w-full py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition mt-4">
+                  <i class="fa-solid fa-video"></i>
+                  <span x-text="selectedMeeting.link ? 'Join Room' : 'Link not available'"></span>
+                </a>
+              </template>
+              <template x-if="!isToday(selectedMeeting)">
+                <div class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm flex items-center justify-center gap-2 mt-4">
+                  <i class="fa-regular fa-clock"></i>
+                  <span x-text="isPast(selectedMeeting) ? 'Session concluded' : 'Opens on the session date'"></span>
+                </div>
+              </template>
             </div>
           </template>
         </div>
@@ -561,21 +808,32 @@
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-              Subproject Telemetry
+              {{ isset($siteVisitsMission) && $siteVisitsMission ? $siteVisitsMission->title : ($activeMission ? $activeMission->title : 'Previous Mission') }}
             </span>
             <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Geotagged Site Visits ({{ $siteVisits->count() }})</h2>
             <p class="text-slate-600 text-sm mt-1">
-              Field telemetry, station chainages, and Applied Geotagging Tool (AGT) photos across Luzon, Visayas, and Mindanao.
+              Missions' Site Visits across Luzon, Visayas, and Mindanao Clusters.
             </p>
           </div>
-          <div class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            AGT Coordinates Certified by Regional Engineering Units
+        
+        </div>
+
+        <!-- Group By Toggle -->
+        <div class="mb-8">
+          <div class="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start" id="siteVisitsGroupToggle">
+            <button type="button" data-group-by="component"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-layer-group w-3.5 h-3.5"></i> Group by Component
+            </button>
+            <button type="button" data-group-by="cluster"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-map-location-dot w-3.5 h-3.5"></i> Group by Cluster
+            </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="siteVisitsGridContainer">
-          <!-- 10 Site Visit Cards rendered by JavaScript -->
+        <div id="siteVisitsGroupsContainer" class="space-y-10">
+          <!-- Site visit groups rendered by JavaScript -->
         </div>
 
       </div>
@@ -590,7 +848,7 @@
         <div class="max-w-3xl mx-auto text-center mb-10">
           <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Registration</h2>
           <p class="text-slate-600 text-sm mt-1">
-            Compliant with RA 10173 (Data Privacy Act of 2012) and mapped strictly to <code>mission_registrations</code>.
+            Compliant with RA 10173 (Data Privacy Act of 2012).
           </p>
         </div>
 
@@ -776,9 +1034,11 @@
               <div>
                 <div class="flex items-center space-x-2">
                   <h2 class="text-lg font-bold text-slate-900 tracking-tight">Mission Photos Stream</h2>
-                  <span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-semibold">Always Shows All</span>
+                  <span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-semibold">{{ $photosMission ? $photosMission->title : 'No Mission' }}</span>
                 </div>
-                <p class="text-xs text-slate-400">Public participant gallery • All submissions displayed in unified date timeline</p>
+                <p class="text-xs text-slate-400">
+                  {{ $activeMission ? 'Photos of the active mission' : 'Photos of the latest previous mission' }} — every photo submitted to the stream in one gallery.
+                </p>
               </div>
             </div>
 
@@ -805,27 +1065,29 @@
 
             <!-- Upload Action -->
             <div class="flex items-center space-x-2.5 justify-end">
-              <button
-                onclick="openUploadModal()"
-                class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-emerald-600/20 transition active:scale-95">
-                <i class="fa-solid fa-cloud-arrow-up w-4 h-4"></i>
-                <span>Upload Photo</span>
-              </button>
+            @if($photosUploadAllowed)
+            <button
+              onclick="openUploadModal()"
+              class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-emerald-600/20 transition active:scale-95">
+              <i class="fa-solid fa-cloud-arrow-up w-4 h-4"></i>
+              <span>Upload Photo</span>
+            </button>
+            @endif
             </div>
 
           </div>
 
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <div class="flex items-center space-x-2">
-              <i class="fa-solid fa-layer-group w-3.5 h-3.5 text-emerald-600"></i>
-              <span>Displaying <strong>all participant photos</strong> with zero hidden subsets.</span>
+              <i class="fa-solid fa-images w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Photos submitted to the stream for {{ $photosMission ? $photosMission->title : 'this mission' }}.</span>
             </div>
             <span class="font-mono text-[11px] text-slate-400" id="streamCounter">Showing all items</span>
           </div>
         </div>
 
-        <!-- Google Photos Stream Container -->
-        <div id="googlePhotosStreamContainer" class="space-y-8">
+        <!-- Mission Photo Gallery -->
+        <div id="googlePhotosStreamContainer">
           <!-- Dynamically injected -->
         </div>
 
@@ -842,7 +1104,7 @@
               Mission Documentation
             </span>
             <h2 class="text-3xl font-extrabold text-slate-900 mt-2"
-                x-text="`Reports &amp; Presentations (${allReports.length})`"></h2>
+                x-text="`Reports &amp; Presentations (${filteredReports.length})`"></h2>
             <p class="text-slate-600 text-sm mt-1">Official deliverables, presentations, annexes, fiduciary reviews, and technical evaluation papers.</p>
           </div>
 
@@ -869,28 +1131,56 @@
                   class="rep-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
             Presentations
           </button>
+
+          <template x-if="focusedMeeting">
+            <div class="ml-auto flex items-center gap-2 shrink-0">
+              <span class="hidden sm:inline text-[11px] text-slate-400">Showing reports for</span>
+              <button @click="clearMeetingFocus()"
+                      class="inline-flex items-center gap-2 pl-2 pr-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 transition">
+                <span class="w-5 h-5 rounded-md bg-white/20 flex items-center justify-center">
+                  <i class="fa-solid fa-filter w-2.5 h-2.5"></i>
+                </span>
+                <span class="max-w-[180px] truncate" x-text="focusedMeeting.title"></span>
+                <span class="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-bold" x-text="`${focusedMeeting.reportCount} report${focusedMeeting.reportCount > 1 ? 's' : ''}`"></span>
+                <i class="fa-solid fa-xmark w-3 h-3 opacity-80 hover:opacity-100"></i>
+              </button>
+            </div>
+          </template>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 shadow-sm overflow-hidden text-xs" id="reportsListContainer">
           <template x-if="filteredReports.length === 0" x-cloak>
-            <div class="p-8 text-center text-xs text-slate-400 bg-white">No reports match the selected filter or search term.</div>
+            <div class="p-8 text-center text-xs text-slate-400 bg-white" x-text="focusedMeeting ? 'No reports available for this meeting.' : 'No reports match the selected filter or search term.'"></div>
           </template>
 
           <template x-for="group in reportGroups" :key="group.date">
             <div class="mb-4 last:mb-0">
-              <div class="bg-slate-100 px-4 py-2 border-b border-slate-200">
+              <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center gap-2 flex-wrap">
                 <span class="text-xs font-bold text-slate-700" x-text="group.label"></span>
-                <span class="text-xs text-slate-500 ml-2" x-text="`(${group.reports.length} document(s))`"></span>
+                <span class="text-xs text-slate-500" x-text="`(${group.reports.length} document(s))`"></span>
+                <template x-if="focusedMeeting">
+                  <span class="inline-flex items-center gap-1.5 ml-auto px-2 py-0.5 rounded-lg bg-white border border-emerald-200 text-emerald-700 text-[10px] font-bold">
+                    <i class="fa-solid fa-video w-3 h-3"></i>
+                    <span class="truncate max-w-[200px]" x-text="group.reports[0]?.meetingTitle"></span>
+                  </span>
+                </template>
               </div>
               <template x-for="rep in group.reports" :key="rep.id">
-                <div class="p-4 sm:p-5 flex items-center justify-between hover:bg-slate-50 transition border-b border-slate-100 last:border-0">
+                <div class="p-4 sm:p-5 flex items-center justify-between hover:bg-slate-50 transition border-b border-slate-100 last:border-0"
+                     :id="`report-${rep.id}`"
+                     :class="(focusedReportId === rep.id || focusedMeetingId === rep.meetingId) ? 'bg-emerald-50 ring-2 ring-inset ring-emerald-200' : ''">
                   <div class="flex items-center space-x-3.5 pr-4 min-w-0">
                     <div :class="`p-2.5 rounded-xl border shrink-0 ${rep.format === 'PDF' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`">
                       <i :class="`w-5 h-5 fa-solid ${rep.format === 'XLSX' ? 'fa-file-excel' : 'fa-file-text'}`"></i>
                     </div>
                     <div class="min-w-0">
                       <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate" x-text="rep.title"></h4>
-                      <p class="text-slate-400 text-[11px] mt-0.5" x-text="rep.format"></p>
+                      <p x-show="rep.description" class="text-slate-600 text-[11px] mt-0.5 line-clamp-2" x-text="rep.description"></p>
+                      <p class="text-slate-400 text-[11px] mt-0.5 truncate">
+                        <span x-text="rep.format"></span>
+                        <span x-show="rep.fileName" x-text="` • ${rep.fileName}`"></span>
+                        <span x-show="rep.meetingTitle" x-text="` • ${rep.meetingTitle}`"></span>
+                      </p>
                     </div>
                   </div>
                   <a :href="rep.link" target="_blank" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center gap-1.5 transition shrink-0">
@@ -926,45 +1216,46 @@
 
       <div class="p-6 overflow-y-auto space-y-6">
         <!-- Photo with AGT Watermark -->
-        <div class="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-300 shadow-inner">
+        <div id="agtPhotoSection" class="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-300 shadow-inner">
           <img id="agtMainImage" src="" alt="Geotagged Photo" class="w-full h-80 sm:h-96 object-cover" />
 
           <div class="agt-watermark-overlay absolute inset-x-0 bottom-0 p-4 text-white">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px] bg-black/60 backdrop-blur-md p-3 rounded-xl border border-white/20">
               <div>
                 <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Coordinates</span>
-                <strong class="text-emerald-400" id="agtCoord">8.7490Â° N, 124.7744Â° E</strong>
+                <strong class="text-emerald-400" id="agtCoord">—</strong>
               </div>
               <div>
                 <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Station / Chainage</span>
-                <strong class="text-white" id="agtStation">Sta. 04+250</strong>
+                <strong class="text-white" id="agtStation">—</strong>
               </div>
               <div>
                 <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Elevation &amp; Bearing</span>
-                <strong class="text-white" id="agtElev">142m MSL • 42Â° NE</strong>
+                <strong class="text-white" id="agtElev">—</strong>
               </div>
               <div>
                 <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Survey Timestamp</span>
-                <strong class="text-phgold-400" id="agtTime">2026-10-15 10:24 PST</strong>
+                <strong class="text-phgold-400" id="agtTime">—</strong>
               </div>
             </div>
           </div>
         </div>
 
-        <div>
+        <div id="agtStationsSection">
           <label class="font-bold text-xs uppercase tracking-wider text-slate-600 block mb-2">
-            Sequential Geotagged Stations (<span id="agtPhotoCount">3</span> photos in this subproject)
+            Sequential Geotagged Stations (<span id="agtPhotoCount">0</span> photos in this subproject)
           </label>
           <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="agtThumbnailsGrid"></div>
         </div>
 
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2">
-          <h4 class="font-bold text-slate-800 text-sm" id="agtSpName">Subproject Full Title</h4>
-          <p class="text-slate-600 leading-relaxed" id="agtSpDesc">Technical audit description</p>
+          <h4 class="font-bold text-slate-800 text-sm" id="agtSpName">—</h4>
+          <p class="text-slate-600 leading-relaxed" id="agtSpDesc"></p>
           <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center gap-4 text-slate-500">
-            <span>Funding: <strong class="text-slate-700" id="agtSpFunding">WB Loan</strong></span>
-            <span>Cluster: <strong class="text-slate-700" id="agtSpCluster">Mindanao</strong></span>
-            <span>Component: <strong class="text-slate-700" id="agtSpComponent">I-BUILD</strong></span>
+            <span>Date: <strong class="text-slate-700" id="agtSpDate">—</strong></span>
+            <span>Funding: <strong class="text-slate-700" id="agtSpFunding">—</strong></span>
+            <span>Cluster: <strong class="text-slate-700" id="agtSpCluster">—</strong></span>
+            <span>Component: <strong class="text-slate-700" id="agtSpComponent">—</strong></span>
             <a id="agtSpDocLink" href="#" target="_blank" class="text-emerald-700 font-bold hover:underline flex items-center gap-1">
               <i class="fa-solid fa-file-text w-3.5 h-3.5"></i> Project Document
             </a>
@@ -989,8 +1280,8 @@
           <i class="fa-solid fa-arrow-left w-5 h-5"></i>
         </button>
         <div class="truncate">
-          <p class="text-sm font-semibold text-white truncate" id="lbHeaderTitle">Photo Title</p>
-          <p class="text-xs text-slate-400 truncate" id="lbHeaderSubtitle">Date • Location</p>
+          <p class="text-sm font-semibold text-white truncate" id="lbHeaderTitle"></p>
+          <p class="text-xs text-slate-400 truncate" id="lbHeaderSubtitle"></p>
         </div>
       </div>
 
@@ -1026,28 +1317,28 @@
           </button>
         </div>
         <div class="p-5 space-y-5 text-xs">
-          <div>
+          <div id="drawerCaptionBlock">
             <label class="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Caption</label>
-            <p class="text-sm font-semibold text-slate-900 mt-1" id="drawerCaption">Caption</p>
+            <p class="text-sm font-semibold text-slate-900 mt-1" id="drawerCaption"></p>
           </div>
           <div class="flex items-start space-x-3">
             <i class="fa-solid fa-calendar w-4 h-4 text-slate-400 mt-0.5"></i>
             <div>
-              <p class="font-bold text-slate-800" id="drawerDate">Date</p>
-              <p class="text-slate-400" id="drawerTime">Time</p>
+              <p class="font-bold text-slate-800" id="drawerDate"></p>
+              <p class="text-slate-400" id="drawerTime"></p>
             </div>
           </div>
-          <div class="flex items-start space-x-3">
-            <i class="fa-solid fa-user w-4 h-4 text-slate-400 mt-0.5"></i>
+          <div class="flex items-start space-x-3" id="drawerAuthorBlock">
+            <i class="fa-solid fa-layer-group w-4 h-4 text-slate-400 mt-0.5"></i>
             <div>
-              <p class="font-bold text-slate-800" id="drawerAuthor">Contributor</p>
-              <p class="text-slate-500" id="drawerOffice">Agency</p>
+              <p class="font-bold text-slate-800" id="drawerAuthor"></p>
+              <p class="text-slate-500" id="drawerOffice"></p>
             </div>
           </div>
           <div class="flex items-start space-x-3">
             <i class="fa-solid fa-map-pin w-4 h-4 text-emerald-600 mt-0.5"></i>
             <div>
-              <p class="font-bold text-slate-800" id="drawerLocation">Location</p>
+              <p class="font-bold text-slate-800" id="drawerLocation"></p>
             </div>
           </div>
           <div class="pt-3 border-t border-slate-100">
@@ -1055,9 +1346,9 @@
             <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-100">
               <div class="flex items-center space-x-2 text-slate-700">
                 <i class="fa-solid fa-camera w-3.5 h-3.5 text-slate-400"></i>
-                <span id="drawerDevice">Camera Sensor</span>
+                <span id="drawerDevice"></span>
               </div>
-              <div class="text-[11px] text-slate-500 font-mono" id="drawerExif">Telemetry</div>
+              <div class="text-[11px] text-slate-500 font-mono" id="drawerExif"></div>
             </div>
           </div>
         </div>
@@ -1079,79 +1370,81 @@
       </div>
 
       <form id="publicUploadForm" class="p-6 space-y-5" onsubmit="event.preventDefault(); handleNewPhotoUpload();">
+        <input type="hidden" id="photoUploadEndpoint" value="{{ route('landing.photos') }}" />
+        <input type="hidden" id="photoUploadCsrf" value="{{ csrf_token() }}" />
         <div
           id="dropArea"
           onclick="document.getElementById('fileInput').click()"
+          ondragover="handleUploadDragOver(event)"
+          ondragleave="handleUploadDragLeave(event)"
+          ondrop="handleUploadDrop(event)"
           class="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50 hover:bg-emerald-50/20 transition relative">
           <input
             type="file"
             id="fileInput"
             accept="image/*"
+            multiple
             class="hidden"
-            required
             onchange="handleFileInputPreview(event)" />
           <div id="dropPrompt" class="space-y-2">
             <div class="w-12 h-12 rounded-full bg-white text-emerald-600 shadow flex items-center justify-center mx-auto">
               <i class="fa-solid fa-cloud-arrow-up w-6 h-6"></i>
             </div>
-            <p class="text-xs font-bold text-slate-800">Select photo from device</p>
-            <p class="text-[11px] text-slate-400">JPG, PNG, WEBP (No login required)</p>
+            <p class="text-xs font-bold text-slate-800">Select photos from device</p>
+            <p class="text-[11px] text-slate-400">JPG, PNG, WEBP • Select or drop several at once (No login required)</p>
           </div>
-          <div id="dropPreview" class="hidden relative">
-            <img id="tempImgPreview" src="" alt="Preview" class="w-full h-44 object-cover rounded-xl shadow-sm" />
-            <button type="button" onclick="event.stopPropagation(); clearUploadFile();" class="absolute top-2 right-2 bg-slate-900/80 text-white p-1 rounded-full hover:bg-slate-900">
-              <i class="fa-solid fa-trash w-4 h-4"></i>
+        </div>
+
+        <div id="dropPreview" class="hidden">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-600" id="previewCount"></span>
+            <button type="button" onclick="event.stopPropagation(); clearUploadFile();" class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-lg transition">
+              <i class="fa-solid fa-trash w-3 h-3"></i>
+              Remove all
             </button>
           </div>
+          <div id="previewGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
         </div>
 
         <div>
-          <label for="upCaption" class="block text-xs font-semibold text-slate-700 mb-1">Caption / Field Activity *</label>
-          <input type="text" id="upCaption" required placeholder="Core drill test on Station 05+100" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="upAuthor" class="block text-xs font-semibold text-slate-700 mb-1">Your Name *</label>
-            <input type="text" id="upAuthor" required placeholder="Engr. Leo Garcia" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
-          </div>
-          <div>
-            <label for="upOffice" class="block text-xs font-semibold text-slate-700 mb-1">Office / Agency *</label>
-            <input type="text" id="upOffice" required placeholder="RPCO 10 / PLGU Misamis" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
-          </div>
+          <label for="upCaption" class="block text-xs font-semibold text-slate-700 mb-1">Caption / Field Activity <span class="font-normal text-slate-400">(optional)</span></label>
+          <input type="text" id="upCaption" placeholder="Core drill test on Station 05+100" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
         </div>
 
         <div>
-          <label for="upLocation" class="block text-xs font-semibold text-slate-700 mb-1">Location Tag</label>
+          <label for="upLocation" class="block text-xs font-semibold text-slate-700 mb-1">Location Tag <span class="font-normal text-slate-400">(optional)</span></label>
           <input type="text" id="upLocation" placeholder="Balingasag, Misamis Oriental" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
         </div>
 
-        <div class="pt-3 flex items-center justify-end space-x-2">
-          <button type="button" onclick="closeUploadModal()" class="px-4 py-2 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
-          <button type="submit" class="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20">
-            Publish to Stream
-          </button>
+        <div class="pt-3 flex items-center justify-between gap-2">
+          <p class="text-[11px] text-slate-400">
+            <i class="fa-solid fa-circle-info w-3 h-3 mr-1"></i>Caption and location apply to all selected photos.
+          </p>
+          <div class="flex items-center space-x-2">
+            <button type="button" onclick="closeUploadModal()" class="px-4 py-2 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
+            <button type="submit" class="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20">
+              Publish to Stream
+            </button>
+          </div>
         </div>
       </form>
     </div>
   </div>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="bg-white border-t border-slate-200 text-slate-600 py-10 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-      <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 rounded-xl bg-govnavy-950 text-white flex items-center justify-center font-bold">
-          <i class="fa-solid fa-shield-alt w-4 h-4 text-emerald-400"></i>
-        </div>
-        <span>Â© 2026 Department of Agriculture • Philippine Rural Development Project (PRDP Scale-Up)</span>
-      </div>
-      <div class="flex space-x-4">
-        <a href="#banner-section" class="hover:underline">Banner</a>
-        <a href="#agenda-section" class="hover:underline">Agenda</a>
-        <a href="#meetings-section" class="hover:underline">Meetings ({{ $meetings->count() }})</a>
-        <a href="#site-visits-section" class="hover:underline">Site Visits ({{ $siteVisits->count() }})</a>
-        <a href="#gallery" class="hover:underline font-bold text-emerald-700">All Photos</a>
-        <a href="#reports-section" class="hover:underline">Reports (30)</a>
+  <footer class="bg-white border-t border-slate-200 text-slate-600 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <img src="/assets/scale-up-letterhead.png" alt="Department of Agriculture — Philippine Rural Development Project" class="h-12 sm:h-14 w-auto object-contain object-left" />
+
+        <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+          <a href="#banner-section" class="hover:underline">Banner</a>
+          <a href="#agenda-section" class="hover:underline">Agenda</a>
+          <a href="#meetings-section" class="hover:underline">Meetings ({{ $meetings->count() }})</a>
+          <a href="#site-visits-section" class="hover:underline">Site Visits ({{ $siteVisits->count() }})</a>
+          <a href="#gallery" class="hover:underline font-bold text-emerald-700">All Photos</a>
+          <a href="#reports-section" class="hover:underline">Reports ({{ $reportsCount }})</a>
+        </nav>
       </div>
     </div>
   </footer>
@@ -1174,12 +1467,14 @@
   'time_from' => $m->time_from?->format('H:i'),
   'time_to' => $m->time_to?->format('H:i'),
   'type' => $m->type === 'other' && $m->other_type ? $m->other_type : ($m->types()[$m->type] ?? $m->type),
+  'type_key' => $m->types()[$m->type] ?? 'Other',
   'venue' => $m->venue ?? '',
   'link' => $m->link ?? '',
   'meeting_id' => $m->meeting_id ?? '',
   'passcode' => $m->passcode ?? '',
-  'reports' => $m->reports ?? [],
+  'reports' => $m->report_documents,
   'report_name' => $m->report_name ?? '',
+  'reports_count' => count($m->report_documents),
   ])->toJson();
   $siteVisitsJson = $siteVisits->map(fn ($sv) => [
   'id' => $sv->id,
@@ -1192,15 +1487,35 @@
   'virtual_site_visit_link' => $sv->virtual_site_visit_link ?? '#',
   'date' => $sv->date?->format('Y-m-d') ?? '',
   'description' => '',
-  'images' => $sv->images ? array_map(fn ($img) => [
+  'images' => collect($sv->images ?? [])->map(fn ($img) => is_array($img) ? [
   'url' => $img['url'] ?? '',
   'station' => $img['station'] ?? '',
   'coords' => $img['coords'] ?? '',
   'elev' => $img['elev'] ?? '',
   'time' => $img['time'] ?? '',
   'label' => $img['label'] ?? '',
-  ], $sv->images) : [],
+  ] : [
+  'url' => \Illuminate\Support\Facades\Storage::disk('public')->url($img),
+  'station' => '',
+  'coords' => '',
+  'elev' => '',
+  'time' => '',
+  'label' => '',
+  ])->values()->all(),
   ])->toJson();
+
+  $photosJson = $missionPhotos->map(fn ($mp) => [
+  'id' => "mp-{$mp->id}",
+  'caption' => $mp->caption ?? '',
+  'author' => '',
+  'office' => '',
+  'location' => $mp->location ?? '',
+  'dateDisplay' => $mp->created_at?->format('M j, Y') ?? '',
+  'timeDisplay' => $mp->created_at?->format('g:i A') ?? '',
+  'device' => '',
+  'exif' => '',
+  'imageUrl' => $mp->image_url,
+  ])->values()->toJson();
 
   $officeLabelsJson = json_encode(\App\Enums\MissionOffice::labels());
   $managementTierLabelsJson = json_encode(\App\Enums\MissionManagementTier::labels());
@@ -1222,6 +1537,11 @@
     const siteVisitsData = {!! $siteVisitsJson !!};
 
     // ----------------------------------------------------
+    // 3. MISSION PHOTOS (from the selected mission)
+    // ----------------------------------------------------
+    const missionPhotosData = {!! $photosJson !!};
+
+    // ----------------------------------------------------
     // 3. ENUMS FOR DELEGATE REGISTRATION (from PHP enums)
     // ----------------------------------------------------
     const officeLabels = {!! $officeLabelsJson !!};
@@ -1231,122 +1551,17 @@
     const componentUnitLabels = {!! $componentUnitLabelsJson !!};
     const sexLabels = {!! $sexLabelsJson !!};
     const suffixLabels = {!! $suffixLabelsJson !!};
+    const canUploadPhotos = @json($photosUploadAllowed);
 
     // ----------------------------------------------------
-    // 4. ALL MISSION PHOTOS STREAM (ALWAYS SHOWS ALL)
+    // 4. MISSION PHOTOS STREAM (selected mission + uploads)
     // ----------------------------------------------------
-    const allMissionPhotos = [{
-        id: 101,
-        dateGroup: "Today",
-        dateDisplay: "October 16, 2026",
-        timeDisplay: "02:15 PM PST",
-        caption: "Field Geotagging & Drone Alignment at Balingasag Farm-to-Market Road",
-        author: "Engr. Carmela De Leon",
-        office: "RPCO Region 10",
-        location: "Misamis Oriental, Region X",
-        device: "DJI Mavic 3 Pro • 24mm f/2.8",
-        exif: "1/1000s • ISO 100",
-        imageUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 102,
-        dateGroup: "Today",
-        dateDisplay: "October 16, 2026",
-        timeDisplay: "11:30 AM PST",
-        caption: "High-Level Opening Plenary with DA Secretary and World Bank TTL",
-        author: "InfoACE Media Desk",
-        office: "NPCO Secretariat",
-        location: "Clark Marriott Ballroom",
-        device: "Sony A7 IV • 35mm f/1.8",
-        exif: "1/250s • ISO 800",
-        imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 103,
-        dateGroup: "Yesterday",
-        dateDisplay: "October 15, 2026",
-        timeDisplay: "03:45 PM PST",
-        caption: "Solar-Powered Irrigation Ultrasonic Flow Meter Verification",
-        author: "Engr. Ronald Soriano",
-        office: "PSO Visayas Cluster",
-        location: "Pototan, Iloilo",
-        device: "iPhone 15 Pro • 24mm f/1.78",
-        exif: "1/1200s • ISO 64",
-        imageUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 104,
-        dateGroup: "Yesterday",
-        dateDisplay: "October 15, 2026",
-        timeDisplay: "01:10 PM PST",
-        caption: "Cacao Post-Harvest Fermentation Quality Assessment & Sensory Lab",
-        author: "Joy Morales, M.Sc.",
-        office: "I-REAP Component Lead",
-        location: "Davao del Norte Processing Center",
-        device: "Canon EOS R6 • 50mm",
-        exif: "1/400s • ISO 400",
-        imageUrl: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 105,
-        dateGroup: "Earlier this Mission",
-        dateDisplay: "October 14, 2026",
-        timeDisplay: "04:30 PM PST",
-        caption: "Safeguards (SES) Consultation with Tribal Chieftains on Right-of-Way",
-        author: "Atty. Pamela Rosales",
-        office: "SES Unit - Luzon B",
-        location: "Victoria, Oriental Mindoro",
-        device: "Nikon Z6 II • 24-70mm",
-        exif: "1/160s • ISO 640",
-        imageUrl: "https://images.unsplash.com/photo-1541888946425-d0fbb18615f3?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 106,
-        dateGroup: "Earlier this Mission",
-        dateDisplay: "October 14, 2026",
-        timeDisplay: "09:45 AM PST",
-        caption: "National Project Advisory Board Alignment and Budget Obligation Brief",
-        author: "Planning Specialist K. Sison",
-        office: "DA-PRDP NPCO",
-        location: "BSWM Convention Hall",
-        device: "Fujifilm X-T4 • 33mm",
-        exif: "1/320s • ISO 1600",
-        imageUrl: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 107,
-        dateGroup: "Earlier this Mission",
-        dateDisplay: "October 14, 2026",
-        timeDisplay: "08:15 AM PST",
-        caption: "Core sampling drill calibration for pavement quality control test",
-        author: "Quality Inspector V. Cruz",
-        office: "PSO Mindanao QA Unit",
-        location: "Bonifacio FMR, Misamis Occ.",
-        device: "Samsung S24 Ultra",
-        exif: "1/800s • ISO 50",
-        imageUrl: "https://images.unsplash.com/photo-1584463699039-447a151b7593?auto=format&fit=crop&w=1200&q=80"
-      },
-      {
-        id: 108,
-        dateGroup: "Earlier this Mission",
-        dateDisplay: "October 14, 2026",
-        timeDisplay: "07:30 AM PST",
-        caption: "Highland Arabica coffee nursery inspection and seedling propagation",
-        author: "Agri-Specialist D. Mendoza",
-        office: "RPCO CAR",
-        location: "Atok, Benguet",
-        device: "Sony A6700",
-        exif: "1/500s • ISO 200",
-        imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80"
-      }
-    ];
-
-    let photos = [...allMissionPhotos];
+    let photos = Array.isArray(missionPhotosData) ? [...missionPhotosData] : [];
     let activeSearchQuery = "";
     let currentLightboxIdx = 0;
     let visiblePhotos = [];
-    let tempUploadBase64 = null;
-    let activeAgtSp = 1;
+    let pendingUploads = [];
+    let activeAgtSp = null;
     let activeAgtPhotoIdx = 0;
 
     function formatTime(timeStr) {
@@ -1364,6 +1579,55 @@
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       const parts = dateStr.split('-');
       return months[parseInt(parts[1]) - 1] + ' ' + parseInt(parts[2]) + ', ' + parseInt(parts[0]);
+    }
+
+    function dayOfMonth(dateStr) {
+      if (!dateStr) return '—';
+      return String(parseInt(dateStr.split('-')[2]));
+    }
+
+    function monthShort(dateStr) {
+      if (!dateStr) return '—';
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return months[parseInt(dateStr.split('-')[1]) - 1];
+    }
+
+    function weekdayOf(dateStr) {
+      if (!dateStr) return '';
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return days[new Date(y, m - 1, d).getDay()];
+    }
+
+    function todayDateString() {
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${now.getFullYear()}-${month}-${day}`;
+    }
+
+    function focusReport(reportId) {
+      window.dispatchEvent(new CustomEvent('focus-report', { detail: reportId }));
+    }
+
+    function focusMeetingReports(meetingId) {
+      window.dispatchEvent(new CustomEvent('focus-meeting-reports', { detail: meetingId }));
+    }
+
+    function isUpcoming(meeting) {
+      if (!meeting || !meeting.date) return false;
+      const endTime = meeting.time_to ? `${meeting.date} ${meeting.time_to}` : `${meeting.date} 23:59`;
+      return new Date(endTime.replace(' ', 'T')) >= new Date();
+    }
+
+    function isToday(meeting) {
+      return !!meeting && !!meeting.date && meeting.date === todayDateString();
+    }
+
+    function isPast(meeting) {
+      if (!meeting || !meeting.date) return false;
+      const endTime = meeting.time_to ? `${meeting.date} ${meeting.time_to}` : `${meeting.date} 23:59`;
+      return new Date(endTime.replace(' ', 'T')) < new Date();
     }
 
     // ----------------------------------------------------
@@ -1402,7 +1666,9 @@
               time: formatTime(m.time_from) + ' - ' + formatTime(m.time_to),
               venue: m.venue,
               link: m.link,
-              meeting_id: m.meeting_id
+              meeting_id: m.meeting_id,
+              isToday: isToday(m),
+              isPast: isPast(m)
             });
           });
           this.siteVisits.forEach(s => {
@@ -1413,8 +1679,9 @@
               title: s.sp_name,
               description: s.description,
               date: s.date || '',
-              time: formatTime("08:30") + ' - ' + formatTime("15:30"),
+              time: '',
               venue: s.location,
+              hasPhotos: Array.isArray(s.images) && s.images.length > 0,
               sp_id: s.id
             });
           });
@@ -1449,10 +1716,20 @@
     // MEETINGS DIRECTORY ALPINE COMPONENT
     // ----------------------------------------------------
     function meetingsDirectory() {
+      const TYPE_ACCENTS = {
+        'Kick Off': { icon: 'fa-flag', soft: 'bg-emerald-50 text-emerald-700 border-emerald-200', blurb: 'Opening sessions that set the mission agenda and expectations.' },
+        'Technical Discussions': { icon: 'fa-comments', soft: 'bg-sky-50 text-sky-700 border-sky-200', blurb: 'Working sessions on subproject engineering, procurement, and safeguards.' },
+        'Wrap Up': { icon: 'fa-flag-checkered', soft: 'bg-violet-50 text-violet-700 border-violet-200', blurb: 'Closing sessions consolidating outputs and agreed action points.' },
+        'Other': { icon: 'fa-layer-group', soft: 'bg-slate-100 text-slate-600 border-slate-200', blurb: 'Other sessions recorded for this mission.' }
+      };
+
+      const TYPE_ORDER = ['Kick Off', 'Technical Discussions', 'Wrap Up', 'Other'];
+
       return {
         searchQuery: '',
         selectedMeeting: null,
         descModalOpen: false,
+        groupBy: 'date',
         getTypeBadgeClass(type) {
           const lower = typeof type === 'string' ? type.toLowerCase() : '';
           if (lower.includes('kick off') || lower.includes('wrap up')) {
@@ -1476,20 +1753,83 @@
             (m.description || '').toLowerCase().includes(q)
           );
         },
-        get isCarousel() {
-          return this.filteredMeetings.length > 3;
-        },
-        scrollPrev() {
-          const container = this.$refs.gridContainer;
-          if (container) {
-            container.scrollLeft -= 340;
+        get meetingGroups() {
+          const meetings = this.filteredMeetings;
+
+          if (this.groupBy === 'date') {
+            const groups = new Map();
+            meetings.forEach(m => {
+              const key = m.date || 'Undated';
+              if (!groups.has(key)) groups.set(key, []);
+              groups.get(key).push(m);
+            });
+
+            const today = todayDateString();
+
+            return Array.from(groups.entries())
+              .sort((a, b) => a[0].localeCompare(b[0]))
+              .map(([date, items]) => ({
+                key: `date-${date}`,
+                label: date === 'Undated' ? 'Undated' : formatDate(date),
+                blurb: date === 'Undated' ? 'Sessions without a scheduled date.' : `${weekdayOf(date)} • ${items.length} session${items.length > 1 ? 's' : ''} scheduled`,
+                icon: 'fa-calendar-day',
+                soft: 'bg-slate-100 text-slate-600 border-slate-200',
+                isToday: date === today,
+                meetings: items,
+                chips: this.buildTypeChips(items)
+              }));
           }
+
+          const groups = new Map();
+          meetings.forEach(m => {
+            const key = m.type_key || 'Other';
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(m);
+          });
+
+          return Array.from(groups.entries())
+            .sort((a, b) => {
+              const ai = TYPE_ORDER.indexOf(a[0]);
+              const bi = TYPE_ORDER.indexOf(b[0]);
+              if (ai === -1 && bi === -1) return a[0].localeCompare(b[0]);
+              if (ai === -1) return 1;
+              if (bi === -1) return -1;
+              return ai - bi;
+            })
+            .map(([type, items]) => {
+              const meta = TYPE_ACCENTS[type] || TYPE_ACCENTS['Other'];
+              return {
+                key: `type-${type}`,
+                label: type,
+                blurb: meta.blurb,
+                icon: meta.icon,
+                soft: meta.soft,
+                isToday: false,
+                meetings: items,
+                chips: this.buildVenueChips(items)
+              };
+            });
         },
-        scrollNext() {
-          const container = this.$refs.gridContainer;
-          if (container) {
-            container.scrollLeft += 340;
-          }
+        buildTypeChips(items) {
+          const counts = {};
+          items.forEach(m => {
+            const key = m.type_key || 'Other';
+            counts[key] = (counts[key] || 0) + 1;
+          });
+          return Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([label, count]) => ({ label, count, icon: 'fa-layer-group' }));
+        },
+        buildVenueChips(items) {
+          const counts = {};
+          items.forEach(m => {
+            const venue = m.venue || 'Unspecified venue';
+            counts[venue] = (counts[venue] || 0) + 1;
+          });
+          return Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([label, count]) => ({ label, count, icon: 'fa-location-dot' }));
         },
         openModal(m) {
           this.selectedMeeting = m;
@@ -1503,40 +1843,205 @@
     }
 
     // ----------------------------------------------------
-    // GEOTAGGED SITE VISITS (10)
+    // GEOTAGGED SITE VISITS (grouped by component or cluster)
     // ----------------------------------------------------
+    let siteVisitsGroupBy = 'component';
+
+    const SITE_VISIT_COMPONENT_META = {
+      'I-BUILD': { icon: 'fa-road', accent: 'sky', blurb: 'Infrastructure — farm-to-market roads, bridges, and post-production facilities.' },
+      'I-REAP': { icon: 'fa-seedling', accent: 'emerald', blurb: 'Enterprise — production, processing, and marketing enterprises.' }
+    };
+
+    const SITE_VISIT_CLUSTER_META = {
+      'North Luzon': { accent: 'sky' },
+      'South Luzon': { accent: 'emerald' },
+      'Visayas': { accent: 'amber' },
+      'Mindanao': { accent: 'violet' }
+    };
+
+    const SITE_VISIT_ACCENTS = {
+      sky: { soft: 'bg-sky-50 text-sky-700 border-sky-200', text: 'text-sky-700' },
+      emerald: { soft: 'bg-emerald-50 text-emerald-700 border-emerald-200', text: 'text-emerald-700' },
+      amber: { soft: 'bg-amber-50 text-amber-700 border-amber-200', text: 'text-amber-700' },
+      violet: { soft: 'bg-violet-50 text-violet-700 border-violet-200', text: 'text-violet-700' },
+      slate: { soft: 'bg-slate-100 text-slate-600 border-slate-200', text: 'text-slate-600' }
+    };
+
+    function siteVisitComponentMeta(component) {
+      return SITE_VISIT_COMPONENT_META[(component || '').toUpperCase()] || {
+        icon: 'fa-layer-group',
+        accent: 'slate',
+        blurb: 'Other field components recorded for this mission.'
+      };
+    }
+
+    function siteVisitClusterMeta(cluster) {
+      return SITE_VISIT_CLUSTER_META[cluster] || { accent: 'slate' };
+    }
+
+    function getSiteVisitGroups() {
+      const visits = Array.isArray(siteVisitsData) ? siteVisitsData : [];
+      const groups = new Map();
+      const byComponent = siteVisitsGroupBy === 'component';
+
+      visits.forEach(sp => {
+        const key = byComponent ? (sp.component || 'Other') : (sp.cluster || 'Unassigned');
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+        groups.get(key).push(sp);
+      });
+
+      if (byComponent) {
+        const order = ['I-BUILD', 'I-REAP'];
+        return Array.from(groups.entries()).sort((a, b) => {
+          const ai = order.indexOf(a[0].toUpperCase());
+          const bi = order.indexOf(b[0].toUpperCase());
+          if (ai === -1 && bi === -1) return a[0].localeCompare(b[0]);
+          if (ai === -1) return 1;
+          if (bi === -1) return -1;
+          return ai - bi;
+        });
+      }
+
+      const order = ['North Luzon', 'South Luzon', 'Visayas', 'Mindanao'];
+      return Array.from(groups.entries()).sort((a, b) => {
+        const ai = order.indexOf(a[0]);
+        const bi = order.indexOf(b[0]);
+        if (ai === -1 && bi === -1) return a[0].localeCompare(b[0]);
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
+      });
+    }
+
+    function renderSiteVisitsGroupToggle() {
+      const toggle = document.getElementById('siteVisitsGroupToggle');
+      if (!toggle) return;
+
+      toggle.querySelectorAll('button[data-group-by]').forEach(btn => {
+        const isActive = btn.dataset.groupBy === siteVisitsGroupBy;
+        btn.classList.toggle('bg-white', isActive);
+        btn.classList.toggle('text-slate-900', isActive);
+        btn.classList.toggle('shadow-sm', isActive);
+        btn.classList.toggle('text-slate-500', !isActive);
+        btn.classList.toggle('hover:text-slate-900', !isActive);
+      });
+
+      toggle.querySelectorAll('button[data-group-by]').forEach(btn => {
+        btn.onclick = () => {
+          siteVisitsGroupBy = btn.dataset.groupBy;
+          renderSiteVisitsGrid();
+        };
+      });
+    }
+
     function renderSiteVisitsGrid() {
-      const container = document.getElementById('siteVisitsGridContainer');
+      const container = document.getElementById('siteVisitsGroupsContainer');
       if (!container) return;
 
       container.innerHTML = "";
+      renderSiteVisitsGroupToggle();
 
-      siteVisitsData.forEach(sp => {
-        const card = document.createElement('div');
-        card.className = "bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between h-full";
-        card.innerHTML = `
-          <div>
-            <div class="relative h-44 bg-slate-900 overflow-hidden group">
-              <img src="${sp.images && sp.images[0] ? sp.images[0].url : 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80'}" alt="${sp.sp_name}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" />
-              <span class="absolute top-3 left-3 bg-govnavy-950/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">${sp.cluster}</span>
-              <span class="absolute bottom-3 right-3 bg-emerald-950/90 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded border border-emerald-500/40">
-                <i class="fa-solid fa-camera w-3 h-3 inline mr-1"></i> ${sp.images ? sp.images.length : 0} Geotagged Photos
+      const groups = getSiteVisitGroups();
+      const total = groups.reduce((sum, [, items]) => sum + items.length, 0);
+
+      if (total === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
+            <span class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <i class="fa-solid fa-map-location-dot w-5 h-5"></i>
+            </span>
+            <p class="text-sm font-bold text-slate-700">No site visits recorded yet</p>
+            <p class="text-xs text-slate-500 mt-1">Geotagged field visits for this mission will appear here once logged.</p>
+          </div>`;
+        return;
+      }
+
+      const byComponent = siteVisitsGroupBy === 'component';
+
+      groups.forEach(([groupKey, items]) => {
+        const meta = byComponent
+          ? siteVisitComponentMeta(groupKey)
+          : siteVisitClusterMeta(groupKey);
+        const accents = SITE_VISIT_ACCENTS[meta.accent] || SITE_VISIT_ACCENTS.slate;
+
+        const breakdown = {};
+        items.forEach(sp => {
+          const key = byComponent ? (sp.cluster || 'Unassigned') : (sp.component || 'Other');
+          breakdown[key] = (breakdown[key] || 0) + 1;
+        });
+        const breakdownChips = Object.entries(breakdown)
+          .sort((a, b) => b[1] - a[1])
+          .map(([key, count]) => `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold ${accents.soft}"><i class="fa-solid ${byComponent ? 'fa-location-dot' : 'fa-layer-group'} w-3 h-3"></i>${key} <span class="opacity-60">${count}</span></span>`)
+          .join('');
+
+        const group = document.createElement('div');
+        group.className = "space-y-4";
+        group.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+            <div class="flex items-start gap-3">
+              ${byComponent ? `
+              <span class="mt-0.5 w-9 h-9 rounded-xl ${accents.soft} border flex items-center justify-center shrink-0">
+                <i class="fa-solid ${meta.icon} w-4 h-4"></i>
+              </span>` : ''}
+              <div>
+                <h3 class="text-base font-extrabold text-slate-900 leading-tight">${groupKey}</h3>
+                <p class="text-xs text-slate-500 mt-0.5">${byComponent ? meta.blurb : 'Regional cluster coverage for this mission.'}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              ${breakdownChips}
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                <i class="fa-solid fa-map-location-dot w-3 h-3"></i>${items.length} site visit${items.length > 1 ? 's' : ''}
               </span>
             </div>
-            <div class="p-5 space-y-2">
-              <p class="text-[11px] font-semibold text-emerald-700">${sp.component} • ${sp.location}</p>
-              <h3 class="text-sm font-bold text-slate-900 line-clamp-2">${sp.sp_name}</h3>
-              <p class="text-xs text-slate-600 line-clamp-2">${sp.description}</p>
-            </div>
           </div>
-          <div class="p-5 pt-0 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400 truncate max-w-[120px]">${sp.funding_source}</span>
-            <button onclick="openGeotagModal(${sp.id})" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-images w-3.5 h-3.5"></i> Inspect AGT Photos
-            </button>
-          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
         `;
-        container.appendChild(card);
+
+        const grid = group.querySelector('div.grid');
+
+        items.forEach(sp => {
+          const hasPhotos = Array.isArray(sp.images) && sp.images.length > 0;
+          const card = document.createElement('div');
+          card.className = "bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between h-full";
+          card.innerHTML = `
+            ${hasPhotos ? `
+            <div class="relative h-44 bg-slate-900 overflow-hidden group">
+              <img src="${sp.images[0].url}" alt="${sp.sp_name}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" />
+              <span class="absolute top-3 left-3 bg-govnavy-950/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">${sp.cluster}</span>
+              ${sp.images.length > 1 ? `<span class="absolute top-3 right-3 bg-slate-900/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><i class="fa-solid fa-images w-3 h-3"></i>${sp.images.length}</span>` : ''}
+            </div>` : ''}
+            <div class="p-5 space-y-2 flex-1">
+              <div class="flex items-start justify-between gap-2">
+                <p class="text-[11px] font-semibold ${accents.text} flex items-center gap-1.5 min-w-0">
+                  <i class="fa-solid fa-location-dot w-3 h-3 shrink-0"></i><span class="truncate">${sp.location || 'Location not specified'}</span>
+                </p>
+                ${sp.date ? `<span class="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-calendar w-3 h-3"></i>${formatDate(sp.date)}</span>` : ''}
+              </div>
+              <h4 class="text-sm font-bold text-slate-900 line-clamp-2">${sp.sp_name}</h4>
+              ${sp.description ? `<p class="text-xs text-slate-600 line-clamp-2">${sp.description}</p>` : ''}
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">${sp.component}</span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-location-dot w-3 h-3"></i>${sp.cluster}</span>
+                ${sp.funding_source ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-coins w-3 h-3"></i>${sp.funding_source}</span>` : ''}
+              </div>
+            </div>
+            <div class="p-5 pt-0 flex items-center justify-end">
+              ${hasPhotos ? `
+              <button onclick="openGeotagModal(${sp.id})" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-images w-3.5 h-3.5"></i> Inspect AGT Photos
+              </button>` : `
+              <a href="${sp.virtual_site_visit_link || '#'}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-arrow-up-right-from-square w-3.5 h-3.5"></i> View Project
+              </a>`}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        container.appendChild(group);
       });
     }
 
@@ -1546,14 +2051,19 @@
       const sp = siteVisitsData.find(item => item.id === spId);
       if (!sp) return;
 
+      const hasPhotos = Array.isArray(sp.images) && sp.images.length > 0;
+      document.getElementById('agtPhotoSection').classList.toggle('hidden', !hasPhotos);
+      document.getElementById('agtStationsSection').classList.toggle('hidden', !hasPhotos);
+
       document.getElementById('agtModalTitle').innerText = sp.sp_name;
       document.getElementById('agtSpName').innerText = sp.sp_name;
       document.getElementById('agtSpDesc').innerText = sp.description;
       document.getElementById('agtSpFunding').innerText = sp.funding_source;
+      document.getElementById('agtSpDate').innerText = sp.date ? formatDate(sp.date) : '—';
       document.getElementById('agtSpCluster').innerText = sp.cluster;
       document.getElementById('agtSpComponent').innerText = sp.component;
-      document.getElementById('agtSpDocLink').href = sp.document_link;
-      document.getElementById('agtPhotoCount').innerText = sp.images ? sp.images.length : 0;
+      document.getElementById('agtSpDocLink').href = sp.document_link || '#';
+      document.getElementById('agtPhotoCount').innerText = hasPhotos ? sp.images.length : 0;
 
       renderAgtPhotos();
       document.getElementById('geotagModal').classList.remove('hidden');
@@ -1604,24 +2114,74 @@
       return {
         searchQuery: '',
         currentCategory: 'all',
+        focusedReportId: null,
+        focusedMeetingId: null,
+        init() {
+          window.addEventListener('focus-report', (event) => {
+            this.focusedReportId = event.detail;
+            this.currentCategory = 'all';
+            this.searchQuery = '';
+
+            this.$nextTick(() => {
+              const target = document.getElementById(`report-${event.detail}`);
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            });
+          });
+
+          window.addEventListener('focus-meeting-reports', (event) => {
+            this.focusedMeetingId = event.detail;
+            this.focusedReportId = null;
+            this.currentCategory = 'all';
+            this.searchQuery = '';
+
+            this.$nextTick(() => {
+              document.getElementById('reports-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+          });
+        },
+        clearMeetingFocus() {
+          this.focusedMeetingId = null;
+          this.focusedReportId = null;
+        },
+        get focusedMeeting() {
+          if (!this.focusedMeetingId) return null;
+
+          const meeting = this.allReports.find(rep => rep.meetingId === this.focusedMeetingId);
+          if (!meeting) return null;
+
+          return {
+            id: this.focusedMeetingId,
+            title: meeting.meetingTitle,
+            reportCount: this.allReports.filter(rep => rep.meetingId === this.focusedMeetingId).length
+          };
+        },
         get allReports() {
           let reports = [];
           if (typeof meetingsData !== 'undefined' && Array.isArray(meetingsData)) {
             meetingsData.forEach(m => {
               if (Array.isArray(m.reports)) {
-                m.reports.forEach((url, idx) => {
-                  if (url) {
-                    const ext = url.split('.').pop().toLowerCase();
-                    const fmt = ext === 'xlsx' ? 'XLSX' : 'PDF';
-                    reports.push({
-                      id: `mtg-${m.id}-${idx}`,
-                      title: m.report_name || m.title,
-                      meetingDate: m.date || '',
-                      category: 'presentation',
-                      format: fmt,
-                      link: url
-                    });
-                  }
+                m.reports.forEach((report, idx) => {
+                  const url = typeof report === 'string' ? report : (report?.url || '');
+                  if (!url) return;
+
+                  const ext = url.split('?')[0].split('.').pop().toLowerCase();
+                  const fmt = ext === 'xlsx' || ext === 'xls' ? 'XLSX' : 'PDF';
+                  const fileName = decodeURIComponent(url.split('?')[0].split('/').pop() || '');
+
+                  reports.push({
+                    id: `mtg-${m.id}-${idx}`,
+                    meetingId: m.id,
+                    title: (typeof report === 'object' && report?.title) || m.report_name || m.title,
+                    description: (typeof report === 'object' && report?.description) || '',
+                    meetingTitle: m.title,
+                    meetingDate: m.date || '',
+                    category: 'presentation',
+                    format: fmt,
+                    fileName: fileName,
+                    link: url
+                  });
                 });
               }
             });
@@ -1632,10 +2192,13 @@
           const q = (this.searchQuery || '').toLowerCase().trim();
           return this.allReports.filter(rep => {
             const matchesCategory = (this.currentCategory === 'all' || rep.category === this.currentCategory);
+            const matchesMeeting = (!this.focusedMeetingId || rep.meetingId === this.focusedMeetingId);
             const matchesSearch = !q ||
               rep.title.toLowerCase().includes(q) ||
-              rep.format.toLowerCase().includes(q);
-            return matchesCategory && matchesSearch;
+              rep.format.toLowerCase().includes(q) ||
+              (rep.fileName || '').toLowerCase().includes(q) ||
+              (rep.description || '').toLowerCase().includes(q);
+            return matchesCategory && matchesMeeting && matchesSearch;
           });
         },
         get reportGroups() {
@@ -1752,7 +2315,7 @@
                   const name = `${this.firstName} ${this.middleInitial ? this.middleInitial.toUpperCase() + '. ' : ''}${this.lastName}${suffixLabel ? ' ' + suffixLabel : ''}`;
 
                   document.getElementById('regAttendeeName').innerText = `Registration Verified: ${name}`;
-                  document.getElementById('regAttendeeDetails').innerText = 'Your delegate profile has been enrolled into mission_registrations.';
+                  document.getElementById('regAttendeeDetails').innerText = 'You are successfully registered.';
                   document.getElementById('regSuccessBox').classList.remove('hidden');
                   document.getElementById('regSuccessBox').scrollIntoView({
                     behavior: 'smooth',
@@ -1799,17 +2362,16 @@
 
       const q = activeSearchQuery.toLowerCase().trim();
       visiblePhotos = photos.filter(item => {
-        if (!q) return true; // ALWAYS SHOW ALL PHOTOS WHEN NO SEARCH QUERY
+        if (!q) return true;
         return (
-          item.caption.toLowerCase().includes(q) ||
-          item.author.toLowerCase().includes(q) ||
-          item.office.toLowerCase().includes(q) ||
-          item.location.toLowerCase().includes(q)
+          (item.caption || '').toLowerCase().includes(q) ||
+          (item.author || '').toLowerCase().includes(q) ||
+          (item.office || '').toLowerCase().includes(q) ||
+          (item.location || '').toLowerCase().includes(q) ||
+          (item.dateDisplay || '').toLowerCase().includes(q)
         );
       });
 
-      const topCountEl = document.getElementById('topPhotoCount');
-      if (topCountEl) topCountEl.innerText = photos.length;
       const streamCounterEl = document.getElementById('streamCounter');
       if (streamCounterEl) {
         streamCounterEl.innerText = q ? `Showing ${visiblePhotos.length} of ${photos.length} photos` : `All ${photos.length} photos displayed`;
@@ -1818,6 +2380,18 @@
       container.innerHTML = "";
 
       if (visiblePhotos.length === 0) {
+        if (photos.length === 0) {
+          container.innerHTML = `
+          <div class="text-center py-16 bg-slate-50 rounded-3xl border border-dashed border-slate-300">
+            <span class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <i class="fa-solid fa-image w-5 h-5"></i>
+            </span>
+            <h3 class="font-bold text-base text-slate-700">No photos yet</h3>
+            <p class="text-xs text-slate-400 mt-1">Geotagged photos uploaded for this mission will appear here.</p>
+          </div>`;
+          return;
+        }
+
         container.innerHTML = `
           <div class="text-center py-16 bg-slate-50 rounded-3xl border border-slate-200">
             <i class="fa-solid fa-image w-12 h-12 text-slate-300 mx-auto mb-3"></i>
@@ -1831,51 +2405,29 @@
         return;
       }
 
-      // Group into date sections while displaying ALL photos
-      const dateGroups = {};
-      visiblePhotos.forEach(p => {
-        if (!dateGroups[p.dateGroup]) {
-          dateGroups[p.dateGroup] = [];
-        }
-        dateGroups[p.dateGroup].push(p);
-      });
+      // Flat gallery — no grouping, photos flow in a single responsive grid
+      const gridEl = document.createElement('div');
+      gridEl.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3";
 
-      Object.keys(dateGroups).forEach(groupName => {
-        const groupPhotos = dateGroups[groupName];
-        const groupWrapper = document.createElement('div');
-        groupWrapper.className = "space-y-3";
+      visiblePhotos.forEach((photo, globalIdx) => {
+        const card = document.createElement('div');
+        card.className = "g-photo-card relative rounded-2xl overflow-hidden bg-slate-100 aspect-square sm:aspect-[4/3] group cursor-pointer border border-slate-200/70 shadow-sm hover:shadow-md transition-all";
+        card.onclick = () => openLightbox(globalIdx);
 
-        const headerEl = document.createElement('div');
-        headerEl.className = "flex items-baseline space-x-2 text-slate-800 pt-2 border-b border-slate-100 pb-1.5";
-        headerEl.innerHTML = `
-          <h3 class="font-bold text-base text-slate-900 tracking-tight">${groupName}</h3>
-          <span class="text-xs text-slate-400 font-medium">${groupPhotos[0].dateDisplay} • ${groupPhotos.length} photo${groupPhotos.length > 1 ? 's' : ''}</span>
+        card.innerHTML = `
+          <img src="${photo.imageUrl}" alt="${photo.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+          <div class="g-photo-overlay absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/10 to-black/20 opacity-0 transition duration-200 pointer-events-none"></div>
+          <div class="absolute bottom-2.5 left-2.5 right-2.5 text-white opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
+            <p class="text-xs font-semibold truncate leading-snug">${photo.caption || 'Mission photo'}</p>
+            ${[photo.author, photo.location].filter(Boolean).length
+              ? `<p class="text-[10px] text-slate-300 truncate">${[photo.author, photo.location].filter(Boolean).join(' • ')}</p>`
+              : ''}
+          </div>
         `;
-        groupWrapper.appendChild(headerEl);
-
-        const gridEl = document.createElement('div');
-        gridEl.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3";
-
-        groupPhotos.forEach(photo => {
-          const globalIdx = visiblePhotos.findIndex(item => item.id === photo.id);
-          const card = document.createElement('div');
-          card.className = "g-photo-card relative rounded-2xl overflow-hidden bg-slate-100 aspect-square sm:aspect-[4/3] group cursor-pointer border border-slate-200/70 shadow-sm hover:shadow-md transition-all";
-          card.onclick = () => openLightbox(globalIdx);
-
-          card.innerHTML = `
-            <img src="${photo.imageUrl}" alt="${photo.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
-            <div class="g-photo-overlay absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20 opacity-0 transition duration-200 pointer-events-none"></div>
-            <div class="absolute bottom-2.5 left-2.5 right-2.5 text-white opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
-              <p class="text-xs font-semibold truncate leading-snug">${photo.caption}</p>
-              <p class="text-[10px] text-slate-300 truncate">${photo.author} • ${photo.location}</p>
-            </div>
-          `;
-          gridEl.appendChild(card);
-        });
-
-        groupWrapper.appendChild(gridEl);
-        container.appendChild(groupWrapper);
+        gridEl.appendChild(card);
       });
+
+      container.appendChild(gridEl);
     }
 
     function handlePhotoSearch(val) {
@@ -1918,17 +2470,23 @@
       if (!photo) return;
 
       document.getElementById('lbMainImage').src = photo.imageUrl;
-      document.getElementById('lbHeaderTitle').innerText = photo.caption;
-      document.getElementById('lbHeaderSubtitle').innerText = `${photo.dateDisplay} • ${photo.location}`;
+      document.getElementById('lbHeaderTitle').innerText = photo.caption || 'Mission photo';
+      document.getElementById('lbHeaderSubtitle').innerText = [photo.dateDisplay, photo.location].filter(Boolean).join(' • ');
 
-      document.getElementById('drawerCaption').innerText = photo.caption;
-      document.getElementById('drawerDate').innerText = photo.dateDisplay;
-      document.getElementById('drawerTime').innerText = photo.timeDisplay;
-      document.getElementById('drawerAuthor').innerText = photo.author;
-      document.getElementById('drawerOffice').innerText = photo.office;
-      document.getElementById('drawerLocation').innerText = photo.location;
-      document.getElementById('drawerDevice').innerText = photo.device;
-      document.getElementById('drawerExif').innerText = photo.exif;
+      const caption = photo.caption || '';
+      document.getElementById('drawerCaption').innerText = caption;
+      document.getElementById('drawerCaptionBlock').classList.toggle('hidden', !caption);
+
+      document.getElementById('drawerDate').innerText = photo.dateDisplay || '—';
+      document.getElementById('drawerTime').innerText = photo.timeDisplay || '';
+      document.getElementById('drawerAuthor').innerText = photo.author || '';
+      document.getElementById('drawerOffice').innerText = photo.office || '';
+      document.getElementById('drawerLocation').innerText = photo.location || '—';
+      document.getElementById('drawerDevice').innerText = photo.device || '';
+      document.getElementById('drawerExif').innerText = photo.exif || '';
+
+      const hasAuthor = !!(photo.author || photo.office);
+      document.getElementById('drawerAuthorBlock').classList.toggle('hidden', !hasAuthor);
     }
 
     function prevPhoto() {
@@ -1961,6 +2519,10 @@
 
     // Unauthenticated Participant Upload
     function openUploadModal() {
+      if (typeof canUploadPhotos !== 'undefined' && !canUploadPhotos) {
+        alert('Photo uploads are closed. Uploads reopen when a new mission starts or within two weeks after the latest mission ends.');
+        return;
+      }
       document.getElementById('gUploadModal').classList.remove('hidden');
       document.getElementById('gUploadModal').classList.add('flex');
     }
@@ -1972,65 +2534,145 @@
     }
 
     function handleFileInputPreview(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+      addPendingFiles(event.target.files);
+      event.target.value = "";
+    }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        tempUploadBase64 = e.target.result;
-        document.getElementById('tempImgPreview').src = tempUploadBase64;
-        document.getElementById('dropPrompt').classList.add('hidden');
-        document.getElementById('dropPreview').classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
+    function handleUploadDragOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.getElementById('dropArea').classList.add('border-emerald-500', 'bg-emerald-50/30');
+    }
+
+    function handleUploadDragLeave(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.getElementById('dropArea').classList.remove('border-emerald-500', 'bg-emerald-50/30');
+    }
+
+    function handleUploadDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.getElementById('dropArea').classList.remove('border-emerald-500', 'bg-emerald-50/30');
+      addPendingFiles(event.dataTransfer.files);
+    }
+
+    function addPendingFiles(fileList) {
+      const files = Array.from(fileList || []).filter(file => file.type.startsWith('image/'));
+
+      if (files.length === 0) {
+        showToast('Please select image files.');
+        return;
+      }
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          pendingUploads.push({
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            name: file.name,
+            size: file.size,
+            file: file,
+            dataUrl: e.target.result
+          });
+          renderPendingUploads();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removePendingUpload(id) {
+      pendingUploads = pendingUploads.filter(upload => upload.id !== id);
+      renderPendingUploads();
+    }
+
+    function renderPendingUploads() {
+      const grid = document.getElementById('previewGrid');
+      const preview = document.getElementById('dropPreview');
+      const count = document.getElementById('previewCount');
+      const prompt = document.getElementById('dropPrompt');
+
+      if (!grid) return;
+
+      if (pendingUploads.length === 0) {
+        grid.innerHTML = '';
+        preview.classList.add('hidden');
+        prompt.classList.remove('hidden');
+        return;
+      }
+
+      prompt.classList.add('hidden');
+      preview.classList.remove('hidden');
+      count.innerText = `${pendingUploads.length} photo${pendingUploads.length > 1 ? 's' : ''} selected`;
+
+      grid.innerHTML = pendingUploads.map(upload => `
+        <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-square">
+          <img src="${upload.dataUrl}" alt="${upload.name}" class="w-full h-full object-cover" />
+          <button type="button" onclick="removePendingUpload('${upload.id}')"
+            class="absolute top-1.5 right-1.5 w-6 h-6 bg-slate-900/80 text-white rounded-full hover:bg-red-600 flex items-center justify-center transition opacity-0 group-hover:opacity-100 focus:opacity-100">
+            <i class="fa-solid fa-xmark w-3 h-3"></i>
+          </button>
+        </div>
+      `).join('');
     }
 
     function clearUploadFile() {
-      tempUploadBase64 = null;
+      pendingUploads = [];
       document.getElementById('fileInput').value = "";
-      document.getElementById('dropPreview').classList.add('hidden');
-      document.getElementById('dropPrompt').classList.remove('hidden');
+      renderPendingUploads();
     }
 
     function handleNewPhotoUpload() {
-      if (!tempUploadBase64) {
-        showToast("Please select a photo to upload.");
+      if (pendingUploads.length === 0) {
+        showToast("Please select at least one photo to upload.");
         return;
       }
 
       const caption = document.getElementById('upCaption').value.trim();
-      const author = document.getElementById('upAuthor').value.trim();
-      const office = document.getElementById('upOffice').value.trim();
-      const location = document.getElementById('upLocation').value.trim() || "Mission Site";
+      const location = document.getElementById('upLocation').value.trim();
 
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
-      }) + ' PST';
+      const formData = new FormData();
+      pendingUploads.forEach(upload => formData.append('images[]', upload.file));
+      formData.append('caption', caption);
+      formData.append('location', location);
 
-      const newPhoto = {
-        id: Date.now(),
-        dateGroup: "Today",
-        dateDisplay: "October 16, 2026",
-        timeDisplay: timeStr,
-        caption: caption,
-        author: author,
-        office: office,
-        location: location,
-        device: "Participant Camera",
-        exif: "f/1.8 • 1/500 • ISO 200",
-        imageUrl: tempUploadBase64
-      };
+      const submitButton = document.querySelector('#publicUploadForm button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+      }
 
-      photos.unshift(newPhoto);
-      document.getElementById('publicUploadForm').reset();
-      closeUploadModal();
-      renderGooglePhotosStream();
-      showToast("Photo published! Visible to all mission delegates.");
-      document.getElementById('gallery').scrollIntoView({
-        behavior: 'smooth'
-      });
+      fetch(document.getElementById('photoUploadEndpoint').value, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.getElementById('photoUploadCsrf').value,
+          'Accept': 'application/json'
+        },
+        body: formData
+      })
+        .then(response => response.json().then(data => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.message || 'Upload failed.');
+          }
+
+          const uploaded = Array.isArray(data.photos) ? data.photos : [];
+          photos.unshift(...uploaded);
+
+          document.getElementById('publicUploadForm').reset();
+          closeUploadModal();
+          renderGooglePhotosStream();
+          showToast(data.message || 'Photo published! Visible to all mission delegates.');
+        })
+        .catch(error => {
+          showToast(error.message || 'Upload failed. Please try again.');
+        })
+        .finally(() => {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Publish to Stream';
+          }
+        });
     }
 
      // Clipboard Helper

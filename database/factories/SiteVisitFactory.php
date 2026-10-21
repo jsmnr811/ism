@@ -21,7 +21,9 @@ class SiteVisitFactory extends Factory
             'document_link' => $this->faker->boolean(60) ? $this->faker->url() : null,
             'virtual_site_visit_link' => $this->faker->boolean(60) ? $this->faker->url() : null,
             'images' => null,
-            'date' => $this->faker->dateTimeBetween('+1 week', '+4 weeks')->format('Y-m-d'),
+            'date' => $this->faker->boolean(70)
+                ? $this->faker->dateTimeBetween('+1 week', '+4 weeks')->format('Y-m-d')
+                : null,
         ];
     }
 }

@@ -45,6 +45,40 @@ class Meeting extends Model
         ];
     }
 
+    /**
+     * Get the meeting reports as structured documents with a title, description, and url.
+     *
+     * @return list<array{title: string|null, description: string|null, url: string|null}>
+     */
+    public function getReportDocumentsAttribute(): array
+    {
+        $reports = $this->reports;
+
+        if (! is_array($reports)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(function ($report) {
+            if (is_array($report)) {
+                return [
+                    'title' => $report['title'] ?? null,
+                    'description' => $report['description'] ?? null,
+                    'url' => $report['url'] ?? null,
+                ];
+            }
+
+            if (! is_string($report) || $report === '') {
+                return null;
+            }
+
+            return [
+                'title' => null,
+                'description' => null,
+                'url' => $report,
+            ];
+        }, $reports)));
+    }
+
     public function types(): array
     {
         return [
