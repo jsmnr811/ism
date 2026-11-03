@@ -92,6 +92,13 @@
                 </flux:table.column>
                 <flux:table.column
                     class="!px-4 !py-3"
+                    :sorted="$sortField === 'date'"
+                    :direction="$sortDirection"
+                    wire:click="sortBy('date')">
+                    {{ __('Date') }}
+                </flux:table.column>
+                <flux:table.column
+                    class="!px-4 !py-3"
                     :sorted="$sortField === 'location'"
                     :direction="$sortDirection"
                     wire:click="sortBy('location')">
@@ -144,6 +151,10 @@
 
                         <flux:table.cell class="!px-4 !py-3.5">
                             <span class="text-sm text-zinc-600 dark:text-zinc-300">{{ $siteVisit->component?->label() ?: '—' }}</span>
+                        </flux:table.cell>
+
+                        <flux:table.cell class="!px-4 !py-3.5">
+                            <span class="text-sm text-zinc-600 dark:text-zinc-300">{{ $siteVisit->date?->format('M j, Y') ?: '—' }}</span>
                         </flux:table.cell>
 
                         <flux:table.cell class="!px-4 !py-3.5">
@@ -270,12 +281,21 @@
                         </flux:select>
                     </div>
 
-                    <flux:input
-                        wire:model="location"
-                        :label="__('Location')"
-                        :error="$errors->first('location')"
-                        placeholder="{{ __('e.g., Quezon City') }}"
-                    />
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <flux:input
+                            type="date"
+                            wire:model="date"
+                            :label="__('Date')"
+                            :error="$errors->first('date')"
+                        />
+
+                        <flux:input
+                            wire:model="location"
+                            :label="__('Location')"
+                            :error="$errors->first('location')"
+                            placeholder="{{ __('e.g., Quezon City') }}"
+                        />
+                    </div>
 
                     <!-- Additional Details -->
                     <div class="space-y-4">

@@ -190,11 +190,11 @@
                         </flux:table.cell>
 
                         <flux:table.cell class="!px-4 !py-3.5">
-                            @if (is_array($meeting->reports) && count($meeting->reports) > 0)
+                            @if (count($meeting->report_documents) > 0)
                                 <div class="flex flex-col gap-1">
-                                    @foreach ($meeting->reports as $report)
-                                        <a href="{{ $report }}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline truncate max-w-40">
-                                            {{ Str::limit($report, 30) }}
+                                    @foreach ($meeting->report_documents as $report)
+                                        <a href="{{ $report['url'] }}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline truncate max-w-40">
+                                            {{ $report['title'] ?: Str::limit($report['url'], 30) }}
                                         </a>
                                     @endforeach
                                 </div>
@@ -388,24 +388,39 @@
                     />
 
                     <div>
-                        <flux:label>{{ __('Report Links') }}</flux:label>
+                        <flux:label>{{ __('Reports') }}</flux:label>
                         @if (! empty($this->reportLinks))
-                            <div class="space-y-2">
-                                @foreach ($this->reportLinks as $index => $link)
-                                    <div class="flex items-center gap-2">
-                                        <flux:input
-                                            type="url"
-                                            wire:model="reportLinks.{{ $index }}"
-                                            :error="$errors->first('reportLinks.'.$index)"
-                                            placeholder="{{ __('e.g., https://drive.google.com/...') }}"
-                                        />
-                                        <flux:button
-                                            size="sm"
-                                            variant="ghost"
-                                            icon="trash"
-                                            wire:click="removeReportLink({{ $index }})"
-                                            title="{{ __('Remove') }}"
-                                        />
+                            <div class="space-y-3">
+                                @foreach ($this->reportLinks as $index => $report)
+                                    <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <div class="flex-1 space-y-2">
+                                                <flux:input
+                                                    wire:model="reportLinks.{{ $index }}.title"
+                                                    :error="$errors->first('reportLinks.'.$index.'.title')"
+                                                    placeholder="{{ __('Report title') }}"
+                                                />
+                                                <flux:textarea
+                                                    wire:model="reportLinks.{{ $index }}.description"
+                                                    :error="$errors->first('reportLinks.'.$index.'.description')"
+                                                    placeholder="{{ __('Report description') }}"
+                                                    rows="2"
+                                                />
+                                                <flux:input
+                                                    type="url"
+                                                    wire:model="reportLinks.{{ $index }}.url"
+                                                    :error="$errors->first('reportLinks.'.$index.'.url')"
+                                                    placeholder="{{ __('e.g., https://drive.google.com/...') }}"
+                                                />
+                                            </div>
+                                            <flux:button
+                                                size="sm"
+                                                variant="ghost"
+                                                icon="trash"
+                                                wire:click="removeReportLink({{ $index }})"
+                                                title="{{ __('Remove') }}"
+                                            />
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -417,10 +432,10 @@
                             wire:click="addReportLink"
                             class="mt-2"
                         >
-                            {{ __('Add report link') }}
+                            {{ __('Add report') }}
                         </flux:button>
                         <flux:text class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                            {{ __('Add links to meeting reports or documents.') }}
+                            {{ __('Attach meeting reports or documents with a title and description.') }}
                         </flux:text>
                     </div>
 

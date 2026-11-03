@@ -57,6 +57,58 @@ test('user can create a new site visit', function () {
     ]);
 });
 
+test('user can create a site visit with a date', function () {
+    Livewire::test(SiteVisits::class)
+        ->call('createSiteVisit')
+        ->set('sp_name', 'Irrigation Project')
+        ->set('cluster', 'north_luzon')
+        ->set('component', 'i_build')
+        ->set('location', 'Baguio City')
+        ->set('date', '2026-10-15')
+        ->call('saveSiteVisit')
+        ->assertHasNoErrors();
+
+    $siteVisit = SiteVisit::where('sp_name', 'Irrigation Project')->first();
+
+    $this->assertNotNull($siteVisit);
+    $this->assertSame('2026-10-15', $siteVisit->date->format('Y-m-d'));
+});
+
+test('site visit date is optional', function () {
+    Livewire::test(SiteVisits::class)
+        ->call('createSiteVisit')
+        ->set('sp_name', 'Undated Project')
+        ->set('cluster', 'north_luzon')
+        ->set('component', 'i_build')
+        ->set('date', null)
+        ->call('saveSiteVisit')
+        ->assertHasNoErrors();
+
+    $siteVisit = SiteVisit::where('sp_name', 'Undated Project')->first();
+
+    $this->assertNotNull($siteVisit);
+    $this->assertNull($siteVisit->date);
+});
+
+test('site visit date must be a valid date', function () {
+    Livewire::test(SiteVisits::class)
+        ->call('createSiteVisit')
+        ->set('sp_name', 'Bad Date Project')
+        ->set('cluster', 'north_luzon')
+        ->set('component', 'i_build')
+        ->set('date', 'not-a-date')
+        ->call('saveSiteVisit')
+        ->assertHasErrors('date');
+});
+
+test('edit modal pre-fills the site visit date', function () {
+    $siteVisit = SiteVisit::factory()->create(['date' => '2026-09-20']);
+
+    Livewire::test(SiteVisits::class)
+        ->call('editSiteVisit', $siteVisit->id)
+        ->assertSet('date', '2026-09-20');
+});
+
 test('user can edit an existing site visit', function () {
     $siteVisit = SiteVisit::factory()->create(['sp_name' => 'Old Name']);
 

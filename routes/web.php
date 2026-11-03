@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingPageController::class, '__invoke'])->name('home');
 Route::post('/landing/register', [LandingPageController::class, 'storeRegistration'])->name('landing.register');
+Route::post('/landing/photos', [LandingPageController::class, 'storePhoto'])->name('landing.photos');
 
 Route::get('missions/{mission}/register', MissionRegistrationForm::class)
     ->name('missions.register')

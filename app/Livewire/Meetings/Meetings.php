@@ -60,7 +60,7 @@ class Meetings extends Component
 
     public ?int $mission_id = null;
 
-    /** @var string[]|null */
+    /** @var array<int, array{title: string, description: string, url: string}>|null */
     public ?array $reportLinks = [];
 
     /**
@@ -239,7 +239,7 @@ class Meetings extends Component
         $this->meeting_id = $meeting->meeting_id;
         $this->passcode = $meeting->passcode;
         $this->mission_id = $meeting->mission_id;
-        $this->reportLinks = $meeting->reports ?? [];
+        $this->reportLinks = $meeting->report_documents ?: [];
         $this->editingId = $meeting->id;
         $this->showModal = true;
     }
@@ -319,9 +319,19 @@ class Meetings extends Component
                 'nullable',
                 'array',
             ],
-            'reportLinks.*' => [
+            'reportLinks.*.title' => [
                 'nullable',
                 'string',
+                'max:255',
+            ],
+            'reportLinks.*.description' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
+            'reportLinks.*.url' => [
+                'nullable',
+                'url',
                 'max:255',
             ],
             'removeImage' => [
@@ -357,7 +367,7 @@ class Meetings extends Component
             'link' => $validated['link'],
             'meeting_id' => $validated['meeting_id'],
             'passcode' => $validated['passcode'],
-            'reports' => $this->reportLinks ? array_filter($this->reportLinks) : null,
+            'reports' => $this->normalizedReports(),
             'mission_id' => $validated['mission_id'],
         ];
 
@@ -424,7 +434,11 @@ class Meetings extends Component
      */
     public function addReportLink(): void
     {
-        $this->reportLinks[] = '';
+        $this->reportLinks[] = [
+            'title' => '',
+            'description' => '',
+            'url' => '',
+        ];
     }
 
     /**
@@ -436,6 +450,26 @@ class Meetings extends Component
             unset($this->reportLinks[$index]);
             $this->reportLinks = array_values($this->reportLinks);
         }
+    }
+
+    /**
+     * Normalize the report inputs into structured documents, dropping empty entries.
+     *
+     * @return list<array{title: string|null, description: string|null, url: string}>
+     */
+    protected function normalizedReports(): ?array
+    {
+        $reports = collect($this->reportLinks ?? [])
+            ->map(fn ($report) => [
+                'title' => filled($report['title'] ?? null) ? $report['title'] : null,
+                'description' => filled($report['description'] ?? null) ? $report['description'] : null,
+                'url' => $report['url'] ?? null,
+            ])
+            ->filter(fn ($report) => filled($report['url']))
+            ->values()
+            ->all();
+
+        return $reports ?: null;
     }
 
     /**
