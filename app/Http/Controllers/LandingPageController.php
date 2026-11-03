@@ -29,6 +29,11 @@ class LandingPageController extends Controller
         $siteVisitsMission = $activeMission ?? $latestMission;
         $meetingsMission = $activeMission ?? $latestMission;
 
+        $registrationMission = Mission::where('is_active', true)
+            ->where('enable_registration', true)
+            ->orderBy('start_date', 'desc')
+            ->first();
+
         $missions = Mission::where('enable_registration', true)
             ->orderBy('start_date', 'desc')
             ->get();
@@ -50,6 +55,7 @@ class LandingPageController extends Controller
 
         return view('landing', [
             'activeMission' => $activeMission,
+            'registrationMission' => $registrationMission,
             'bannerMission' => $bannerMission,
             'photosMission' => $photosMission,
             'photosUploadAllowed' => $this->photosUploadAllowed($activeMission, $latestMission),
