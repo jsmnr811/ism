@@ -82,6 +82,7 @@ class Meeting extends Model
     public function types(): array
     {
         return [
+            'ribbon_cutting' => 'Ribbon Cutting',
             'technical_discussions' => 'Technical Discussions',
             'kick_off' => 'Kick Off',
             'wrap_up' => 'Wrap Up',

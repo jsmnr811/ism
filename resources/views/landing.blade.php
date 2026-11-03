@@ -67,7 +67,7 @@
 
         <!-- Agency Logo & Title -->
         <a href="#banner-section" class="flex items-center group min-w-0">
-          <img src="/assets/scale-up-letterhead.png" alt="Department of Agriculture — Philippine Rural Development Project" class="h-10 sm:h-12 w-auto object-contain object-left transition-transform duration-300 group-hover:scale-[1.02]" />
+          <img src="{{ asset('assets/scale-up-letterhead.png') }}" alt="Department of Agriculture — Philippine Rural Development Project" class="h-10 sm:h-12 w-auto object-contain object-left transition-transform duration-300 group-hover:scale-[1.02]" />
         </a>
 
         <!-- Desktop Navigation -->
@@ -1435,7 +1435,7 @@
   <footer class="bg-white border-t border-slate-200 text-slate-600 mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <img src="/assets/scale-up-letterhead.png" alt="Department of Agriculture — Philippine Rural Development Project" class="h-12 sm:h-14 w-auto object-contain object-left" />
+        <img src="{{ asset('assets/scale-up-letterhead.png') }}" alt="Department of Agriculture — Philippine Rural Development Project" class="h-12 sm:h-14 w-auto object-contain object-left" />
 
         <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
           <a href="#banner-section" class="hover:underline">Banner</a>
@@ -1723,7 +1723,7 @@
         'Other': { icon: 'fa-layer-group', soft: 'bg-slate-100 text-slate-600 border-slate-200', blurb: 'Other sessions recorded for this mission.' }
       };
 
-      const TYPE_ORDER = ['Kick Off', 'Technical Discussions', 'Wrap Up', 'Other'];
+      const TYPE_ORDER = ['Ribbon Cutting', 'Kick Off', 'Technical Discussions', 'Wrap Up', 'Other'];
 
       return {
         searchQuery: '',

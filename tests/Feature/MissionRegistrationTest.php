@@ -38,6 +38,7 @@ test('user can submit a registration for guest office', function () {
         ->set('office', MissionOffice::Guest->value)
         ->set('position', 'Project Manager')
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Male->value)
         ->call('save')
         ->assertHasNoErrors();
@@ -65,6 +66,7 @@ test('user can submit a registration for PRDP office with management tier', func
         ->set('position', 'Director')
         ->set('component_unit', MissionComponentUnit::OfficeOfNationalProjectDirector->value)
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Female->value)
         ->call('save')
         ->assertHasNoErrors();
@@ -110,6 +112,7 @@ test('pso_cluster is required when management tier is PSO', function () {
         ->set('position', 'Manager')
         ->set('component_unit', MissionComponentUnit::IPLAN->value)
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Male->value)
         ->call('save')
         ->assertHasErrors('pso_cluster');
@@ -126,6 +129,7 @@ test('rpco_office is required when management tier is RPCO', function () {
         ->set('position', 'Manager')
         ->set('component_unit', MissionComponentUnit::IPLAN->value)
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Male->value)
         ->call('save')
         ->assertHasErrors('rpco_office');
@@ -141,6 +145,7 @@ test('component_unit is required when office is PRDP', function () {
         ->set('management_tier', MissionManagementTier::NPCO->value)
         ->set('position', 'Manager')
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Male->value)
         ->call('save')
         ->assertHasErrors('component_unit');
@@ -155,6 +160,7 @@ test('form resets after successful submission', function () {
         ->set('office', MissionOffice::Guest->value)
         ->set('position', 'Manager')
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Male->value)
         ->call('save')
         ->assertSet('first_name', '')
@@ -175,6 +181,7 @@ test('registration can be created with all PRDP fields', function () {
         ->set('position', 'Cluster Coordinator')
         ->set('component_unit', MissionComponentUnit::IBUILD->value)
         ->set('contact_number', '09123456789')
+        ->set('email', 'test@example.com')
         ->set('sex', Sex::Female->value)
         ->call('save')
         ->assertHasNoErrors();

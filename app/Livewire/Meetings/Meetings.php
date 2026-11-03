@@ -125,6 +125,7 @@ class Meetings extends Component
     public function types(): array
     {
         return [
+            'ribbon_cutting' => __('Ribbon Cutting'),
             'technical_discussions' => __('Technical Discussions'),
             'kick_off' => __('Kick Off'),
             'wrap_up' => __('Wrap Up'),

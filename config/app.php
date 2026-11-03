@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Asset URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used to generate URLs to application assets such as images,
+    | stylesheets, and JavaScript. Set ASSET_URL in your ".env" file when
+    | the application is served from a subdirectory (e.g. ASSET_URL=/ism).
+    |
+    */
+
+    'asset_url' => env('ASSET_URL'),
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

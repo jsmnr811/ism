@@ -155,6 +155,7 @@
                         <flux:table.cell class="!px-4 !py-3.5">
                             @php
                                 $badgeColor = match ($meeting->type) {
+                                    'ribbon_cutting' => 'yellow',
                                     'technical_discussions' => 'blue',
                                     'kick_off' => 'green',
                                     'wrap_up' => 'orange',

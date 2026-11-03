@@ -17,7 +17,7 @@ class MeetingFactory extends Factory
      */
     public function definition(): array
     {
-        $types = ['technical_discussions', 'kick_off', 'wrap_up', 'other'];
+        $types = ['ribbon_cutting', 'technical_discussions', 'kick_off', 'wrap_up', 'other'];
         $startHour = $this->faker->numberBetween(8, 17);
         $startMinute = $this->faker->randomElement(['00', '15', '30', '45']);
         $endHour = $startHour + $this->faker->numberBetween(1, 3);

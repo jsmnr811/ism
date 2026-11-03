@@ -13,15 +13,15 @@
 
 @if ($variant === 'dark')
     <span {{ $attributes->except('class')->merge(['class' => 'contents']) }}>
-        <img src="/assets/scale-up-mark-white.png" alt="{{ $brandName }}" class="{{ $imageClasses }}" />
+        <img src="{{ asset('assets/scale-up-mark-white.png') }}" alt="{{ $brandName }}" class="{{ $imageClasses }}" />
     </span>
 @elseif ($variant === 'light')
     <span {{ $attributes->except('class')->merge(['class' => 'contents']) }}>
-        <img src="/assets/scale-up-mark.png" alt="{{ $brandName }}" class="{{ $imageClasses }}" />
+        <img src="{{ asset('assets/scale-up-mark.png') }}" alt="{{ $brandName }}" class="{{ $imageClasses }}" />
     </span>
 @else
     <span {{ $attributes->except('class')->merge(['class' => 'contents']) }}>
-        <img src="/assets/scale-up-mark.png" alt="{{ $brandName }}" class="{{ $imageClasses }} dark:hidden" />
-        <img src="/assets/scale-up-mark-white.png" alt="{{ $brandName }}" class="{{ $imageClasses }} hidden dark:block" />
+        <img src="{{ asset('assets/scale-up-mark.png') }}" alt="{{ $brandName }}" class="{{ $imageClasses }} dark:hidden" />
+        <img src="{{ asset('assets/scale-up-mark-white.png') }}" alt="{{ $brandName }}" class="{{ $imageClasses }} hidden dark:block" />
     </span>
 @endif
