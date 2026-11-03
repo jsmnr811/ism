@@ -5,16 +5,9 @@
 
     <!-- Header -->
     <div class="max-w-4xl mx-auto text-center mb-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 mb-4">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        System Node • Accreditation Open
-      </div>
       <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-        Delegate Registration
+        Mission Registration
       </h2>
-      <p class="text-slate-500 text-sm mt-2 max-w-lg mx-auto">
-        Input your official accreditation credentials to initialize registration for this event session.
-      </p>
     </div>
 
     <!-- Expanded Form Container (max-w-6xl) -->

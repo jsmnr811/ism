@@ -1040,14 +1040,7 @@
 
       if (visiblePhotos.length === 0) {
         if (photos.length === 0) {
-          container.innerHTML = `
-          <div class="text-center py-16 bg-slate-50 rounded-3xl border border-dashed border-slate-300">
-            <span class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 shadow-sm">
-              <i class="fa-solid fa-image w-5 h-5"></i>
-            </span>
-            <h3 class="font-bold text-base text-slate-700">No photos yet</h3>
-            <p class="text-xs text-slate-400 mt-1">Geotagged photos uploaded for this mission will appear here.</p>
-          </div>`;
+          container.innerHTML = "";
           return;
         }
 

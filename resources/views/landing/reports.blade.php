@@ -1,3 +1,4 @@
+    @if($meetings->contains(fn($m) => !empty($m->report_documents)))
     <!-- ================= OFFICIAL REPORTS, PRESENTATIONS & DELIVERABLES ================= -->
     <section id="reports-section" class="py-10 bg-slate-50 border-b border-slate-200" x-data="reportsList()">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,5 +99,5 @@
 
       </div>
     </section>
-  </main>
 
+@endif
