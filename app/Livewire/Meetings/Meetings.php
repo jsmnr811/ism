@@ -246,6 +246,44 @@ class Meetings extends Component
     }
 
     /**
+     * Show the create modal pre-filled with a copy of the given meeting.
+     */
+    public function duplicateMeeting(int $id): void
+    {
+        abort_if(! auth()->user()?->can('create meetings'), 403);
+
+        $meeting = Meeting::findOrFail($id);
+
+        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'reportLinks', 'mission_id', 'editingId', 'showModal');
+        $this->type = $meeting->type ?: 'technical_discussions';
+        $this->title = __('Copy :title', ['title' => $meeting->title]);
+        $this->description = '';
+        $this->date = $meeting->date ? $meeting->date->format('Y-m-d') : null;
+        $this->time_from = $meeting->time_from ? $meeting->time_from->format('H:i') : null;
+        $this->time_to = $meeting->time_to ? $meeting->time_to->format('H:i') : null;
+        $this->other_type = $meeting->other_type;
+        $this->existingImage = null;
+        $this->removeImage = false;
+        $this->image = null;
+        $this->venue = $meeting->venue;
+        $this->link = '';
+        $this->meeting_id = '';
+        $this->passcode = '';
+        $this->mission_id = $meeting->mission_id;
+        $this->reportLinks = [];
+        $this->editingId = null;
+        $this->showModal = true;
+    }
+
+    /**
+     * Alias for duplicateMeeting.
+     */
+    public function duplicate(int $id): void
+    {
+        $this->duplicateMeeting($id);
+    }
+
+    /**
      * Store or update the meeting.
      */
     public function saveMeeting(): void
@@ -279,7 +317,7 @@ class Meetings extends Component
             ],
             'type' => [
                 'required',
-                'in:technical_discussions,kick_off,wrap_up,other',
+                'in:ribbon_cutting,technical_discussions,kick_off,wrap_up,other',
             ],
             'other_type' => [
                 'nullable',

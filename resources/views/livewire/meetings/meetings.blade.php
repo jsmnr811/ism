@@ -210,6 +210,15 @@
 
                         <flux:table.cell align="end" class="!px-4 !py-3.5">
                             <div class="flex items-center justify-end gap-1">
+                                @can('create meetings')
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="document-duplicate"
+                                        wire:click="duplicateMeeting({{ $meeting->id }})"
+                                        title="{{ __('Duplicate') }}" />
+                                @endcan
+
                                 @can('edit meetings')
                                     <flux:button
                                         size="sm"
