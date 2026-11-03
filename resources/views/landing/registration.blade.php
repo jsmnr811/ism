@@ -16,9 +16,6 @@
       <!-- Banner Header -->
       <div class="bg-slate-950 p-6 sm:px-10 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800">
         <div class="flex items-center space-x-3.5">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-mono text-sm font-bold">
-            DA
-          </div>
           <div>
             <h3 class="text-sm font-semibold tracking-wide text-white uppercase">
               {{ $registrationMission?->title ?? 'Official Accreditation Portal' }}
