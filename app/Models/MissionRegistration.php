@@ -32,10 +32,12 @@ use Illuminate\Support\Carbon;
  * @property string $contact_number
  * @property Sex $sex
  * @property string|null $email
+ * @property array|null $attendance_dates
+ * @property string|null $attendance_mode
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['mission_id', 'first_name', 'middle_initial', 'suffix', 'last_name', 'office', 'management_tier', 'pso_cluster', 'rpco_office', 'position', 'component_unit', 'contact_number', 'sex', 'email'])]
+#[Fillable(['mission_id', 'first_name', 'middle_initial', 'suffix', 'last_name', 'office', 'management_tier', 'pso_cluster', 'rpco_office', 'position', 'component_unit', 'contact_number', 'sex', 'email', 'attendance_dates', 'attendance_mode'])]
 class MissionRegistration extends Model
 {
     /** @use HasFactory<MissionRegistrationFactory> */
@@ -51,6 +53,8 @@ class MissionRegistration extends Model
             'component_unit' => MissionComponentUnit::class,
             'sex' => Sex::class,
             'suffix' => Suffix::class,
+            'attendance_dates' => 'array',
+            'attendance_mode' => 'array',
         ];
     }
 

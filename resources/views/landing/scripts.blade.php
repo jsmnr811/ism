@@ -889,6 +889,8 @@
         componentUnit: '',
         contactNumber: '',
         email: '',
+        attendanceDates: [],
+        attendanceModes: {},
         sex: 'female',
         submitted: false,
         get isPRDP() {
@@ -941,6 +943,10 @@
           formData.append('contact_number', this.contactNumber);
           formData.append('sex', this.sex);
           formData.append('email', this.email);
+          this.attendanceDates.forEach(date => {
+            formData.append('attendance_dates[]', date);
+            formData.append('attendance_mode[]', this.attendanceModes[date] || '');
+          });
 
           const submitBtn = document.querySelector('#registration-section button[type="submit"]');
           if (submitBtn) submitBtn.disabled = true;

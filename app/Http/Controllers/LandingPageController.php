@@ -203,6 +203,10 @@ class LandingPageController extends Controller
             'contact_number' => ['required', 'string', 'min:7', 'max:20'],
             'sex' => ['required', 'in:'.implode(',', array_keys(Sex::labels()))],
             'email' => ['required', 'string', 'email', 'max:255'],
+            'attendance_dates' => ['nullable', 'array'],
+            'attendance_dates.*' => ['date'],
+            'attendance_mode' => ['nullable', 'array'],
+            'attendance_mode.*' => ['string', 'in:onsite,online'],
         ])->validate();
 
         $registration = MissionRegistration::create(array_merge($validated, [
