@@ -22,19 +22,19 @@
 
           <a href="#meetings-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
             <span>Meetings</span>
-            <span class="text-[10px] text-slate-400">{{ $meetings->count() }}</span>
+            <span class="text-[10px] text-slate-400">{{ $meetingsCount }}</span>
           </a>
 
           <a href="#site-visits-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
             <span>Virtual Site Visits</span>
-            <span class="text-[10px] text-slate-400">{{ $siteVisits->count() }}</span>
+            <span class="text-[10px] text-slate-400">{{ $siteVisitsCount }}</span>
           </a>
 
           <a href="#gallery" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
             <span>Gallery</span>
           </a>
 
-          @if($meetings->contains(fn($m) => !empty($m->report_documents)))
+          @if($hasReports)
           <a href="#reports-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
             <span>Reports</span>
           </a>
@@ -85,7 +85,7 @@
             </span>
 
             <span class="inline-flex items-center justify-center min-w-[24px] h-5 px-1.5 rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
-              {{ $meetings->count() + $siteVisits->count() }}
+              {{ $meetingsCount + $siteVisitsCount }}
             </span>
           </a>
 
@@ -94,7 +94,7 @@
               <i class="fa-solid fa-display w-4 h-4"></i>
               <span>Meetings</span>
             </span>
-            <span class="text-[10px] font-bold text-slate-400">{{ $meetings->count() }}</span>
+            <span class="text-[10px] font-bold text-slate-400">{{ $meetingsCount }}</span>
           </a>
 
           <a href="#site-visits-section" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">
@@ -102,7 +102,7 @@
               <i class="fa-solid fa-map-pin w-4 h-4"></i>
               <span>Virtual Site Visits</span>
             </span>
-            <span class="text-[10px] font-bold text-slate-400">{{ $siteVisits->count() }}</span>
+            <span class="text-[10px] font-bold text-slate-400">{{ $siteVisitsCount }}</span>
           </a>
 
           @if($registrationMission)
@@ -117,7 +117,7 @@
             <span>Gallery</span>
           </a>
 
-          @if($meetings->contains(fn($m) => !empty($m->report_documents)))
+          @if($hasReports)
           <a href="#reports-section" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">
             <i class="fa-solid fa-files w-4 h-4"></i>
             <span>Reports and Presentations</span>
@@ -139,4 +139,3 @@
     </div>
   </header>
 
-  <main class="flex-grow">

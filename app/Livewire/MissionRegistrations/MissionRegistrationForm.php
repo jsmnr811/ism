@@ -7,6 +7,7 @@ use App\Enums\MissionManagementTier;
 use App\Enums\MissionOffice;
 use App\Enums\MissionPsoCluster;
 use App\Enums\MissionRpcoOffice;
+use App\Enums\RegistrationSource;
 use App\Enums\Sex;
 use App\Enums\Suffix;
 use App\Models\Mission;
@@ -178,6 +179,7 @@ class MissionRegistrationForm extends Component
         ]);
 
         $validated['mission_id'] = $this->mission->id;
+        $validated['source'] = RegistrationSource::Landing->value;
 
         MissionRegistration::create($validated);
 

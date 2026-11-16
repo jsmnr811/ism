@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RegistrationSource;
 use App\Enums\Suffix;
 use App\Models\Mission;
 use App\Models\MissionRegistration;
@@ -35,6 +36,8 @@ class MissionRegistrationFactory extends Factory
             'contact_number' => fake()->phoneNumber(),
             'sex' => fake()->randomElement(['male', 'female', 'other']),
             'email' => fake()->email(),
+            'source' => RegistrationSource::Landing->value,
+            'registered_by' => null,
         ];
     }
 }

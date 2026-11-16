@@ -12,20 +12,29 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
-/**
- * Extract the photo stream payload rendered on the landing page.
- *
- * @return list<array<string, mixed>>
- */
-function photosStreamFrom(string $html): array
-{
-    preg_match('/const missionPhotosData = (\[.*?\]);/s', $html, $matches);
-
-    return json_decode($matches[1] ?? '[]', true) ?: [];
-}
-
 it('renders the landing page', function () {
     $this->get('/')->assertOk();
+});
+
+it('lazy loads the heavy landing sections until requested', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertSee("lazySection('agenda')", false)
+        ->assertSee("lazySection('meetings')", false)
+        ->assertSee("lazySection('site-visits')", false)
+        ->assertSee("lazySection('gallery')", false)
+        ->assertDontSee('id="agenda-section"', false)
+        ->assertDontSee('id="meetings-section"', false)
+        ->assertDontSee('id="site-visits-section"', false)
+        ->assertDontSee('id="googlePhotosStreamContainer"', false);
+});
+
+it('renders every lazy section on demand', function (string $section) {
+    $this->get(route('landing.section', ['section' => $section]))->assertOk();
+})->with(['agenda', 'meetings', 'site-visits', 'registration', 'gallery', 'reports']);
+
+it('rejects unknown lazy section names', function () {
+    $this->get(route('landing.section', ['section' => 'nope']))->assertNotFound();
 });
 
 it('shows the scale up favicon on every page', function () {
@@ -50,6 +59,24 @@ it('shows the scale up favicon on authenticated pages', function () {
         ->assertSee('/apple-touch-icon.png', false);
 });
 
+it('counts report documents from meeting reports', function () {
+    $mission = Mission::factory()->create(['is_active' => true]);
+
+    Meeting::factory()->create([
+        'mission_id' => $mission->id,
+        'reports' => [
+            ['title' => 'Kickoff Deck', 'description' => null, 'url' => 'https://example.com/deck'],
+            ['title' => 'Minutes', 'description' => null, 'url' => 'https://example.com/minutes'],
+        ],
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertViewHas('meetingsCount', 1)
+        ->assertViewHas('reportsCount', 2)
+        ->assertViewHas('hasReports', true);
+});
+
 it('shows site visits for the active mission', function () {
     $active = Mission::factory()->create([
         'is_active' => true,
@@ -66,7 +93,7 @@ it('shows site visits for the active mission', function () {
     SiteVisit::factory()->count(2)->create(['mission_id' => $active->id]);
     SiteVisit::factory()->create(['mission_id' => $previous->id]);
 
-    $response = $this->get('/');
+    $response = $this->get(route('landing.section', ['section' => 'site-visits']));
 
     $response->assertOk();
     $response->assertSee($active->title);
@@ -83,11 +110,14 @@ it('falls back to the latest mission when no mission is active by date', functio
 
     SiteVisit::factory()->create(['mission_id' => $inactive->id]);
 
-    $response = $this->get('/');
+    $this->get('/')
+        ->assertOk()
+        ->assertViewHas('bannerMission', fn ($mission) => $mission->id === $inactive->id);
+
+    $response = $this->get(route('landing.section', ['section' => 'site-visits']));
 
     $response->assertOk();
     expect($response->viewData('siteVisitsMission')->id)->toBe($inactive->id);
-    expect($response->viewData('bannerMission')->id)->toBe($inactive->id);
 });
 
 it('shows meetings of the active mission', function () {
@@ -106,11 +136,30 @@ it('shows meetings of the active mission', function () {
     Meeting::factory()->count(2)->create(['mission_id' => $active->id]);
     Meeting::factory()->create(['mission_id' => $previous->id]);
 
-    $response = $this->get('/');
+    $response = $this->get(route('landing.section', ['section' => 'meetings']));
 
     $response->assertOk();
     expect($response->viewData('meetings'))->toHaveCount(2);
     expect($response->viewData('meetingsMission')->id)->toBe($active->id);
+});
+
+it('exposes site visit document and virtual site visit links in the dataset', function () {
+    $mission = Mission::factory()->create([
+        'is_active' => true,
+        'start_date' => now()->subDays(2)->toDateString(),
+        'end_date' => now()->addDays(2)->toDateString(),
+    ]);
+
+    SiteVisit::factory()->create([
+        'mission_id' => $mission->id,
+        'document_link' => 'https://example.test/document.pdf',
+        'virtual_site_visit_link' => 'https://example.test/virtual-tour',
+    ]);
+
+    $visit = $this->getJson(route('landing.data'))->assertOk()->json('siteVisits.0');
+
+    expect($visit['document_link'])->toBe('https://example.test/document.pdf');
+    expect($visit['virtual_site_visit_link'])->toBe('https://example.test/virtual-tour');
 });
 
 it('falls back to the latest mission meetings when no mission is active by date', function () {
@@ -125,14 +174,14 @@ it('falls back to the latest mission meetings when no mission is active by date'
         'date' => now()->subMonths(2)->toDateString(),
     ]);
 
-    $response = $this->get('/');
+    $response = $this->get(route('landing.section', ['section' => 'meetings']));
 
     $response->assertOk();
     expect($response->viewData('meetingsMission')->id)->toBe($inactive->id);
     expect($response->viewData('meetings'))->toHaveCount(1);
 });
 
-it('shows only the selected mission photos in the photo stream', function () {
+it('shows only the selected mission photos in the photo stream dataset', function () {
     $active = Mission::factory()->create([
         'is_active' => true,
         'start_date' => now()->subDays(2)->toDateString(),
@@ -154,15 +203,10 @@ it('shows only the selected mission photos in the photo stream', function () {
         'caption' => 'Previous stream capture',
     ]);
 
-    $response = $this->get('/');
+    $photos = $this->getJson(route('landing.data'))->assertOk()->json('photos');
 
-    $response->assertOk();
-    expect($response->viewData('photosMission')->id)->toBe($active->id);
-
-    $stream = photosStreamFrom($response->getContent());
-
-    expect($stream)->toHaveCount(1);
-    expect($stream[0]['caption'])->toBe('Active stream capture');
+    expect($photos)->toHaveCount(1);
+    expect($photos[0]['caption'])->toBe('Active stream capture');
 });
 
 it('keeps site visit photos and the mission banner out of the photo stream', function () {
@@ -178,17 +222,13 @@ it('keeps site visit photos and the mission banner out of the photo stream', fun
         'images' => ['site-visits/agt-capture.jpg'],
     ]);
 
-    $response = $this->get('/');
+    $data = $this->getJson(route('landing.data'))->assertOk();
 
-    $response->assertOk();
+    expect($data->json('photos'))->toBeEmpty();
+    expect($data->json('siteVisits.0.images.0.url'))->toContain('agt-capture.jpg');
 
-    $stream = photosStreamFrom($response->getContent());
-
-    expect($stream)->toBeEmpty();
-
-    // The site visit image and the banner are still rendered in their own sections.
-    $response->assertSee('agt-capture.jpg', false);
-    $response->assertSee('banner.jpg', false);
+    // The banner is still rendered with the initial page.
+    $this->get('/')->assertOk()->assertSee('banner.jpg', false);
 });
 
 it('allows photo uploads while a mission is active', function () {
@@ -198,10 +238,13 @@ it('allows photo uploads while a mission is active', function () {
         'end_date' => now()->addDays(2)->toDateString(),
     ]);
 
-    $response = $this->get('/');
+    $this->getJson(route('landing.data'))
+        ->assertOk()
+        ->assertJsonPath('canUploadPhotos', true);
 
-    $response->assertOk();
-    expect($response->viewData('photosUploadAllowed'))->toBeTrue();
+    $this->get(route('landing.section', ['section' => 'gallery']))
+        ->assertOk()
+        ->assertSee('Upload Photo');
 });
 
 it('allows photo uploads within two weeks after the latest mission ends', function () {
@@ -211,10 +254,9 @@ it('allows photo uploads within two weeks after the latest mission ends', functi
         'end_date' => now()->subWeek()->toDateString(),
     ]);
 
-    $response = $this->get('/');
-
-    $response->assertOk();
-    expect($response->viewData('photosUploadAllowed'))->toBeTrue();
+    $this->getJson(route('landing.data'))
+        ->assertOk()
+        ->assertJsonPath('canUploadPhotos', true);
 });
 
 it('closes photo uploads after two weeks past the latest mission', function () {
@@ -224,10 +266,13 @@ it('closes photo uploads after two weeks past the latest mission', function () {
         'end_date' => now()->subWeeks(3)->toDateString(),
     ]);
 
-    $response = $this->get('/');
+    $this->getJson(route('landing.data'))
+        ->assertOk()
+        ->assertJsonPath('canUploadPhotos', false);
 
-    $response->assertOk();
-    expect($response->viewData('photosUploadAllowed'))->toBeFalse();
+    $this->get(route('landing.section', ['section' => 'gallery']))
+        ->assertOk()
+        ->assertDontSee('Upload Photo');
 });
 
 it('stores uploaded photos for the active mission', function () {
@@ -332,10 +377,8 @@ it('shows stored mission photos for the selected mission', function () {
         'caption' => 'Previous mission capture',
     ]);
 
-    $response = $this->get('/');
+    $photos = $this->getJson(route('landing.data'))->assertOk()->json('photos');
 
-    $response->assertOk();
-    expect($response->viewData('missionPhotos'))->toHaveCount(1);
-    $response->assertSee('Active mission capture');
-    $response->assertDontSee('Previous mission capture');
+    expect($photos)->toHaveCount(1);
+    expect($photos[0]['caption'])->toBe('Active mission capture');
 });

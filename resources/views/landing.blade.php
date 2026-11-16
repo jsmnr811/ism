@@ -34,12 +34,60 @@
 
   <main class="flex-grow">
     @include('landing.banner')
-    @include('landing.agenda')
-    @include('landing.meetings')
-    @include('landing.site-visits')
-    @include('landing.registration')
-    @include('landing.gallery')
-    @include('landing.reports')
+
+    <div x-data="lazySection('agenda')" data-lazy-section="agenda">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
+
+    <div x-data="lazySection('meetings')" data-lazy-section="meetings">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
+
+    <div x-data="lazySection('site-visits')" data-lazy-section="site-visits">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
+
+    <div x-data="lazySection('registration')" data-lazy-section="registration">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
+
+    <div x-data="lazySection('gallery')" data-lazy-section="gallery">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
+
+    <div x-data="lazySection('reports')" data-lazy-section="reports">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
   </main>
 
   @include('landing.footer')

@@ -49,6 +49,10 @@ class RolePermissionSeeder extends Seeder
             'create site visits',
             'edit site visits',
             'delete site visits',
+            'view mission registrations',
+            'create mission registrations',
+            'edit mission registrations',
+            'delete mission registrations',
         ];
 
         foreach (array_merge($broadPermissions, $granularPermissions) as $permissionName) {

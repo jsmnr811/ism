@@ -7,6 +7,7 @@ use App\Enums\MissionManagementTier;
 use App\Enums\MissionOffice;
 use App\Enums\MissionPsoCluster;
 use App\Enums\MissionRpcoOffice;
+use App\Enums\RegistrationSource;
 use App\Enums\Sex;
 use App\Enums\Suffix;
 use App\Models\Meeting;
@@ -14,59 +15,160 @@ use App\Models\Mission;
 use App\Models\MissionPhoto;
 use App\Models\MissionRegistration;
 use App\Models\SiteVisit;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class LandingPageController extends Controller
 {
-    public function __invoke()
+    private const LAZY_SECTIONS = ['agenda', 'meetings', 'site-visits', 'registration', 'gallery', 'reports'];
+
+    public function __invoke(): View
     {
         [$activeMission, $latestMission] = $this->resolveMissions();
 
         $bannerMission = $activeMission ?? $latestMission;
-        $photosMission = $activeMission ?? $latestMission;
-        $siteVisitsMission = $activeMission ?? $latestMission;
-        $meetingsMission = $activeMission ?? $latestMission;
 
-        $registrationMission = Mission::where('is_active', true)
-            ->where('enable_registration', true)
-            ->orderBy('start_date', 'desc')
-            ->first();
+        $meetings = Meeting::when($bannerMission, fn ($query) => $query->where('mission_id', $bannerMission->id))->get();
 
-        $missions = Mission::where('enable_registration', true)
-            ->orderBy('start_date', 'desc')
-            ->get();
+        $reportDocuments = $meetings->map(fn (Meeting $meeting) => $meeting->report_documents);
 
-        $meetings = Meeting::when($meetingsMission, fn ($query) => $query->where('mission_id', $meetingsMission->id))
-            ->orderBy('date', 'asc')
-            ->orderBy('time_from', 'asc')
-            ->get();
-
-        $siteVisits = SiteVisit::when($siteVisitsMission, fn ($query) => $query->where('mission_id', $siteVisitsMission->id))
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $missionPhotos = MissionPhoto::when($photosMission, fn ($query) => $query->where('mission_id', $photosMission->id))
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $reportsCount = $meetings->sum(fn ($meeting) => count($meeting->report_documents));
+        $reportsCount = $reportDocuments->sum(fn ($documents) => count($documents ?? []));
 
         return view('landing', [
-            'activeMission' => $activeMission,
-            'registrationMission' => $registrationMission,
             'bannerMission' => $bannerMission,
-            'photosMission' => $photosMission,
-            'photosUploadAllowed' => $this->photosUploadAllowed($activeMission, $latestMission),
-            'siteVisitsMission' => $siteVisitsMission,
-            'meetingsMission' => $meetingsMission,
-            'missions' => $missions,
+            'registrationMission' => $this->registrationMission(),
+            'meetingsCount' => $reportDocuments->count(),
+            'siteVisitsCount' => SiteVisit::when($bannerMission, fn ($query) => $query->where('mission_id', $bannerMission->id))->count(),
+            'reportsCount' => $reportsCount,
+            'hasReports' => $reportsCount > 0,
+            'title' => $bannerMission ? $bannerMission->title : 'ISM Portal',
+        ]);
+    }
+
+    /**
+     * Render a single landing page section on demand so the initial page stays light.
+     */
+    public function section(string $section)
+    {
+        abort_unless(in_array($section, self::LAZY_SECTIONS, true), 404);
+
+        [$activeMission, $latestMission] = $this->resolveMissions();
+        $mission = $activeMission ?? $latestMission;
+
+        $data = match ($section) {
+            'agenda' => [
+                'bannerMission' => $mission,
+            ],
+            'meetings' => [
+                'meetingsMission' => $mission,
+                'meetings' => $this->missionMeetings($mission),
+            ],
+            'site-visits' => [
+                'activeMission' => $activeMission,
+                'siteVisitsMission' => $mission,
+                'siteVisits' => $this->missionSiteVisits($mission),
+            ],
+            'registration' => [
+                'registrationMission' => $this->registrationMission(),
+                'meetings' => $this->missionMeetings($mission),
+            ],
+            'gallery' => [
+                'activeMission' => $activeMission,
+                'photosMission' => $mission,
+                'photosUploadAllowed' => $this->photosUploadAllowed($activeMission, $latestMission),
+            ],
+            'reports' => [
+                'meetings' => $this->missionMeetings($mission),
+            ],
+        };
+
+        return response()
+            ->view("landing.{$section}", $data)
+            ->header('Cache-Control', 'no-store');
+    }
+
+    /**
+     * JSON dataset consumed by the client-side agenda, meetings, site visit, and gallery views.
+     */
+    public function data(): JsonResponse
+    {
+        [$activeMission, $latestMission] = $this->resolveMissions();
+        $mission = $activeMission ?? $latestMission;
+
+        $meetings = $this->missionMeetings($mission)->map(fn (Meeting $meeting) => [
+            'id' => $meeting->id,
+            'title' => $meeting->title,
+            'description' => $meeting->description ?? '',
+            'date' => $meeting->date?->format('Y-m-d'),
+            'time_from' => $meeting->time_from?->format('H:i'),
+            'time_to' => $meeting->time_to?->format('H:i'),
+            'type' => $meeting->type === 'other' && $meeting->other_type
+                ? $meeting->other_type
+                : ($meeting->types()[$meeting->type] ?? $meeting->type),
+            'type_key' => $meeting->types()[$meeting->type] ?? 'Other',
+            'venue' => $meeting->venue ?? '',
+            'link' => $meeting->link ?? '',
+            'meeting_id' => $meeting->meeting_id ?? '',
+            'passcode' => $meeting->passcode ?? '',
+            'reports' => $meeting->report_documents ?? [],
+            'report_name' => $meeting->report_name ?? '',
+            'reports_count' => count($meeting->report_documents ?? []),
+        ])->values();
+
+        $siteVisits = $this->missionSiteVisits($mission)->map(fn (SiteVisit $visit) => [
+            'id' => $visit->id,
+            'sp_name' => $visit->sp_name,
+            'cluster' => $visit->cluster?->label() ?? '',
+            'component' => $visit->component?->label() ?? '',
+            'location' => $visit->location ?? '',
+            'funding_source' => $visit->funding_source?->label() ?? '',
+            'document_link' => $visit->document_link ?? '#',
+            'virtual_site_visit_link' => $visit->virtual_site_visit_link ?? '#',
+            'date' => $visit->date?->format('Y-m-d') ?? '',
+            'description' => '',
+            'images' => collect($visit->images ?? [])->map(fn ($image) => is_array($image) ? [
+                'url' => $image['url'] ?? '',
+                'station' => $image['station'] ?? '',
+                'coords' => $image['coords'] ?? '',
+                'elev' => $image['elev'] ?? '',
+                'time' => $image['time'] ?? '',
+                'label' => $image['label'] ?? '',
+            ] : [
+                'url' => Storage::disk('public')->url($image),
+                'station' => '',
+                'coords' => '',
+                'elev' => '',
+                'time' => '',
+                'label' => '',
+            ])->values()->all(),
+        ])->values();
+
+        $photos = MissionPhoto::when($mission, fn ($query) => $query->where('mission_id', $mission->id))
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn (MissionPhoto $photo) => [
+                'id' => "mp-{$photo->id}",
+                'caption' => $photo->caption ?? '',
+                'author' => '',
+                'office' => '',
+                'location' => $photo->location ?? '',
+                'dateDisplay' => $photo->created_at?->format('M j, Y') ?? '',
+                'timeDisplay' => $photo->created_at?->format('g:i A') ?? '',
+                'device' => '',
+                'exif' => '',
+                'imageUrl' => $photo->image_url,
+            ])->values();
+
+        return response()->json([
             'meetings' => $meetings,
             'siteVisits' => $siteVisits,
-            'missionPhotos' => $missionPhotos,
-            'reportsCount' => $reportsCount,
-            'title' => $bannerMission ? $bannerMission->title : 'ISM Portal',
+            'photos' => $photos,
+            'canUploadPhotos' => $this->photosUploadAllowed($activeMission, $latestMission),
         ]);
     }
 
@@ -154,6 +256,38 @@ class LandingPageController extends Controller
     }
 
     /**
+     * Mission currently accepting delegate registrations.
+     */
+    protected function registrationMission(): ?Mission
+    {
+        return Mission::where('is_active', true)
+            ->where('enable_registration', true)
+            ->orderBy('start_date', 'desc')
+            ->first();
+    }
+
+    /**
+     * @return Collection<int, Meeting>
+     */
+    protected function missionMeetings(?Mission $mission): Collection
+    {
+        return Meeting::when($mission, fn ($query) => $query->where('mission_id', $mission->id))
+            ->orderBy('date', 'asc')
+            ->orderBy('time_from', 'asc')
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, SiteVisit>
+     */
+    protected function missionSiteVisits(?Mission $mission): Collection
+    {
+        return SiteVisit::when($mission, fn ($query) => $query->where('mission_id', $mission->id))
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    /**
      * Determine whether photo uploads are currently accepted.
      */
     protected function photosUploadAllowed(?Mission $activeMission, ?Mission $latestMission): bool
@@ -211,10 +345,12 @@ class LandingPageController extends Controller
 
         $registration = MissionRegistration::create(array_merge($validated, [
             'mission_id' => $activeMission->id,
+            'source' => RegistrationSource::Landing->value,
         ]));
 
-        $suffixLabel = $validated['suffix'] ? (Suffix::labels()[$validated['suffix']] ?? $validated['suffix']) : '';
-        $middleInitial = $validated['middle_initial'] ? strtoupper($validated['middle_initial']).'.' : '';
+        $suffix = $validated['suffix'] ?? null;
+        $suffixLabel = $suffix ? (Suffix::labels()[$suffix] ?? $suffix) : '';
+        $middleInitial = ! empty($validated['middle_initial']) ? strtoupper($validated['middle_initial']).'.' : '';
         $fullName = trim("{$validated['first_name']} {$middleInitial} {$validated['last_name']}".($suffixLabel ? ' '.$suffixLabel : ''));
 
         Log::info('Mission registration created.', [

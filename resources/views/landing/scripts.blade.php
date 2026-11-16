@@ -1,63 +1,5 @@
-  <!-- ================= COMPLETE REALISTIC DATASETS & JAVASCRIPT ================= -->
+  <!-- ================= LAZY DATASETS, SECTION LOADER & PAGE LOGIC ================= -->
   @php
-  $meetingsJson = $meetings->map(fn ($m) => [
-  'id' => $m->id,
-  'title' => $m->title,
-  'description' => $m->description ?? '',
-  'date' => $m->date?->format('Y-m-d'),
-  'time_from' => $m->time_from?->format('H:i'),
-  'time_to' => $m->time_to?->format('H:i'),
-  'type' => $m->type === 'other' && $m->other_type ? $m->other_type : ($m->types()[$m->type] ?? $m->type),
-  'type_key' => $m->types()[$m->type] ?? 'Other',
-  'venue' => $m->venue ?? '',
-  'link' => $m->link ?? '',
-  'meeting_id' => $m->meeting_id ?? '',
-  'passcode' => $m->passcode ?? '',
-  'reports' => $m->report_documents,
-  'report_name' => $m->report_name ?? '',
-  'reports_count' => count($m->report_documents),
-  ])->toJson();
-  $siteVisitsJson = $siteVisits->map(fn ($sv) => [
-  'id' => $sv->id,
-  'sp_name' => $sv->sp_name,
-  'cluster' => $sv->cluster?->label() ?? '',
-  'component' => $sv->component?->label() ?? '',
-  'location' => $sv->location ?? '',
-  'funding_source' => $sv->funding_source?->label() ?? '',
-  'document_link' => $sv->document_link ?? '#',
-  'virtual_site_visit_link' => $sv->virtual_site_visit_link ?? '#',
-  'date' => $sv->date?->format('Y-m-d') ?? '',
-  'description' => '',
-  'images' => collect($sv->images ?? [])->map(fn ($img) => is_array($img) ? [
-  'url' => $img['url'] ?? '',
-  'station' => $img['station'] ?? '',
-  'coords' => $img['coords'] ?? '',
-  'elev' => $img['elev'] ?? '',
-  'time' => $img['time'] ?? '',
-  'label' => $img['label'] ?? '',
-  ] : [
-  'url' => \Illuminate\Support\Facades\Storage::disk('public')->url($img),
-  'station' => '',
-  'coords' => '',
-  'elev' => '',
-  'time' => '',
-  'label' => '',
-  ])->values()->all(),
-  ])->toJson();
-
-  $photosJson = $missionPhotos->map(fn ($mp) => [
-  'id' => "mp-{$mp->id}",
-  'caption' => $mp->caption ?? '',
-  'author' => '',
-  'office' => '',
-  'location' => $mp->location ?? '',
-  'dateDisplay' => $mp->created_at?->format('M j, Y') ?? '',
-  'timeDisplay' => $mp->created_at?->format('g:i A') ?? '',
-  'device' => '',
-  'exif' => '',
-  'imageUrl' => $mp->image_url,
-  ])->values()->toJson();
-
   $officeLabelsJson = json_encode(\App\Enums\MissionOffice::labels());
   $managementTierLabelsJson = json_encode(\App\Enums\MissionManagementTier::labels());
   $psoClusterLabelsJson = json_encode(\App\Enums\MissionPsoCluster::labels());
@@ -67,24 +9,7 @@
   $suffixLabelsJson = json_encode(\App\Enums\Suffix::labels());
   @endphp
   <script>
-    // ----------------------------------------------------
-    // 1. MEETINGS (from database)
-    // ----------------------------------------------------
-    const meetingsData = {!! $meetingsJson !!};
-
-    // ----------------------------------------------------
-    // 2. GEOTAGGED SITE VISITS (from database)
-    // ----------------------------------------------------
-    const siteVisitsData = {!! $siteVisitsJson !!};
-
-    // ----------------------------------------------------
-    // 3. MISSION PHOTOS (from the selected mission)
-    // ----------------------------------------------------
-    const missionPhotosData = {!! $photosJson !!};
-
-    // ----------------------------------------------------
-    // 3. ENUMS FOR DELEGATE REGISTRATION (from PHP enums)
-    // ----------------------------------------------------
+    // Static enum labels rendered with the page - no database round-trip required
     const officeLabels = {!! $officeLabelsJson !!};
     const managementTierLabels = {!! $managementTierLabelsJson !!};
     const psoClusterLabels = {!! $psoClusterLabelsJson !!};
@@ -92,12 +17,154 @@
     const componentUnitLabels = {!! $componentUnitLabelsJson !!};
     const sexLabels = {!! $sexLabelsJson !!};
     const suffixLabels = {!! $suffixLabelsJson !!};
-    const canUploadPhotos = @json($photosUploadAllowed);
 
     // ----------------------------------------------------
-    // 4. MISSION PHOTOS STREAM (selected mission + uploads)
+    // LAZY DATA - REQUESTED ONLY WHEN A SECTION NEEDS IT
     // ----------------------------------------------------
-    let photos = Array.isArray(missionPhotosData) ? [...missionPhotosData] : [];
+    let meetingsData = [];
+    let siteVisitsData = [];
+    let missionPhotosData = [];
+    let canUploadPhotos = false;
+    let photos = [];
+    let landingDataPromise = null;
+
+    function loadLandingData() {
+      if (!landingDataPromise) {
+        landingDataPromise = fetch(@json(route('landing.data')), {
+            headers: {
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(response => {
+            if (!response.ok) throw new Error('Unable to load landing data.');
+            return response.json();
+          })
+          .then(data => {
+            meetingsData = Array.isArray(data.meetings) ? data.meetings : [];
+            siteVisitsData = Array.isArray(data.siteVisits) ? data.siteVisits : [];
+            missionPhotosData = Array.isArray(data.photos) ? data.photos : [];
+            photos = [...missionPhotosData];
+            canUploadPhotos = !!data.canUploadPhotos;
+            return data;
+          })
+          .catch(error => {
+            console.error(error);
+            return {};
+          });
+      }
+
+      return landingDataPromise;
+    }
+
+    // ----------------------------------------------------
+    // ALPINE LAZY SECTION - FETCHES HTML ONLY WHEN NEAR VIEWPORT
+    // ----------------------------------------------------
+    function lazySection(name) {
+      return {
+        html: '',
+        loaded: false,
+        loading: false,
+        init() {
+          if (!('IntersectionObserver' in window)) {
+            this.load();
+            return;
+          }
+
+          const observer = new IntersectionObserver((entries) => {
+            if (entries.some(entry => entry.isIntersecting)) {
+              observer.disconnect();
+              this.load();
+            }
+          }, { rootMargin: '600px 0px' });
+
+          observer.observe(this.$el);
+        },
+        async load() {
+          if (this.loading || this.loaded) return;
+          this.loading = true;
+
+          try {
+            const [, response] = await Promise.all([
+              loadLandingData(),
+              fetch(`{!! url('/landing/section') !!}/${name}`, {
+                headers: {
+                  'Accept': 'text/html',
+                  'X-Requested-With': 'XMLHttpRequest'
+                }
+              })
+            ]);
+
+            if (!response.ok) throw new Error(`Unable to load ${name} section.`);
+
+            this.html = await response.text();
+            this.loaded = true;
+            const notify = () => window.dispatchEvent(new CustomEvent('landing:section-loaded', {
+              detail: name
+            }));
+            if (typeof this.$nextTick === 'function') {
+              this.$nextTick(notify);
+            } else {
+              setTimeout(notify, 0);
+            }
+          } catch (error) {
+            console.error(error);
+          } finally {
+            this.loading = false;
+          }
+        }
+      };
+    }
+
+    window.addEventListener('landing:section-loaded', (event) => {
+      if (event.detail === 'site-visits') renderSiteVisitsGrid();
+      if (event.detail === 'gallery') renderGooglePhotosStream();
+    });
+
+    // Resolve in-page anchor links to their lazy section on demand
+    const LAZY_SECTION_ANCHORS = {
+      '#agenda-section': 'agenda',
+      '#meetings-section': 'meetings',
+      '#site-visits-section': 'site-visits',
+      '#registration-section': 'registration',
+      '#gallery': 'gallery',
+      '#reports-section': 'reports',
+    };
+
+    function lazySectionComponent(name) {
+      const wrapper = document.querySelector(`[data-lazy-section="${name}"]`);
+      if (!wrapper || !window.Alpine) return null;
+
+      return window.Alpine.$data(wrapper);
+    }
+
+    function loadSectionForHash() {
+      const name = LAZY_SECTION_ANCHORS[window.location.hash];
+      if (!name) return;
+
+      const component = lazySectionComponent(name);
+      if (component && !component.loaded) component.load();
+    }
+
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href^="#"]');
+      if (!link) return;
+
+      const name = LAZY_SECTION_ANCHORS[link.getAttribute('href')];
+      if (!name) return;
+
+      const component = lazySectionComponent(name);
+      if (!component || component.loaded) return;
+
+      event.preventDefault();
+      component.load().then(() => {
+        document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    window.addEventListener('hashchange', loadSectionForHash);
+    document.addEventListener('DOMContentLoaded', loadSectionForHash);
+
     let activeSearchQuery = "";
     let currentLightboxIdx = 0;
     let visiblePhotos = [];
@@ -174,14 +241,6 @@
       const endTime = meeting.time_to ? `${meeting.date} ${meeting.time_to}` : `${meeting.date} 23:59`;
       return new Date(endTime.replace(' ', 'T')) < new Date();
     }
-
-    // ----------------------------------------------------
-    // INITIALIZATION & EVENT LOGIC
-    // ----------------------------------------------------
-    window.addEventListener('DOMContentLoaded', () => {
-      renderSiteVisitsGrid();
-      renderGooglePhotosStream();
-    });
 
     // ----------------------------------------------------
     // MISSION AGENDA ALPINE COMPONENT
@@ -641,7 +700,7 @@
           card.innerHTML = `
             ${hasPhotos ? `
             <div class="relative h-44 bg-slate-900 overflow-hidden group">
-              <img src="${sp.images[0].url}" alt="${sp.sp_name}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" />
+              <img src="${sp.images[0].url}" alt="${sp.sp_name}" loading="lazy" decoding="async" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" />
               <span class="absolute top-3 left-3 bg-govnavy-950/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">${sp.cluster}</span>
               ${sp.images.length > 1 ? `<span class="absolute top-3 right-3 bg-slate-900/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><i class="fa-solid fa-images w-3 h-3"></i>${sp.images.length}</span>` : ''}
             </div>` : ''}
@@ -652,7 +711,7 @@
                 </p>
                 ${sp.date ? `<span class="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-calendar w-3 h-3"></i>${formatDate(sp.date)}</span>` : ''}
               </div>
-              <h4 class="text-sm font-bold text-slate-900 line-clamp-2">${sp.sp_name}</h4>
+              <a href="${sp.document_link || '#'}" target="_blank" rel="noopener" class="block text-sm font-bold text-slate-900 line-clamp-2 hover:text-emerald-700 hover:underline">${sp.sp_name}</a>
               ${sp.description ? `<p class="text-xs text-slate-600 line-clamp-2">${sp.description}</p>` : ''}
               <div class="flex flex-wrap items-center gap-1.5 pt-1">
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">${sp.component}</span>
@@ -660,14 +719,14 @@
                 ${sp.funding_source ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-coins w-3 h-3"></i>${sp.funding_source}</span>` : ''}
               </div>
             </div>
-            <div class="p-5 pt-0 flex items-center justify-end">
+            <div class="p-5 pt-0 flex flex-wrap items-center justify-end gap-2">
               ${hasPhotos ? `
-              <button onclick="openGeotagModal(${sp.id})" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
+              <button onclick="openGeotagModal(${sp.id})" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-images w-3.5 h-3.5"></i> Inspect AGT Photos
-              </button>` : `
-              <a href="${sp.virtual_site_visit_link || '#'}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-arrow-up-right-from-square w-3.5 h-3.5"></i> View Project
-              </a>`}
+              </button>` : ''}
+              <a href="${sp.virtual_site_visit_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-arrow-up-right-from-square w-3.5 h-3.5"></i> Inspect Site
+              </a>
             </div>
           `;
           grid.appendChild(card);
@@ -747,7 +806,7 @@
           renderAgtPhotos();
         };
         thumb.innerHTML = `
-          <img src="${p.url}" alt="${p.label}" class="w-full h-14 object-cover" />
+          <img src="${p.url}" alt="${p.label}" loading="lazy" decoding="async" class="w-full h-14 object-cover" />
           <div class="p-1 bg-white text-[9px] text-slate-700 font-semibold truncate text-center">${p.station}</div>
         `;
         thumbsContainer.appendChild(thumb);

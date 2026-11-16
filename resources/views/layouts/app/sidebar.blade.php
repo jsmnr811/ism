@@ -40,11 +40,17 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
-                @if (auth()->user()->can('view missions') || auth()->user()->can('view meetings') || auth()->user()->can('view site visits'))
+                @if (auth()->user()->can('view missions') || auth()->user()->can('view meetings') || auth()->user()->can('view site visits') || auth()->user()->can('view mission registrations'))
                     <flux:sidebar.group :heading="__('ISM Management')" class="grid">
                         @can('view missions')
                         <flux:sidebar.item icon="check-circle" :href="route('missions.index')" :current="request()->routeIs('missions.*')" wire:navigate>
                             {{ __('Missions') }}
+                        </flux:sidebar.item>
+                        @endcan
+
+                        @can('view mission registrations')
+                        <flux:sidebar.item icon="clipboard-document-list" :href="route('mission-registrations.index')" :current="request()->routeIs('mission-registrations.*')" wire:navigate>
+                            {{ __('Registrations') }}
                         </flux:sidebar.item>
                         @endcan
 
