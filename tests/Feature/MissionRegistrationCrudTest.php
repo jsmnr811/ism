@@ -293,6 +293,56 @@ test('user can delete a registration', function () {
     $this->assertDatabaseMissing('mission_registrations', ['id' => $registration->id]);
 });
 
+test('landing page registration returns field level validation errors', function () {
+    Mission::factory()->create([
+        'is_active' => true,
+        'enable_registration' => true,
+    ]);
+
+    $this->postJson(route('landing.register'), [
+        'first_name' => 'A',
+        'last_name' => '',
+        'office' => 'invalid-office',
+        'position' => '',
+        'contact_number' => '',
+        'sex' => '',
+        'email' => 'not-an-email',
+    ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors([
+            'first_name',
+            'last_name',
+            'office',
+            'position',
+            'contact_number',
+            'sex',
+            'email',
+            'attendance_dates',
+            'attendance_mode',
+        ]);
+});
+
+test('landing page registration requires a mode for each attendance date', function () {
+    Mission::factory()->create([
+        'is_active' => true,
+        'enable_registration' => true,
+    ]);
+
+    $this->postJson(route('landing.register'), [
+        'first_name' => 'Juan',
+        'last_name' => 'Dela Cruz',
+        'office' => MissionOffice::Guest->value,
+        'position' => 'Observer',
+        'contact_number' => '09123456789',
+        'email' => 'juan@example.com',
+        'sex' => Sex::Male->value,
+        'attendance_dates' => ['2026-10-05'],
+        'attendance_mode' => [''],
+    ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('attendance_mode.0');
+});
+
 test('landing page submissions are recorded as landing registrations', function () {
     $mission = Mission::factory()->create([
         'is_active' => true,
@@ -307,6 +357,8 @@ test('landing page submissions are recorded as landing registrations', function 
         'contact_number' => '09123456789',
         'email' => 'visitor@example.com',
         'sex' => Sex::Female->value,
+        'attendance_dates' => ['2026-10-05', '2026-10-08'],
+        'attendance_mode' => ['onsite', 'online'],
     ])->assertOk();
 
     $this->assertDatabaseHas('mission_registrations', [

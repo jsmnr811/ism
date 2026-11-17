@@ -24,6 +24,8 @@
   <!-- Alpine.js -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js" defer></script>
 
+  <style>[x-cloak]{display:none!important}</style>
+
 </head>
 
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-emerald-100 selection:text-emerald-900 flex flex-col min-h-screen">

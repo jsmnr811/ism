@@ -951,7 +951,50 @@
         attendanceDates: [],
         attendanceModes: {},
         sex: 'female',
+        agreed: false,
         submitted: false,
+        submitting: false,
+        submitError: '',
+        errors: {},
+        fieldElementIds: {
+          first_name: 'reg_first_name',
+          middle_initial: 'reg_middle_initial',
+          suffix: 'reg_suffix',
+          last_name: 'reg_last_name',
+          office: 'reg_office',
+          management_tier: 'reg_tier',
+          pso_cluster: 'reg_cluster',
+          rpco_office: 'reg_rpco',
+          position: 'reg_position',
+          component_unit: 'reg_component',
+          contact_number: 'reg_contact_number',
+          email: 'reg_email',
+          agreed: 'reg_agreed',
+        },
+        clearFieldError(field) {
+          if (!this.errors[field] && !Object.keys(this.errors).some(key => key.startsWith(field + '.'))) {
+            return;
+          }
+
+          this.errors = Object.fromEntries(
+            Object.entries(this.errors).filter(([key]) => key !== field && !key.startsWith(field + '.'))
+          );
+        },
+        scrollToFirstError() {
+          const firstError = Object.keys(this.errors)[0];
+          const target = firstError && this.fieldElementIds[firstError]
+            ? document.getElementById(this.fieldElementIds[firstError])
+            : null;
+
+          (target || document.querySelector('#registration-section button[type="submit"]'))?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+
+          if (target) {
+            target.focus({ preventScroll: true });
+          }
+        },
         get isPRDP() {
           return this.office === 'prdp';
         },
@@ -973,6 +1016,9 @@
         get sexOptions() {
           return Object.entries(sexLabels).filter(([value]) => value !== 'other');
         },
+        attendanceModeMissing(date) {
+          return this.attendanceDates.includes(date) && !this.attendanceModes[date];
+        },
         updateOffice(value) {
           this.office = value;
           this.managementTier = '';
@@ -987,6 +1033,56 @@
         },
         submitForm() {
           this.submitted = true;
+          this.errors = {};
+          this.submitError = '';
+          document.getElementById('regSuccessBox')?.classList.add('hidden');
+
+          const clientErrors = {};
+
+          if (!this.firstName.trim()) {
+            clientErrors.first_name = 'First name is required.';
+          }
+
+          if (!this.lastName.trim()) {
+            clientErrors.last_name = 'Last name is required.';
+          }
+
+          if (!this.office) {
+            clientErrors.office = 'Please select your office or agency.';
+          }
+
+          if (!this.position.trim()) {
+            clientErrors.position = 'Position / designation is required.';
+          }
+
+          if (!this.contactNumber.trim()) {
+            clientErrors.contact_number = 'Contact number is required.';
+          }
+
+          if (!this.email.trim()) {
+            clientErrors.email = 'Email address is required.';
+          } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim())) {
+            clientErrors.email = 'Enter a valid email address.';
+          }
+
+          if (!this.agreed) {
+            clientErrors.agreed = 'You must accept the Data Privacy notice to continue.';
+          }
+
+          if (this.attendanceDates.length === 0) {
+            clientErrors.attendance_dates = 'Select at least one attendance date.';
+          } else if (this.attendanceDates.some(date => !this.attendanceModes[date])) {
+            clientErrors.attendance_mode = 'Select a mode for each selected attendance date.';
+          }
+
+          if (Object.keys(clientErrors).length > 0) {
+            this.errors = clientErrors;
+            this.submitError = 'Please correct the highlighted fields and try again.';
+            this.$nextTick(() => this.scrollToFirstError());
+            return;
+          }
+
+          this.submitting = true;
 
           const formData = new FormData();
           formData.append('first_name', this.firstName);
@@ -1006,9 +1102,6 @@
             formData.append('attendance_dates[]', date);
             formData.append('attendance_mode[]', this.attendanceModes[date] || '');
           });
-
-          const submitBtn = document.querySelector('#registration-section button[type="submit"]');
-          if (submitBtn) submitBtn.disabled = true;
 
           fetch('{{ route('landing.register') }}', {
                 method: 'POST',
@@ -1054,18 +1147,32 @@
                 this.contactNumber = '';
                 this.email = '';
                 this.sex = 'female';
+                this.agreed = false;
+                this.attendanceDates = [];
+                this.attendanceModes = {};
                 this.submitted = false;
+                this.errors = {};
+                this.submitError = '';
               } else {
-                const errorMsg = body.message || 'Registration failed. Please check your inputs and try again.';
-                showToast(errorMsg);
+                if (response.status === 422 && body.errors) {
+                  this.errors = body.errors;
+                  this.submitError = body.message || 'Please correct the highlighted fields and try again.';
+                } else {
+                  this.submitError = body.message || 'Registration failed. Please check your inputs and try again.';
+                }
+
+                showToast(this.submitError);
+
+                this.$nextTick(() => this.scrollToFirstError());
               }
             })
             .catch(error => {
               console.error(error);
-              showToast('Registration failed. Please try again.');
+              this.submitError = 'Registration failed. Please try again.';
+              showToast(this.submitError);
             })
             .finally(() => {
-              if (submitBtn) submitBtn.disabled = false;
+              this.submitting = false;
             });
         }
       };

@@ -40,7 +40,7 @@
       </div>
 
       <!-- Form Content -->
-      <form id="missionRegForm" class="p-6 sm:p-10 space-y-8" @submit.prevent="submitForm()">
+      <form id="missionRegForm" class="p-6 sm:p-10 space-y-8" novalidate @submit.prevent="submitForm()">
         <input type="hidden" name="mission_id" value="{{ $registrationMission->id ?? '' }}" />
 
         <!-- SECTION 01: IDENTITY -->
@@ -54,11 +54,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div class="sm:col-span-6">
               <label for="reg_first_name" class="block text-xs font-semibold text-slate-700 mb-1.5">First Name <span class="text-emerald-600">*</span></label>
-              <input type="text" id="reg_first_name" x-model="firstName" required placeholder="Maria" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <input type="text" id="reg_first_name" x-model="firstName" @input="clearFieldError('first_name')" required placeholder="Maria" :class="errors.first_name ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <p x-show="errors.first_name" x-text="errors.first_name" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
             <div class="sm:col-span-6">
               <label for="reg_last_name" class="block text-xs font-semibold text-slate-700 mb-1.5">Last Name <span class="text-emerald-600">*</span></label>
-              <input type="text" id="reg_last_name" x-model="lastName" required placeholder="Santos" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <input type="text" id="reg_last_name" x-model="lastName" @input="clearFieldError('last_name')" required placeholder="Santos" :class="errors.last_name ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <p x-show="errors.last_name" x-text="errors.last_name" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
           </div>
 
@@ -66,29 +68,32 @@
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div class="sm:col-span-3">
               <label for="reg_middle_initial" class="block text-xs font-semibold text-slate-700 mb-1.5">M.I.</label>
-              <input type="text" id="reg_middle_initial" x-model="middleInitial" maxlength="1" placeholder="S" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-center uppercase text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <input type="text" id="reg_middle_initial" x-model="middleInitial" @input="clearFieldError('middle_initial')" maxlength="1" placeholder="S" :class="errors.middle_initial ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm uppercase text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <p x-show="errors.middle_initial" x-text="errors.middle_initial" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
 
             <div class="sm:col-span-3">
               <label for="reg_suffix" class="block text-xs font-semibold text-slate-700 mb-1.5">Suffix</label>
-              <select id="reg_suffix" x-model="suffix" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+              <select id="reg_suffix" x-model="suffix" @change="clearFieldError('suffix')" :class="errors.suffix ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
                 <option value="">None</option>
                 <template x-for="[value, label] in Object.entries(suffixLabels)" :key="value">
                   <option :value="value" x-text="label"></option>
                 </template>
               </select>
+              <p x-show="errors.suffix" x-text="errors.suffix" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
 
             <div class="sm:col-span-6">
               <label class="block text-xs font-semibold text-slate-700 mb-1.5">Sex <span class="text-emerald-600">*</span></label>
-              <div class="grid grid-cols-2 gap-3 h-[42px]" x-show="sexOptions.length">
+              <div class="grid grid-cols-2 gap-3 h-[42px]" x-show="sexOptions.length" :class="errors.sex ? 'rounded-xl ring-1 ring-red-300' : ''">
                 <template x-for="[value, label] in sexOptions" :key="value">
                   <label :class="sex === value ? 'border-emerald-600 bg-emerald-50/60 text-emerald-950 ring-2 ring-emerald-500/20' : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'" class="flex items-center justify-center h-full px-4 rounded-xl border cursor-pointer transition text-xs font-semibold tracking-wide">
-                    <input type="radio" name="sex" :value="value" x-model="sex" class="sr-only" />
+                    <input type="radio" name="sex" :value="value" x-model="sex" @change="clearFieldError('sex')" class="sr-only" />
                     <span x-text="label"></span>
                   </label>
                 </template>
               </div>
+              <p x-show="errors.sex" x-text="errors.sex" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
           </div>
 
@@ -103,17 +108,19 @@
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div class="sm:col-span-6">
               <label for="reg_office" class="block text-xs font-semibold text-slate-700 mb-1.5">Office / Agency <span class="text-emerald-600">*</span></label>
-              <select id="reg_office" x-model="office" @change="updateOffice(office)" required class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+              <select id="reg_office" x-model="office" @change="updateOffice(office); clearFieldError('office')" required :class="errors.office ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
                 <option value="">Select Office / Agency</option>
                 <template x-for="[value, label] in Object.entries(officeLabels)" :key="value">
                   <option :value="value" x-text="label"></option>
                 </template>
               </select>
+              <p x-show="errors.office" x-text="errors.office" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
 
             <div class="sm:col-span-6">
               <label for="reg_position" class="block text-xs font-semibold text-slate-700 mb-1.5">Position / Designation <span class="text-emerald-600">*</span></label>
-              <input type="text" id="reg_position" x-model="position" required placeholder="Senior Infrastructure Engineer" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <input type="text" id="reg_position" x-model="position" @input="clearFieldError('position')" required placeholder="Senior Infrastructure Engineer" :class="errors.position ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <p x-show="errors.position" x-text="errors.position" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
           </div>
 
@@ -122,42 +129,46 @@
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
               <div class="sm:col-span-6">
                 <label for="reg_tier" class="block text-xs font-semibold text-slate-700 mb-1.5">Management Tier</label>
-                <select id="reg_tier" x-model="managementTier" @change="updateManagementTier(managementTier)" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+                <select id="reg_tier" x-model="managementTier" @change="updateManagementTier(managementTier); clearFieldError('management_tier')" :class="errors.management_tier ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
                   <option value="">Select Management Tier</option>
                   <template x-for="[value, label] in Object.entries(managementTierLabels)" :key="value">
                     <option :value="value" x-text="label"></option>
                   </template>
                 </select>
+                <p x-show="errors.management_tier" x-text="errors.management_tier" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
               </div>
               <div class="sm:col-span-6">
                 <label for="reg_component" class="block text-xs font-semibold text-slate-700 mb-1.5">Component / Unit</label>
-                <select id="reg_component" x-model="componentUnit" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+                <select id="reg_component" x-model="componentUnit" @change="clearFieldError('component_unit')" :class="errors.component_unit ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
                   <option value="">Select Component / Unit</option>
                   <template x-for="[value, label] in Object.entries(componentUnitLabels)" :key="value">
                     <option :value="value" x-text="label"></option>
                   </template>
                 </select>
+                <p x-show="errors.component_unit" x-text="errors.component_unit" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
               </div>
             </div>
 
             <div x-show="showPsoCluster" x-cloak>
               <label for="reg_cluster" class="block text-xs font-semibold text-slate-700 mb-1.5">PSO Cluster</label>
-              <select id="reg_cluster" x-model="psoCluster" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+              <select id="reg_cluster" x-model="psoCluster" @change="clearFieldError('pso_cluster')" :class="errors.pso_cluster ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
                 <option value="">Select PSO Cluster</option>
                 <template x-for="[value, label] in Object.entries(psoClusterLabels)" :key="value">
                   <option :value="value" x-text="label"></option>
                 </template>
               </select>
+              <p x-show="errors.pso_cluster" x-text="errors.pso_cluster" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
 
             <div x-show="showRpcoOffice" x-cloak>
               <label for="reg_rpco" class="block text-xs font-semibold text-slate-700 mb-1.5">RPCO Office</label>
-              <select id="reg_rpco" x-model="rpcoOffice" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+              <select id="reg_rpco" x-model="rpcoOffice" @change="clearFieldError('rpco_office')" :class="errors.rpco_office ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
                 <option value="">Select RPCO Office</option>
                 <template x-for="[value, label] in Object.entries(rpcoOfficeLabels)" :key="value">
                   <option :value="value" x-text="label"></option>
                 </template>
               </select>
+              <p x-show="errors.rpco_office" x-text="errors.rpco_office" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
           </div>
         </div>
@@ -172,11 +183,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div class="sm:col-span-6">
               <label for="reg_email" class="block text-xs font-semibold text-slate-700 mb-1.5">Email Address <span class="text-emerald-600">*</span></label>
-              <input type="email" id="reg_email" x-model="email" required placeholder="maria.santos@da.gov.ph" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <input type="email" id="reg_email" x-model="email" @input="clearFieldError('email')" required placeholder="maria.santos@da.gov.ph" :class="errors.email ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <p x-show="errors.email" x-text="errors.email" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
             <div class="sm:col-span-6">
               <label for="reg_contact_number" class="block text-xs font-semibold text-slate-700 mb-1.5">Contact Number <span class="text-emerald-600">*</span></label>
-              <input type="tel" id="reg_contact_number" x-model="contactNumber" required placeholder="+63 917 123 4567" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <input type="tel" id="reg_contact_number" x-model="contactNumber" @input="clearFieldError('contact_number')" required placeholder="+63 917 123 4567" :class="errors.contact_number ? '!border-red-400 ring-1 ring-red-300' : ''" class="w-full h-[42px] px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition" />
+              <p x-show="errors.contact_number" x-text="errors.contact_number" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
             </div>
           </div>
 
@@ -226,12 +239,13 @@
                     })->unique()->implode(', ');
                 @endphp
 
-                <div :class="attendanceDates.includes('{{ $dateVal }}') ? 'border-emerald-500 bg-emerald-50/40 shadow-sm ring-1 ring-emerald-500/30' : 'border-slate-200 bg-white hover:border-slate-300'"
+                <div :class="attendanceModeMissing('{{ $dateVal }}') ? 'border-red-400 ring-1 ring-red-300 bg-red-50/30' : (attendanceDates.includes('{{ $dateVal }}') ? 'border-emerald-500 bg-emerald-50/40 shadow-sm ring-1 ring-emerald-500/30' : 'border-slate-200 bg-white hover:border-slate-300')"
                      class="p-3.5 rounded-2xl border transition flex items-center justify-between gap-3">
 
                   <!-- Date Toggle Label -->
                   <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
                     <input type="checkbox" value="{{ $dateVal }}" x-model="attendanceDates"
+                           @change="clearFieldError('attendance_dates'); clearFieldError('attendance_mode')"
                            class="w-4 h-4 text-emerald-600 focus:ring-emerald-500/20 border-slate-300 rounded transition" />
                     <span class="text-xs font-mono font-medium text-slate-800 truncate">
                       {{ \Carbon\Carbon::parse($dateVal)->format('D, M j, Y') }}
@@ -241,8 +255,9 @@
 
                   <!-- Mode Selector -->
                   <select x-model="attendanceModes['{{ $dateVal }}']"
+                          @change="clearFieldError('attendance_mode'); clearFieldError('attendance_dates')"
                           :disabled="!attendanceDates.includes('{{ $dateVal }}')"
-                          :class="attendanceDates.includes('{{ $dateVal }}') ? 'bg-white border-emerald-300 text-slate-800' : 'bg-slate-100/70 border-slate-200 text-slate-400 cursor-not-allowed'"
+                          :class="attendanceModeMissing('{{ $dateVal }}') ? 'bg-white border-red-400 text-slate-800 ring-1 ring-red-300' : (attendanceDates.includes('{{ $dateVal }}') ? 'bg-white border-emerald-300 text-slate-800' : 'bg-slate-100/70 border-slate-200 text-slate-400 cursor-not-allowed')"
                           class="px-2.5 py-1.5 rounded-xl border text-xs font-mono outline-none transition focus:ring-2 focus:ring-emerald-500/20">
                     <option value="">Mode</option>
                     <option value="onsite">Onsite</option>
@@ -256,6 +271,8 @@
               </div>
               @endforelse
             </div>
+            <p x-show="errors.attendance_dates" x-text="errors.attendance_dates" x-cloak class="mt-2 text-xs font-medium text-red-600"></p>
+            <p x-show="errors.attendance_mode" x-text="errors.attendance_mode" x-cloak class="mt-1 text-xs font-medium text-red-600"></p>
           </div>
         </div>
 
@@ -272,17 +289,35 @@
               In compliance with the <strong>Data Privacy Act (DPA) of 2012</strong>, the Department of Agriculture - Philippine Rural Development Project (DA-PRDP) is committed to protecting your personal information. By submitting this form, you grant explicit consent to collect, process, and store your data exclusively for event accreditation, operational coordination, session management, and material distribution.
             </p>
             <label class="flex items-center gap-2 pt-1 cursor-pointer">
-              <input type="checkbox" required class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" />
+              <input type="checkbox" id="reg_agreed" x-model="agreed" @change="clearFieldError('agreed')" :class="errors.agreed ? '!border-red-400 ring-1 ring-red-300' : 'border-slate-300'" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" />
               <span class="text-slate-800 font-medium">I have read, understood, and agree to the Data Privacy Act of 2012 terms. <span class="text-emerald-600">*</span></span>
             </label>
+            <p x-show="errors.agreed" x-text="errors.agreed" x-cloak class="text-xs font-medium text-red-600"></p>
           </div>
 
           <!-- Submit Button -->
           <div class="flex items-center justify-end">
             @if($registrationMission)
-            <button type="submit" class="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-slate-950 hover:bg-emerald-700 text-white text-xs font-mono font-bold tracking-wider uppercase shadow-xl transition-all flex items-center justify-center gap-2 border border-slate-800 hover:border-emerald-600">
-              <span>Submit Registration</span>
-              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            <button
+              type="submit"
+              :disabled="submitting"
+              :class="submitting ? 'opacity-70 cursor-wait' : ''"
+              class="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-slate-950 hover:bg-emerald-700 text-white text-xs font-mono font-bold tracking-wider uppercase shadow-xl transition-all flex items-center justify-center gap-2 border border-slate-800 hover:border-emerald-600">
+              <template x-if="!submitting">
+                <span class="flex items-center gap-2">
+                  <span>Submit Registration</span>
+                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </span>
+              </template>
+              <template x-if="submitting">
+                <span class="flex items-center gap-2">
+                  <svg class="animate-spin size-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                  <span>Submitting...</span>
+                </span>
+              </template>
             </button>
             @else
             <button type="button" disabled class="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-slate-200 text-slate-400 text-xs font-mono font-bold tracking-wider uppercase cursor-not-allowed flex items-center justify-center gap-2">
