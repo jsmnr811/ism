@@ -20,11 +20,6 @@
             <span>Agenda</span>
           </a>
 
-          <a href="#meetings-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
-            <span>Meetings</span>
-            <span class="text-[10px] text-slate-400">{{ $meetingsCount }}</span>
-          </a>
-
           <a href="#site-visits-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
             <span>Virtual Site Visits</span>
             <span class="text-[10px] text-slate-400">{{ $siteVisitsCount }}</span>
@@ -87,14 +82,6 @@
             <span class="inline-flex items-center justify-center min-w-[24px] h-5 px-1.5 rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
               {{ $meetingsCount + $siteVisitsCount }}
             </span>
-          </a>
-
-          <a href="#meetings-section" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">
-            <span class="flex items-center gap-3">
-              <i class="fa-solid fa-display w-4 h-4"></i>
-              <span>Meetings</span>
-            </span>
-            <span class="text-[10px] font-bold text-slate-400">{{ $meetingsCount }}</span>
           </a>
 
           <a href="#site-visits-section" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">

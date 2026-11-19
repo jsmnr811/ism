@@ -7,7 +7,6 @@
         <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
           <a href="#banner-section" class="hover:underline">Banner</a>
           <a href="#agenda-section" class="hover:underline">Agenda</a>
-          <a href="#meetings-section" class="hover:underline">Meetings ({{ $meetingsCount }})</a>
           <a href="#site-visits-section" class="hover:underline">Site Visits ({{ $siteVisitsCount }})</a>
           <a href="#gallery" class="hover:underline font-bold text-emerald-700">All Photos</a>
           <a href="#reports-section" class="hover:underline">Reports ({{ $reportsCount }})</a>

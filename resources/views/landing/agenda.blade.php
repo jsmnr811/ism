@@ -7,9 +7,9 @@
 
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-slate-200 gap-4">
           <div>
-            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Mission Agenda</h2>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Mission Agenda &amp; Schedule</h2>
             <p class="text-slate-600 text-sm mt-1 max-w-2xl">
-              Cross-synchronized with mission database records.
+              Live-synced schedule of 27 mission activities across meetings and site visits (Nov 23 – Dec 11, 2026)
             </p>
           </div>
 
@@ -147,6 +147,7 @@
                         </span>
                       </template>
                       <span class="text-[10px] text-slate-400 font-mono" x-show="item.meeting_id" x-text="`ID: ${item.meeting_id}`"></span>
+                      <span class="text-[10px] text-slate-400 font-mono" x-show="item.passcode" x-text="`Passcode: ${item.passcode}`"></span>
                     </div>
                   </template>
                   <template x-if="item.type === 'site_visit'">

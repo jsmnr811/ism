@@ -7,9 +7,9 @@
             <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
               {{ isset($siteVisitsMission) && $siteVisitsMission ? $siteVisitsMission->title : ($activeMission ? $activeMission->title : 'Previous Mission') }}
             </span>
-            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Geotagged Site Visits ({{ $siteVisits->count() }})</h2>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Mission Site Visits &amp; Virtual Inspections</h2>
             <p class="text-slate-600 text-sm mt-1">
-              Missions' Site Visits across Luzon, Visayas, and Mindanao Clusters.
+              Field itineraries and virtual geomapping walkthroughs across Luzon and Visayas clusters.
             </p>
           </div>
 

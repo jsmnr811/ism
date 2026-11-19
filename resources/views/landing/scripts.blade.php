@@ -124,7 +124,6 @@
     // Resolve in-page anchor links to their lazy section on demand
     const LAZY_SECTION_ANCHORS = {
       '#agenda-section': 'agenda',
-      '#meetings-section': 'meetings',
       '#site-visits-section': 'site-visits',
       '#registration-section': 'registration',
       '#gallery': 'gallery',
@@ -272,6 +271,7 @@
               venue: m.venue,
               link: m.link,
               meeting_id: m.meeting_id,
+              passcode: m.passcode,
               isToday: isToday(m),
               isPast: isPast(m)
             });

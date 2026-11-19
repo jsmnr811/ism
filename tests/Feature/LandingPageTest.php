@@ -22,7 +22,7 @@ it('lazy loads the heavy landing sections until requested', function () {
     $this->get('/')
         ->assertOk()
         ->assertSee("lazySection('agenda')", false)
-        ->assertSee("lazySection('meetings')", false)
+        ->assertDontSee("lazySection('meetings')", false)
         ->assertSee("lazySection('site-visits')", false)
         ->assertSee("lazySection('gallery')", false)
         ->assertDontSee('id="agenda-section"', false)
