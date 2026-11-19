@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 it('renders the landing page', function () {
-    $this->get('/')->assertOk();
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('View Profile', false);
 });
 
 it('lazy loads the heavy landing sections until requested', function () {
