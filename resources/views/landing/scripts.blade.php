@@ -724,11 +724,11 @@
               <button onclick="openGeotagModal(${sp.id})" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-images w-3.5 h-3.5"></i> Inspect AGT Photos
               </button>` : ''}
-              <a href="${sp.document_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-[11px] font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-id-card w-3.5 h-3.5"></i> View Profile
-              </a>
-              <a href="${sp.virtual_site_visit_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-sm">
+              <a href="${sp.virtual_site_visit_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-[11px] font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-arrow-up-right-from-square w-3.5 h-3.5"></i> Inspect Site
+              </a>
+              <a href="${sp.document_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-id-card w-3.5 h-3.5"></i> View Profile
               </a>
             </div>
           `;
