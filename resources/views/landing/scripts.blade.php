@@ -272,6 +272,7 @@
               link: m.link,
               meeting_id: m.meeting_id,
               passcode: m.passcode,
+              videoLinks: Array.isArray(m.video_links) ? m.video_links : [],
               isToday: isToday(m),
               isPast: isPast(m)
             });

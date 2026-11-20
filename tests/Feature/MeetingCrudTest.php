@@ -113,6 +113,44 @@ test('user can create a meeting with structured reports', function () {
     $this->assertNull($meeting->report_documents[1]['title']);
 });
 
+test('user can create a meeting with video links', function () {
+    Livewire::test(Meetings::class)
+        ->call('createMeeting')
+        ->set('title', 'Video Meeting')
+        ->set('date', '2026-10-15')
+        ->set('time_from', '09:00')
+        ->set('time_to', '10:00')
+        ->set('type', 'technical_discussions')
+        ->set('videoLinks', [
+            ['title' => 'Session Recording', 'url' => 'https://youtu.be/session123'],
+            ['title' => '', 'url' => 'https://youtu.be/incomplete'],
+        ])
+        ->call('saveMeeting')
+        ->assertHasNoErrors();
+
+    $meeting = Meeting::where('title', 'Video Meeting')->first();
+
+    $this->assertNotNull($meeting);
+    $this->assertCount(1, $meeting->video_documents);
+    $this->assertSame('Session Recording', $meeting->video_documents[0]['title']);
+    $this->assertSame('https://youtu.be/session123', $meeting->video_documents[0]['url']);
+});
+
+test('video link url must be a valid url', function () {
+    Livewire::test(Meetings::class)
+        ->call('createMeeting')
+        ->set('title', 'Bad Video Meeting')
+        ->set('date', '2026-10-15')
+        ->set('time_from', '09:00')
+        ->set('time_to', '10:00')
+        ->set('type', 'technical_discussions')
+        ->set('videoLinks', [
+            ['title' => 'Bad', 'url' => 'not-a-url'],
+        ])
+        ->call('saveMeeting')
+        ->assertHasErrors('videoLinks.0.url');
+});
+
 test('reports without a url are discarded', function () {
     Livewire::test(Meetings::class)
         ->call('createMeeting')

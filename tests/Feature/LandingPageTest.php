@@ -79,6 +79,24 @@ it('counts report documents from meeting reports', function () {
         ->assertViewHas('hasReports', true);
 });
 
+it('exposes meeting video links in the landing dataset', function () {
+    $mission = Mission::factory()->create(['is_active' => true, 'enable_registration' => true]);
+
+    Meeting::factory()->create([
+        'mission_id' => $mission->id,
+        'video_links' => [
+            ['title' => 'Session Recording', 'url' => 'https://youtu.be/session123'],
+        ],
+    ]);
+
+    $this->get(route('landing.data'))
+        ->assertOk()
+        ->assertJsonFragment([
+            'title' => 'Session Recording',
+            'url' => 'https://youtu.be/session123',
+        ]);
+});
+
 it('shows site visits for the active mission', function () {
     $active = Mission::factory()->create([
         'is_active' => true,

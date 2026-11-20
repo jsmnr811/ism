@@ -48,6 +48,7 @@ class MeetingFactory extends Factory
                 ],
             ] : null,
             'report_name' => $this->faker->boolean(50) ? $this->faker->sentence(3) : null,
+            'video_links' => null,
         ];
     }
 }

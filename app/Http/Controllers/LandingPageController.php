@@ -116,6 +116,7 @@ class LandingPageController extends Controller
             'meeting_id' => $meeting->meeting_id ?? '',
             'passcode' => $meeting->passcode ?? '',
             'reports' => $meeting->report_documents ?? [],
+            'video_links' => $meeting->video_documents ?? [],
             'report_name' => $meeting->report_name ?? '',
             'reports_count' => count($meeting->report_documents ?? []),
         ])->values();

@@ -148,6 +148,17 @@
                       </template>
                       <span class="text-[10px] text-slate-400 font-mono" x-show="item.meeting_id" x-text="`ID: ${item.meeting_id}`"></span>
                       <span class="text-[10px] text-slate-400 font-mono" x-show="item.passcode" x-text="`Passcode: ${item.passcode}`"></span>
+                      <template x-if="item.videoLinks && item.videoLinks.length">
+                        <div class="flex flex-col md:items-end gap-1 pt-1">
+                          <template x-for="video in item.videoLinks" :key="video.url">
+                            <a :href="video.url" target="_blank" rel="noopener"
+                              class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold hover:bg-emerald-100 hover:border-emerald-300 hover:text-emerald-800 transition shadow-sm">
+                              <i class="fa-solid fa-video w-3.5 h-3.5"></i>
+                              <span x-text="video.title"></span>
+                            </a>
+                          </template>
+                        </div>
+                      </template>
                     </div>
                   </template>
                   <template x-if="item.type === 'site_visit'">

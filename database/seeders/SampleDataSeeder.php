@@ -55,6 +55,12 @@ class SampleDataSeeder extends Seeder
                         'url' => 'https://drive.google.com/file/d/15l7jpUxcwa1XKjkKCD_G3oytEREa4MPD/view',
                     ],
                 ],
+                'video_links' => [
+                    [
+                        'title' => 'Kick-off Meeting Recording',
+                        'url' => 'https://youtu.be/5thWBISMKickoff2026',
+                    ],
+                ],
             ],
             [
                 'title' => 'Technical Discussions on PRDP Scale Up Components',
@@ -126,6 +132,12 @@ class SampleDataSeeder extends Seeder
                         'title' => 'Wrap-up Presentation',
                         'description' => null,
                         'url' => 'https://drive.google.com/file/d/1WrapUpPresentation2026/view',
+                    ],
+                ],
+                'video_links' => [
+                    [
+                        'title' => 'Wrap-up Meeting Recording',
+                        'url' => 'https://youtu.be/5thWBISMWrapup2026',
                     ],
                 ],
             ],

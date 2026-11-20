@@ -450,6 +450,52 @@
                     </div>
 
                     <div>
+                        <flux:label>{{ __('Video Links') }}</flux:label>
+                        @if (! empty($this->videoLinks))
+                            <div class="space-y-3">
+                                @foreach ($this->videoLinks as $index => $video)
+                                    <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-3">
+                                        <div class="flex items-start gap-2">
+                                            <div class="flex-1 space-y-2">
+                                                <flux:input
+                                                    wire:model="videoLinks.{{ $index }}.title"
+                                                    :error="$errors->first('videoLinks.'.$index.'.title')"
+                                                    placeholder="{{ __('Video title') }}"
+                                                />
+                                                <flux:input
+                                                    type="url"
+                                                    wire:model="videoLinks.{{ $index }}.url"
+                                                    :error="$errors->first('videoLinks.'.$index.'.url')"
+                                                    placeholder="{{ __('e.g., https://youtu.be/...') }}"
+                                                />
+                                            </div>
+                                            <flux:button
+                                                size="sm"
+                                                variant="ghost"
+                                                icon="trash"
+                                                wire:click="removeVideoLink({{ $index }})"
+                                                title="{{ __('Remove') }}"
+                                            />
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                        <flux:button
+                            size="sm"
+                            variant="ghost"
+                            icon="plus"
+                            wire:click="addVideoLink"
+                            class="mt-2"
+                        >
+                            {{ __('Add video link') }}
+                        </flux:button>
+                        <flux:text class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            {{ __('Add a video title and link. Both are required to show it on the landing page.') }}
+                        </flux:text>
+                    </div>
+
+                    <div>
                         <flux:label>{{ __('Image') }}</flux:label>
                         <flux:input
                             type="file"

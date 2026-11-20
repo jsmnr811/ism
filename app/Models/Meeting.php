@@ -25,11 +25,12 @@ use Illuminate\Support\Carbon;
  * @property string|null $passcode
  * @property int|null $mission_id
  * @property array|null $reports
+ * @property array|null $video_links
  * @property string|null $report_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'venue', 'link', 'meeting_id', 'passcode', 'reports', 'report_name', 'mission_id'])]
+#[Fillable(['title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'venue', 'link', 'meeting_id', 'passcode', 'reports', 'video_links', 'report_name', 'mission_id'])]
 class Meeting extends Model
 {
     /** @use HasFactory<MeetingFactory> */
@@ -42,6 +43,7 @@ class Meeting extends Model
             'time_from' => 'datetime:H:i',
             'time_to' => 'datetime:H:i',
             'reports' => 'array',
+            'video_links' => 'array',
         ];
     }
 
@@ -77,6 +79,38 @@ class Meeting extends Model
                 'url' => $report,
             ];
         }, $reports)));
+    }
+
+    /**
+     * Get the meeting video links that have both a title and a url.
+     *
+     * @return list<array{title: string, url: string}>
+     */
+    public function getVideoDocumentsAttribute(): array
+    {
+        $videos = $this->video_links;
+
+        if (! is_array($videos)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(function ($video) {
+            if (! is_array($video)) {
+                return null;
+            }
+
+            $title = trim((string) ($video['title'] ?? ''));
+            $url = trim((string) ($video['url'] ?? ''));
+
+            if ($title === '' || $url === '') {
+                return null;
+            }
+
+            return [
+                'title' => $title,
+                'url' => $url,
+            ];
+        }, $videos)));
     }
 
     public function types(): array
