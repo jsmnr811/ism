@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LandingPageController extends Controller
@@ -175,17 +176,66 @@ class LandingPageController extends Controller
     }
 
     /**
-     * Stream a mission photo from the public disk.
+     * Stream a mission photo from storage, tolerating legacy path formats.
      */
-    public function showPhoto(MissionPhoto $missionPhoto): StreamedResponse
+    public function showPhoto(MissionPhoto $missionPhoto): StreamedResponse|BinaryFileResponse
     {
-        $disk = Storage::disk('public');
+        $path = $this->normalizePhotoPath($missionPhoto->image_path);
+        $headers = ['Cache-Control' => 'public, max-age=31536000, immutable'];
 
-        abort_unless($disk->exists($missionPhoto->image_path), 404);
+        if ($path !== '') {
+            foreach (['public', 'local'] as $diskName) {
+                $disk = Storage::disk($diskName);
 
-        return $disk->response($missionPhoto->image_path, null, [
-            'Cache-Control' => 'public, max-age=31536000, immutable',
+                if ($disk->exists($path)) {
+                    return $disk->response($path, null, $headers);
+                }
+            }
+
+            foreach ([
+                public_path($path),
+                public_path('storage/'.$path),
+                storage_path('app/public/'.$path),
+                storage_path('app/private/'.$path),
+            ] as $absolutePath) {
+                if (is_file($absolutePath)) {
+                    return response()->file($absolutePath, $headers);
+                }
+            }
+        }
+
+        Log::warning('Mission photo file was not found.', [
+            'mission_photo_id' => $missionPhoto->id,
+            'image_path' => $missionPhoto->image_path,
+            'normalized_path' => $path,
         ]);
+
+        abort(404);
+    }
+
+    /**
+     * Normalize a stored photo path into a disk-relative path.
+     */
+    protected function normalizePhotoPath(?string $path): string
+    {
+        $path = trim((string) $path);
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            $path = (string) parse_url($path, PHP_URL_PATH);
+        }
+
+        $path = ltrim($path, '/');
+
+        foreach ([
+            '#^storage/app/public/#',
+            '#^storage/app/private/#',
+            '#^storage/#',
+            '#^public/#',
+        ] as $prefix) {
+            $path = (string) preg_replace($prefix, '', $path);
+        }
+
+        return $path;
     }
 
     /**

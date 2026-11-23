@@ -391,6 +391,28 @@ it('serves mission photos without relying on the public storage symlink', functi
     $this->get($photo->image_url)->assertOk();
 });
 
+it('serves legacy mission photo paths from public and private storage', function () {
+    Storage::fake('public');
+    Storage::fake('local');
+
+    $mission = Mission::factory()->create();
+
+    Storage::disk('public')->put('mission-photos/legacy-public.jpg', 'image-bytes');
+    $publicPhoto = MissionPhoto::factory()->create([
+        'mission_id' => $mission->id,
+        'image_path' => '/storage/mission-photos/legacy-public.jpg',
+    ]);
+
+    Storage::disk('local')->put('mission-photos/legacy-private.jpg', 'image-bytes');
+    $privatePhoto = MissionPhoto::factory()->create([
+        'mission_id' => $mission->id,
+        'image_path' => 'mission-photos/legacy-private.jpg',
+    ]);
+
+    $this->get($publicPhoto->image_url)->assertOk();
+    $this->get($privatePhoto->image_url)->assertOk();
+});
+
 it('shows stored mission photos for the selected mission', function () {
     $active = Mission::factory()->create([
         'is_active' => true,
