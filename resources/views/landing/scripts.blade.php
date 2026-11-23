@@ -295,7 +295,10 @@
           return activities;
         },
         get uniqueDates() {
-          const dates = [...new Set(this.meetings.map(m => m.date).filter(d => d))];
+          const dates = [...new Set([
+            ...this.meetings.map(m => m.date),
+            ...this.siteVisits.map(s => s.date),
+          ].filter(d => d))];
           dates.sort();
           return dates;
         },
