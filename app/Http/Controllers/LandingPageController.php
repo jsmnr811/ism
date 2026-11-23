@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LandingPageController extends Controller
 {
@@ -170,6 +171,20 @@ class LandingPageController extends Controller
             'siteVisits' => $siteVisits,
             'photos' => $photos,
             'canUploadPhotos' => $this->photosUploadAllowed($activeMission, $latestMission),
+        ]);
+    }
+
+    /**
+     * Stream a mission photo from the public disk.
+     */
+    public function showPhoto(MissionPhoto $missionPhoto): StreamedResponse
+    {
+        $disk = Storage::disk('public');
+
+        abort_unless($disk->exists($missionPhoto->image_path), 404);
+
+        return $disk->response($missionPhoto->image_path, null, [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
     }
 

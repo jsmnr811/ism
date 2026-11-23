@@ -17,6 +17,7 @@ Route::get('/landing/data', [LandingPageController::class, 'data'])->name('landi
 Route::get('/landing/section/{section}', [LandingPageController::class, 'section'])->name('landing.section');
 Route::post('/landing/register', [LandingPageController::class, 'storeRegistration'])->name('landing.register');
 Route::post('/landing/photos', [LandingPageController::class, 'storePhoto'])->name('landing.photos');
+Route::get('/mission-photos/{missionPhoto}', [LandingPageController::class, 'showPhoto'])->name('mission-photos.show');
 
 Route::get('missions/{mission}/register', MissionRegistrationForm::class)
     ->name('missions.register')

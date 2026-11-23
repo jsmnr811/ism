@@ -375,6 +375,22 @@ it('rejects photo uploads without an image', function () {
     ])->assertSessionHasErrors('images');
 });
 
+it('serves mission photos without relying on the public storage symlink', function () {
+    Storage::fake('public');
+
+    $mission = Mission::factory()->create();
+    $path = UploadedFile::fake()->image('capture.jpg')->store('mission-photos', 'public');
+
+    $photo = MissionPhoto::factory()->create([
+        'mission_id' => $mission->id,
+        'image_path' => $path,
+    ]);
+
+    expect($photo->image_url)->toContain('/mission-photos/'.$photo->id);
+
+    $this->get($photo->image_url)->assertOk();
+});
+
 it('shows stored mission photos for the selected mission', function () {
     $active = Mission::factory()->create([
         'is_active' => true,
