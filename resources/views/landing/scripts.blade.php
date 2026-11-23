@@ -729,7 +729,7 @@
                 <i class="fa-solid fa-arrow-up-right-from-square w-3.5 h-3.5"></i> Inspect Site
               </a>
               <a href="${sp.document_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-id-card w-3.5 h-3.5"></i> View Profile
+                <i class="fa-solid fa-id-card w-3.5 h-3.5"></i> SP Profile & Documents
               </a>
             </div>
           `;

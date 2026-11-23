@@ -15,7 +15,7 @@ uses(RefreshDatabase::class);
 it('renders the landing page', function () {
     $this->get('/')
         ->assertOk()
-        ->assertSee('View Profile', false);
+        ->assertSee('SP Profile & Documents', false);
 });
 
 it('lazy loads the heavy landing sections until requested', function () {
