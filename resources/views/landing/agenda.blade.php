@@ -133,21 +133,56 @@
                 <div class="flex items-center md:flex-col md:items-end gap-2 shrink-0">
                   <template x-if="item.type === 'meeting'">
                     <div class="flex flex-col md:items-end gap-2">
-                      <template x-if="item.isToday">
-                        <a :href="item.link || '#'" :target="item.link ? '_blank' : null"
-                          :class="item.link ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm' : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
-                          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition">
-                          <i class="fa-solid fa-video w-3.5 h-3.5"></i> Join Session
-                        </a>
-                      </template>
-                      <template x-if="!item.isToday">
-                        <span class="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs font-semibold inline-flex items-center gap-1.5">
-                          <i class="fa-regular fa-clock w-3.5 h-3.5"></i>
-                          <span x-text="item.isPast ? 'Session concluded' : 'Opens on the session date'"></span>
+                      <div class="flex items-center gap-2">
+                        <template x-if="item.isToday">
+                          <a :href="item.link || '#'" :target="item.link ? '_blank' : null"
+                            :class="item.link ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm' : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+                            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-video w-3.5 h-3.5"></i> Join Session
+                          </a>
+                        </template>
+                        <template x-if="!item.isToday">
+                          <span class="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs font-semibold inline-flex items-center gap-1.5">
+                            <i class="fa-regular fa-clock w-3.5 h-3.5"></i>
+                            <span x-text="item.isPast ? 'Session concluded' : 'Opens on the session date'"></span>
+                          </span>
+                        </template>
+                        <template x-if="item.link">
+                          <button type="button" @click="copyToClipboard(item.link, 'Meeting link copied.')"
+                            aria-label="{{ __('Copy meeting link') }}"
+                            class="group relative w-3.5 h-3.5 shrink-0 rounded text-slate-300 hover:text-blue-700 inline-flex items-center justify-center transition">
+                            <i class="fa-regular fa-copy w-2 h-2"></i>
+                            <span class="pointer-events-none absolute -top-7 right-0 whitespace-nowrap rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-semibold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                              {{ __('Copy link') }}
+                            </span>
+                          </button>
+                        </template>
+                      </div>
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 md:justify-end">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-slate-400 font-mono" x-show="item.meeting_id">
+                          <span x-text="`ID: ${item.meeting_id}`"></span>
+                          <button type="button" @click="copyToClipboard(item.meeting_id, 'Meeting ID copied.')"
+                            aria-label="{{ __('Copy meeting ID') }}"
+                            class="group relative w-4 h-4 shrink-0 rounded text-slate-300 hover:text-blue-700 inline-flex items-center justify-center transition">
+                            <i class="fa-regular fa-copy w-2.5 h-2.5"></i>
+                            <span class="pointer-events-none absolute -top-7 right-0 whitespace-nowrap rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-semibold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                              {{ __('Copy ID') }}
+                            </span>
+                          </button>
                         </span>
-                      </template>
-                      <span class="text-[10px] text-slate-400 font-mono" x-show="item.meeting_id" x-text="`ID: ${item.meeting_id}`"></span>
-                      <span class="text-[10px] text-slate-400 font-mono" x-show="item.passcode" x-text="`Passcode: ${item.passcode}`"></span>
+                        <span class="hidden sm:inline text-slate-300" x-show="item.meeting_id && item.passcode">•</span>
+                        <span class="inline-flex items-center gap-1 text-[10px] text-slate-400 font-mono" x-show="item.passcode">
+                          <span x-text="`Passcode: ${item.passcode}`"></span>
+                          <button type="button" @click="copyToClipboard(item.passcode, 'Meeting passcode copied.')"
+                            aria-label="{{ __('Copy meeting passcode') }}"
+                            class="group relative w-4 h-4 shrink-0 rounded text-slate-300 hover:text-blue-700 inline-flex items-center justify-center transition">
+                            <i class="fa-regular fa-copy w-2.5 h-2.5"></i>
+                            <span class="pointer-events-none absolute -top-7 right-0 whitespace-nowrap rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-semibold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                              {{ __('Copy Passcode') }}
+                            </span>
+                          </button>
+                        </span>
+                      </div>
                       <template x-if="item.videoLinks && item.videoLinks.length">
                         <div class="flex flex-col md:items-end gap-1 pt-1">
                           <template x-for="video in item.videoLinks" :key="video.url">
