@@ -34,6 +34,6 @@ class MissionPhoto extends Model
      */
     public function getImageUrlAttribute(): string
     {
-        return route('mission-photos.show', ['missionPhoto' => $this], false);
+        return route('mission-photos.show', ['missionPhoto' => $this]);
     }
 }
