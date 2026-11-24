@@ -406,6 +406,15 @@
                         description="{{ __('Link to the recorded meeting. Recordings are listed on the landing page.') }}"
                     />
 
+                    <flux:input
+                        type="url"
+                        wire:model="transcription_link"
+                        :label="__('Recording Transcription')"
+                        :error="$errors->first('transcription_link')"
+                        placeholder="{{ __('e.g., https://drive.google.com/...') }}"
+                        description="{{ __('Link to the meeting transcript. Shown beside the recording on the landing page.') }}"
+                    />
+
                     <div>
                         <flux:label>{{ __('Reports') }}</flux:label>
                         @if (! empty($this->reportLinks))

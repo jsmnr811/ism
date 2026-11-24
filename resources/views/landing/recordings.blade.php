@@ -40,11 +40,21 @@
             @endif
           </div>
 
-          <a href="{{ $meeting->recording_link }}" target="_blank" rel="noopener"
-            class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold hover:bg-red-100 hover:border-red-300 hover:text-red-800 transition self-start">
-            <i class="fa-solid fa-circle-play w-3.5 h-3.5"></i>
-            Watch Recording
-          </a>
+          <div class="flex flex-wrap items-center gap-2">
+            <a href="{{ $meeting->recording_link }}" target="_blank" rel="noopener"
+              class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold hover:bg-red-100 hover:border-red-300 hover:text-red-800 transition">
+              <i class="fa-solid fa-circle-play w-3.5 h-3.5"></i>
+              Watch Recording
+            </a>
+
+            @if($meeting->transcription_link)
+              <a href="{{ $meeting->transcription_link }}" target="_blank" rel="noopener"
+                class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800 transition">
+                <i class="fa-solid fa-file-lines w-3.5 h-3.5"></i>
+                Transcript
+              </a>
+            @endif
+          </div>
         </article>
       @endforeach
     </div>

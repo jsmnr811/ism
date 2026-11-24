@@ -109,13 +109,16 @@ it('shows meeting recordings in their own section', function () {
         'mission_id' => $mission->id,
         'title' => 'Recorded Kick-off',
         'recording_link' => 'https://youtu.be/recorded-kickoff',
+        'transcription_link' => 'https://drive.google.com/recorded-kickoff-transcript',
     ]);
 
     $this->get(route('landing.section', ['section' => 'recordings']))
         ->assertOk()
         ->assertSee('Meeting Recordings')
         ->assertSee('Recorded Kick-off')
-        ->assertSee('https://youtu.be/recorded-kickoff');
+        ->assertSee('https://youtu.be/recorded-kickoff')
+        ->assertSee('Transcript')
+        ->assertSee('https://drive.google.com/recorded-kickoff-transcript');
 });
 
 it('exposes meeting recording links in the landing dataset', function () {
