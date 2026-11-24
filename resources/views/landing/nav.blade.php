@@ -36,6 +36,13 @@
           </a>
           @endif
 
+          @if($recordingsCount > 0)
+          <a href="#recordings-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200">
+            <span>Recordings</span>
+            <span class="text-[10px] text-slate-400">{{ $recordingsCount }}</span>
+          </a>
+          @endif
+
         </nav>
 
         <!-- Right Actions -->
@@ -110,6 +117,13 @@
           <a href="#reports-section" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">
             <i class="fa-solid fa-files w-4 h-4"></i>
             <span>Reports and Presentations</span>
+          </a>
+          @endif
+
+          @if($recordingsCount > 0)
+          <a href="#recordings-section" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-red-700 transition">
+            <i class="fa-solid fa-circle-play w-4 h-4"></i>
+            <span>Recordings</span>
           </a>
           @endif
 

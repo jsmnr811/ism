@@ -128,6 +128,7 @@
       '#registration-section': 'registration',
       '#gallery': 'gallery',
       '#reports-section': 'reports',
+      '#recordings-section': 'recordings',
     };
 
     function lazySectionComponent(name) {
@@ -911,21 +912,6 @@
                     fileName: fileName,
                     link: url
                   });
-                });
-              }
-
-              if (m.recording_link) {
-                reports.push({
-                  id: `rec-${m.id}`,
-                  meetingId: m.id,
-                  title: `${m.title} — Meeting Recording`,
-                  description: m.description || '',
-                  meetingTitle: m.title,
-                  meetingDate: m.date || '',
-                  category: 'recording',
-                  format: 'VIDEO',
-                  fileName: '',
-                  link: m.recording_link
                 });
               }
             });

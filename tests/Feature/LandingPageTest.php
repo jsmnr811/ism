@@ -24,6 +24,7 @@ it('lazy loads the heavy landing sections until requested', function () {
         ->assertSee("lazySection('agenda')", false)
         ->assertDontSee("lazySection('meetings')", false)
         ->assertSee("lazySection('site-visits')", false)
+        ->assertSee("lazySection('recordings')", false)
         ->assertSee("lazySection('gallery')", false)
         ->assertDontSee('id="agenda-section"', false)
         ->assertDontSee('id="meetings-section"', false)
@@ -33,7 +34,7 @@ it('lazy loads the heavy landing sections until requested', function () {
 
 it('renders every lazy section on demand', function (string $section) {
     $this->get(route('landing.section', ['section' => $section]))->assertOk();
-})->with(['agenda', 'meetings', 'site-visits', 'registration', 'gallery', 'reports']);
+})->with(['agenda', 'meetings', 'site-visits', 'registration', 'recordings', 'gallery', 'reports']);
 
 it('rejects unknown lazy section names', function () {
     $this->get(route('landing.section', ['section' => 'nope']))->assertNotFound();
@@ -95,6 +96,26 @@ it('exposes meeting video links in the landing dataset', function () {
             'title' => 'Session Recording',
             'url' => 'https://youtu.be/session123',
         ]);
+});
+
+it('shows meeting recordings in their own section', function () {
+    $mission = Mission::factory()->create([
+        'is_active' => true,
+        'start_date' => now()->subDays(2)->toDateString(),
+        'end_date' => now()->addDays(2)->toDateString(),
+    ]);
+
+    Meeting::factory()->create([
+        'mission_id' => $mission->id,
+        'title' => 'Recorded Kick-off',
+        'recording_link' => 'https://youtu.be/recorded-kickoff',
+    ]);
+
+    $this->get(route('landing.section', ['section' => 'recordings']))
+        ->assertOk()
+        ->assertSee('Meeting Recordings')
+        ->assertSee('Recorded Kick-off')
+        ->assertSee('https://youtu.be/recorded-kickoff');
 });
 
 it('exposes meeting recording links in the landing dataset', function () {
