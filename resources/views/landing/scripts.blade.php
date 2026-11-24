@@ -125,7 +125,6 @@
     const LAZY_SECTION_ANCHORS = {
       '#agenda-section': 'agenda',
       '#site-visits-section': 'site-visits',
-      '#recordings-section': 'recordings',
       '#registration-section': 'registration',
       '#gallery': 'gallery',
       '#reports-section': 'reports',
@@ -912,6 +911,21 @@
                     fileName: fileName,
                     link: url
                   });
+                });
+              }
+
+              if (m.recording_link) {
+                reports.push({
+                  id: `rec-${m.id}`,
+                  meetingId: m.id,
+                  title: `${m.title} — Meeting Recording`,
+                  description: m.description || '',
+                  meetingTitle: m.title,
+                  meetingDate: m.date || '',
+                  category: 'recording',
+                  format: 'VIDEO',
+                  fileName: '',
+                  link: m.recording_link
                 });
               }
             });

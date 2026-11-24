@@ -24,7 +24,6 @@ it('lazy loads the heavy landing sections until requested', function () {
         ->assertSee("lazySection('agenda')", false)
         ->assertDontSee("lazySection('meetings')", false)
         ->assertSee("lazySection('site-visits')", false)
-        ->assertSee("lazySection('recordings')", false)
         ->assertSee("lazySection('gallery')", false)
         ->assertDontSee('id="agenda-section"', false)
         ->assertDontSee('id="meetings-section"', false)
@@ -34,7 +33,7 @@ it('lazy loads the heavy landing sections until requested', function () {
 
 it('renders every lazy section on demand', function (string $section) {
     $this->get(route('landing.section', ['section' => $section]))->assertOk();
-})->with(['agenda', 'meetings', 'site-visits', 'recordings', 'registration', 'gallery', 'reports']);
+})->with(['agenda', 'meetings', 'site-visits', 'registration', 'gallery', 'reports']);
 
 it('rejects unknown lazy section names', function () {
     $this->get(route('landing.section', ['section' => 'nope']))->assertNotFound();
@@ -98,7 +97,7 @@ it('exposes meeting video links in the landing dataset', function () {
         ]);
 });
 
-it('shows meeting recordings on the landing page', function () {
+it('exposes meeting recording links in the landing dataset', function () {
     $mission = Mission::factory()->create([
         'is_active' => true,
         'start_date' => now()->subDays(2)->toDateString(),
@@ -111,11 +110,12 @@ it('shows meeting recordings on the landing page', function () {
         'recording_link' => 'https://youtu.be/recorded-kickoff',
     ]);
 
-    $this->get(route('landing.section', ['section' => 'recordings']))
+    $this->get(route('landing.data'))
         ->assertOk()
-        ->assertSee('Meeting Recordings')
-        ->assertSee('Recorded Kick-off')
-        ->assertSee('https://youtu.be/recorded-kickoff');
+        ->assertJsonFragment([
+            'title' => 'Recorded Kick-off',
+            'recording_link' => 'https://youtu.be/recorded-kickoff',
+        ]);
 });
 
 it('shows site visits for the active mission', function () {

@@ -25,12 +25,6 @@
             <span class="text-[10px] text-slate-400">{{ $siteVisitsCount }}</span>
           </a>
 
-          @if($recordingsCount > 0)
-          <a href="#recordings-section" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200">
-            <span>Recordings</span>
-            <span class="text-[10px] text-slate-400">{{ $recordingsCount }}</span>
-          </a>
-          @endif
 
           <a href="#gallery" class="group inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-200">
             <span>Gallery</span>
@@ -99,15 +93,6 @@
             <span class="text-[10px] font-bold text-slate-400">{{ $siteVisitsCount }}</span>
           </a>
 
-          @if($recordingsCount > 0)
-          <a href="#recordings-section" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-red-700 transition">
-            <span class="flex items-center gap-3">
-              <i class="fa-solid fa-circle-play w-4 h-4"></i>
-              <span>Recordings</span>
-            </span>
-            <span class="text-[10px] font-bold text-slate-400">{{ $recordingsCount }}</span>
-          </a>
-          @endif
 
           @if($registrationMission)
           <a href="#registration-section" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">

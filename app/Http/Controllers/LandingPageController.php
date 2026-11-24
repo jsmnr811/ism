@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LandingPageController extends Controller
 {
-    private const LAZY_SECTIONS = ['agenda', 'meetings', 'site-visits', 'recordings', 'registration', 'gallery', 'reports'];
+    private const LAZY_SECTIONS = ['agenda', 'meetings', 'site-visits', 'registration', 'gallery', 'reports'];
 
     public function __invoke(): View
     {
@@ -39,8 +39,8 @@ class LandingPageController extends Controller
 
         $reportDocuments = $meetings->map(fn (Meeting $meeting) => $meeting->report_documents);
 
-        $reportsCount = $reportDocuments->sum(fn ($documents) => count($documents ?? []));
         $recordingsCount = $meetings->filter(fn (Meeting $meeting) => filled($meeting->recording_link))->count();
+        $reportsCount = $reportDocuments->sum(fn ($documents) => count($documents ?? [])) + $recordingsCount;
 
         return view('landing', [
             'bannerMission' => $bannerMission,
@@ -49,7 +49,6 @@ class LandingPageController extends Controller
             'siteVisitsCount' => SiteVisit::when($bannerMission, fn ($query) => $query->where('mission_id', $bannerMission->id))->count(),
             'reportsCount' => $reportsCount,
             'hasReports' => $reportsCount > 0,
-            'recordingsCount' => $recordingsCount,
             'title' => $bannerMission ? $bannerMission->title : 'ISM Portal',
         ]);
     }
@@ -76,9 +75,6 @@ class LandingPageController extends Controller
                 'activeMission' => $activeMission,
                 'siteVisitsMission' => $mission,
                 'siteVisits' => $this->missionSiteVisits($mission),
-            ],
-            'recordings' => [
-                'meetings' => $this->missionMeetings($mission),
             ],
             'registration' => [
                 'registrationMission' => $this->registrationMission(),

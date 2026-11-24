@@ -1,4 +1,4 @@
-    @if($meetings->contains(fn($m) => !empty($m->report_documents)))
+    @if($meetings->contains(fn($m) => !empty($m->report_documents) || !empty($m->recording_link)))
     <!-- ================= OFFICIAL REPORTS, PRESENTATIONS & DELIVERABLES ================= -->
     <section id="reports-section" class="py-10 bg-slate-50 border-b border-slate-200" x-data="reportsList()">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -10,7 +10,7 @@
             </span>
             <h2 class="text-3xl font-extrabold text-slate-900 mt-2"
               x-text="`Reports &amp; Presentations (${filteredReports.length})`"></h2>
-            <p class="text-slate-600 text-sm mt-1">Official deliverables, presentations, annexes, fiduciary reviews, and technical evaluation papers.</p>
+            <p class="text-slate-600 text-sm mt-1">Official deliverables, presentations, meeting recordings, annexes, fiduciary reviews, and technical evaluation papers.</p>
           </div>
 
           <!-- Reports Search -->
@@ -35,6 +35,11 @@
             :class="currentCategory === 'presentation' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
             class="rep-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
             Presentations
+          </button>
+          <button @click="currentCategory = 'recording'"
+            :class="currentCategory === 'recording' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+            class="rep-cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+            Recordings
           </button>
 
           <template x-if="focusedMeeting">
@@ -75,8 +80,8 @@
                   :id="`report-${rep.id}`"
                   :class="(focusedReportId === rep.id || focusedMeetingId === rep.meetingId) ? 'bg-emerald-50 ring-2 ring-inset ring-emerald-200' : ''">
                   <div class="flex items-center space-x-3.5 pr-4 min-w-0">
-                    <div :class="`p-2.5 rounded-xl border shrink-0 ${rep.format === 'PDF' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`">
-                      <i :class="`w-5 h-5 fa-solid ${rep.format === 'XLSX' ? 'fa-file-excel' : 'fa-file-text'}`"></i>
+                    <div :class="`p-2.5 rounded-xl border shrink-0 ${rep.format === 'VIDEO' ? 'bg-red-50 text-red-600 border-red-200' : (rep.format === 'PDF' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200')}`">
+                      <i :class="`w-5 h-5 fa-solid ${rep.format === 'VIDEO' ? 'fa-circle-play' : (rep.format === 'XLSX' ? 'fa-file-excel' : 'fa-file-text')}`"></i>
                     </div>
                     <div class="min-w-0">
                       <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate" x-text="rep.title"></h4>
@@ -89,7 +94,8 @@
                     </div>
                   </div>
                   <a :href="rep.link" target="_blank" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center gap-1.5 transition shrink-0">
-                    <i class="fa-solid fa-download w-3.5 h-3.5"></i> Download
+                    <i :class="`w-3.5 h-3.5 fa-solid ${rep.format === 'VIDEO' ? 'fa-play' : 'fa-download'}`"></i>
+                    <span x-text="rep.format === 'VIDEO' ? 'Watch' : 'Download'"></span>
                   </a>
                 </div>
               </template>
