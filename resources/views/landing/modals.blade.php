@@ -75,21 +75,31 @@
   </div>
 
   <!-- ================= FULL PHOTO GALLERY MODAL ================= -->
-  <div id="photoGalleryModal"
-    class="fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-md hidden flex-col p-4 sm:p-6"
-    onclick="if (event.target === this) closePhotoGalleryModal()">
-    <div class="max-w-7xl w-full mx-auto flex items-center justify-between text-white pb-4 shrink-0">
-      <div>
-        <h3 class="text-sm font-bold">Mission Photos</h3>
-        <p class="text-[11px] text-slate-400" id="photoGalleryModalCount"></p>
+  <div id="photoGalleryModal" role="dialog" aria-modal="true" aria-label="Mission photos"
+    class="fixed inset-0 z-[60] hidden bg-slate-950/95 backdrop-blur-md">
+    <div class="flex h-full flex-col">
+      <header class="shrink-0 border-b border-white/10 bg-slate-950/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 flex items-center justify-center">
+              <i class="fa-solid fa-images w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Mission Photos</h3>
+              <p class="text-[11px] text-slate-400" id="photoGalleryModalCount"></p>
+            </div>
+          </div>
+          <button onclick="closePhotoGalleryModal()" aria-label="Close gallery"
+            class="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-x w-4 h-4"></i>
+          </button>
+        </div>
+      </header>
+      <div class="flex-1 overflow-y-auto">
+        <div id="photoGalleryModalGrid"
+          class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3"></div>
       </div>
-      <button onclick="closePhotoGalleryModal()" aria-label="Close gallery"
-        class="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition">
-        <i class="fa-solid fa-x w-5 h-5"></i>
-      </button>
     </div>
-    <div id="photoGalleryModalGrid"
-      class="max-w-7xl w-full mx-auto flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 content-start pb-6"></div>
   </div>
 
   <!-- ================= GOOGLE PHOTOS LIGHTBOX MODAL ================= -->

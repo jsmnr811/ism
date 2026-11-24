@@ -1272,32 +1272,35 @@
       `;
       slideShowEl.querySelector('#photoSlideshowImage').onclick = () => openLightbox(photoSlideshowIndex);
       container.appendChild(slideShowEl);
-      updatePhotoSlide();
-      startPhotoSlideshow();
 
-      // Flat gallery — no grouping, photos flow in a single responsive grid
-      const gridEl = document.createElement('div');
-      gridEl.className = "flex flex-wrap items-center justify-center gap-2 sm:gap-2.5";
+      // Moving thumbnail strip — active slide is kept centered
+      const stripEl = document.createElement('div');
+      stripEl.className = "photo-thumbnail-strip relative mb-5";
+      stripEl.onmouseenter = pausePhotoSlideshow;
+      stripEl.onmouseleave = startPhotoSlideshow;
+      stripEl.innerHTML = `
+        <div class="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-12 bg-gradient-to-r from-white to-transparent z-10"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-12 bg-gradient-to-l from-white to-transparent z-10"></div>
+        <div id="photoThumbnailTrack" class="flex items-center gap-2 overflow-x-auto px-2 py-2 scroll-smooth snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"></div>
+      `;
 
-      visiblePhotos.forEach((photo, globalIdx) => {
-        const card = document.createElement('div');
-        card.className = "g-photo-card relative w-24 sm:w-28 md:w-32 lg:w-36 aspect-square rounded-xl overflow-hidden bg-slate-100 group cursor-pointer border border-slate-200/70 shadow-sm hover:shadow-md transition-all";
-        card.onclick = () => openLightbox(globalIdx);
-
-        card.innerHTML = `
-          <img src="${photo.imageUrl}" alt="${photo.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
-          <div class="g-photo-overlay absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/10 to-black/20 opacity-0 transition duration-200 pointer-events-none"></div>
-          <div class="absolute bottom-2.5 left-2.5 right-2.5 text-white opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
-            <p class="text-xs font-semibold truncate leading-snug">${photo.caption || 'Mission photo'}</p>
-            ${[photo.author, photo.location].filter(Boolean).length
-              ? `<p class="text-[10px] text-slate-300 truncate">${[photo.author, photo.location].filter(Boolean).join(' • ')}</p>`
-              : ''}
-          </div>
+      const track = stripEl.querySelector('#photoThumbnailTrack');
+      visiblePhotos.forEach((photo, index) => {
+        const thumb = document.createElement('button');
+        thumb.type = 'button';
+        thumb.dataset.thumbIndex = index;
+        thumb.className = "photo-thumb shrink-0 w-16 sm:w-20 aspect-square rounded-lg overflow-hidden bg-slate-100 snap-center transition-all duration-300 opacity-60 hover:opacity-100 ring-2 ring-transparent";
+        thumb.onclick = () => goToPhotoSlide(index);
+        thumb.innerHTML = `
+          <img src="${photo.imageUrl}" alt="${photo.caption || 'Mission photo'}" loading="lazy" decoding="async"
+            class="w-full h-full object-cover" />
         `;
-        gridEl.appendChild(card);
+        track.appendChild(thumb);
       });
 
-      container.appendChild(gridEl);
+      container.appendChild(stripEl);
+      updatePhotoSlide();
+      startPhotoSlideshow();
     }
 
     // Slideshow state & controls
@@ -1327,6 +1330,30 @@
 
       const counterEl = document.getElementById('photoSlideshowCounter');
       if (counterEl) counterEl.innerText = `${photoSlideshowIndex + 1} / ${visiblePhotos.length}`;
+
+      centerPhotoThumbnail();
+    }
+
+    function centerPhotoThumbnail() {
+      const track = document.getElementById('photoThumbnailTrack');
+      if (!track) return;
+
+      track.querySelectorAll('[data-thumb-index]').forEach(thumb => {
+        const isActive = Number(thumb.dataset.thumbIndex) === photoSlideshowIndex;
+
+        thumb.classList.toggle('ring-emerald-500', isActive);
+        thumb.classList.toggle('opacity-100', isActive);
+        thumb.classList.toggle('scale-105', isActive);
+        thumb.classList.toggle('opacity-60', !isActive);
+        thumb.classList.toggle('ring-transparent', !isActive);
+      });
+
+      const activeThumb = track.querySelector(`[data-thumb-index="${photoSlideshowIndex}"]`);
+
+      if (activeThumb) {
+        const targetLeft = activeThumb.offsetLeft - (track.clientWidth - activeThumb.clientWidth) / 2;
+        track.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+      }
     }
 
     function startPhotoSlideshow() {
@@ -1345,6 +1372,14 @@
         clearInterval(photoSlideshowTimer);
         photoSlideshowTimer = null;
       }
+    }
+
+    function goToPhotoSlide(index) {
+      if (visiblePhotos.length === 0) return;
+
+      photoSlideshowIndex = Math.max(0, Math.min(index, visiblePhotos.length - 1));
+      updatePhotoSlide();
+      startPhotoSlideshow();
     }
 
     function nextPhotoSlide(event) {
@@ -1374,12 +1409,15 @@
 
       grid.innerHTML = visiblePhotos.map((photo, index) => `
         <button type="button" onclick="closePhotoGalleryModal(); openLightbox(${index})"
-          class="relative rounded-xl overflow-hidden bg-slate-800 aspect-square group cursor-pointer border border-white/10">
-          <img src="${photo.imageUrl}" alt="${photo.caption || 'Mission photo'}" loading="lazy"
-            class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
-          <div class="absolute bottom-2 left-2 right-2 text-left text-white opacity-0 group-hover:opacity-100 transition pointer-events-none">
-            <p class="text-[10px] font-semibold truncate">${photo.caption || 'Mission photo'}</p>
+          class="group relative aspect-square overflow-hidden rounded-lg bg-slate-800 ring-1 ring-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">
+          <img src="${photo.imageUrl}" alt="${photo.caption || 'Mission photo'}" loading="lazy" decoding="async"
+            class="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/5 to-transparent opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
+          <div class="absolute inset-x-0 bottom-0 p-2.5 flex items-end justify-between gap-2 opacity-0 group-hover:opacity-100 transition pointer-events-none">
+            <p class="text-[10px] font-semibold text-white text-left leading-snug line-clamp-2">${photo.caption || 'Mission photo'}</p>
+            <span class="w-5 h-5 rounded-full bg-white/90 text-slate-800 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-up-right-and-down-left-from-center text-[8px]"></i>
+            </span>
           </div>
         </button>
       `).join('');
@@ -1388,7 +1426,6 @@
       if (countEl) countEl.innerText = `${visiblePhotos.length} photo${visiblePhotos.length === 1 ? '' : 's'}`;
 
       modal.classList.remove('hidden');
-      modal.classList.add('flex');
       document.body.classList.add('overflow-hidden');
       pausePhotoSlideshow();
     }
@@ -1398,7 +1435,6 @@
       if (!modal) return;
 
       modal.classList.add('hidden');
-      modal.classList.remove('flex');
       document.body.classList.remove('overflow-hidden');
       startPhotoSlideshow();
     }
