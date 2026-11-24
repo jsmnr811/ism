@@ -288,10 +288,20 @@
               time: '',
               venue: s.location,
               hasPhotos: Array.isArray(s.images) && s.images.length > 0,
-              sp_id: s.id
+              sp_id: s.id,
+              isPast: isPast(s),
             });
           });
-          activities.sort((a, b) => a.date.localeCompare(b.date));
+          activities.sort((a, b) => {
+            const aDone = a.isPast ? 1 : 0;
+            const bDone = b.isPast ? 1 : 0;
+
+            if (aDone !== bDone) {
+              return aDone - bDone;
+            }
+
+            return a.date.localeCompare(b.date);
+          });
           return activities;
         },
         get uniqueDates() {
