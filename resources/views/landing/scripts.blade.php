@@ -1241,13 +1241,47 @@
         return;
       }
 
+      // Slideshow — one hero frame with auto-advance and manual controls
+      pausePhotoSlideshow();
+      photoSlideshowIndex = Math.min(photoSlideshowIndex, visiblePhotos.length - 1);
+
+      const slideShowEl = document.createElement('div');
+      slideShowEl.className = "photo-slideshow relative mb-5 rounded-3xl overflow-hidden bg-slate-900 border border-slate-200 shadow-md aspect-[16/10] sm:aspect-[21/9]";
+      slideShowEl.onmouseenter = pausePhotoSlideshow;
+      slideShowEl.onmouseleave = startPhotoSlideshow;
+      slideShowEl.innerHTML = `
+        <img id="photoSlideshowImage" src="" alt="" class="w-full h-full object-cover cursor-pointer" />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/10 to-slate-950/20 pointer-events-none"></div>
+        <span id="photoSlideshowCounter" class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-slate-950/60 text-white text-[10px] font-mono font-semibold backdrop-blur"></span>
+        <button type="button" onclick="openPhotoGalleryModal(event)" aria-label="View all photos"
+          class="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-slate-700 text-[10px] font-bold shadow-md transition">
+          <i class="fa-solid fa-images w-3 h-3"></i> View all
+        </button>
+        <button type="button" onclick="prevPhotoSlide(event)" aria-label="Previous photo"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 flex items-center justify-center shadow-md transition">
+          <i class="fa-solid fa-chevron-left w-3.5 h-3.5"></i>
+        </button>
+        <button type="button" onclick="nextPhotoSlide(event)" aria-label="Next photo"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 flex items-center justify-center shadow-md transition">
+          <i class="fa-solid fa-chevron-right w-3.5 h-3.5"></i>
+        </button>
+        <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 pointer-events-none">
+          <p id="photoSlideshowCaption" class="text-white text-sm sm:text-base font-bold leading-snug drop-shadow"></p>
+          <p id="photoSlideshowMeta" class="text-[11px] text-slate-200 mt-0.5 drop-shadow"></p>
+        </div>
+      `;
+      slideShowEl.querySelector('#photoSlideshowImage').onclick = () => openLightbox(photoSlideshowIndex);
+      container.appendChild(slideShowEl);
+      updatePhotoSlide();
+      startPhotoSlideshow();
+
       // Flat gallery — no grouping, photos flow in a single responsive grid
       const gridEl = document.createElement('div');
-      gridEl.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3";
+      gridEl.className = "flex flex-wrap items-center justify-center gap-2 sm:gap-2.5";
 
       visiblePhotos.forEach((photo, globalIdx) => {
         const card = document.createElement('div');
-        card.className = "g-photo-card relative rounded-2xl overflow-hidden bg-slate-100 aspect-square sm:aspect-[4/3] group cursor-pointer border border-slate-200/70 shadow-sm hover:shadow-md transition-all";
+        card.className = "g-photo-card relative w-24 sm:w-28 md:w-32 lg:w-36 aspect-square rounded-xl overflow-hidden bg-slate-100 group cursor-pointer border border-slate-200/70 shadow-sm hover:shadow-md transition-all";
         card.onclick = () => openLightbox(globalIdx);
 
         card.innerHTML = `
@@ -1264,6 +1298,109 @@
       });
 
       container.appendChild(gridEl);
+    }
+
+    // Slideshow state & controls
+    let photoSlideshowIndex = 0;
+    let photoSlideshowTimer = null;
+
+    function updatePhotoSlide() {
+      if (visiblePhotos.length === 0) return;
+
+      if (photoSlideshowIndex >= visiblePhotos.length) {
+        photoSlideshowIndex = 0;
+      }
+
+      const photo = visiblePhotos[photoSlideshowIndex];
+      const image = document.getElementById('photoSlideshowImage');
+
+      if (image) {
+        image.src = photo.imageUrl;
+        image.alt = photo.caption || 'Mission photo';
+      }
+
+      const captionEl = document.getElementById('photoSlideshowCaption');
+      if (captionEl) captionEl.innerText = photo.caption || 'Mission photo';
+
+      const metaEl = document.getElementById('photoSlideshowMeta');
+      if (metaEl) metaEl.innerText = [photo.dateDisplay, photo.location].filter(Boolean).join(' · ');
+
+      const counterEl = document.getElementById('photoSlideshowCounter');
+      if (counterEl) counterEl.innerText = `${photoSlideshowIndex + 1} / ${visiblePhotos.length}`;
+    }
+
+    function startPhotoSlideshow() {
+      pausePhotoSlideshow();
+
+      if (visiblePhotos.length < 2) return;
+
+      photoSlideshowTimer = setInterval(() => {
+        photoSlideshowIndex = (photoSlideshowIndex + 1) % visiblePhotos.length;
+        updatePhotoSlide();
+      }, 5000);
+    }
+
+    function pausePhotoSlideshow() {
+      if (photoSlideshowTimer) {
+        clearInterval(photoSlideshowTimer);
+        photoSlideshowTimer = null;
+      }
+    }
+
+    function nextPhotoSlide(event) {
+      event?.stopPropagation();
+      if (visiblePhotos.length === 0) return;
+
+      photoSlideshowIndex = (photoSlideshowIndex + 1) % visiblePhotos.length;
+      updatePhotoSlide();
+      startPhotoSlideshow();
+    }
+
+    function prevPhotoSlide(event) {
+      event?.stopPropagation();
+      if (visiblePhotos.length === 0) return;
+
+      photoSlideshowIndex = (photoSlideshowIndex - 1 + visiblePhotos.length) % visiblePhotos.length;
+      updatePhotoSlide();
+      startPhotoSlideshow();
+    }
+
+    function openPhotoGalleryModal(event) {
+      event?.stopPropagation();
+
+      const modal = document.getElementById('photoGalleryModal');
+      const grid = document.getElementById('photoGalleryModalGrid');
+      if (!modal || !grid || visiblePhotos.length === 0) return;
+
+      grid.innerHTML = visiblePhotos.map((photo, index) => `
+        <button type="button" onclick="closePhotoGalleryModal(); openLightbox(${index})"
+          class="relative rounded-xl overflow-hidden bg-slate-800 aspect-square group cursor-pointer border border-white/10">
+          <img src="${photo.imageUrl}" alt="${photo.caption || 'Mission photo'}" loading="lazy"
+            class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition pointer-events-none"></div>
+          <div class="absolute bottom-2 left-2 right-2 text-left text-white opacity-0 group-hover:opacity-100 transition pointer-events-none">
+            <p class="text-[10px] font-semibold truncate">${photo.caption || 'Mission photo'}</p>
+          </div>
+        </button>
+      `).join('');
+
+      const countEl = document.getElementById('photoGalleryModalCount');
+      if (countEl) countEl.innerText = `${visiblePhotos.length} photo${visiblePhotos.length === 1 ? '' : 's'}`;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.classList.add('overflow-hidden');
+      pausePhotoSlideshow();
+    }
+
+    function closePhotoGalleryModal() {
+      const modal = document.getElementById('photoGalleryModal');
+      if (!modal) return;
+
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.classList.remove('overflow-hidden');
+      startPhotoSlideshow();
     }
 
     function handlePhotoSearch(val) {
@@ -1553,6 +1690,10 @@
       const geoModal = document.getElementById('geotagModal');
       if (!geoModal.classList.contains('hidden') && e.key === 'Escape') {
         closeGeotagModal();
+      }
+      const galleryModal = document.getElementById('photoGalleryModal');
+      if (galleryModal && !galleryModal.classList.contains('hidden') && e.key === 'Escape') {
+        closePhotoGalleryModal();
       }
     });
   </script>

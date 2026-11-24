@@ -74,6 +74,24 @@
     </div>
   </div>
 
+  <!-- ================= FULL PHOTO GALLERY MODAL ================= -->
+  <div id="photoGalleryModal"
+    class="fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-md hidden flex-col p-4 sm:p-6"
+    onclick="if (event.target === this) closePhotoGalleryModal()">
+    <div class="max-w-7xl w-full mx-auto flex items-center justify-between text-white pb-4 shrink-0">
+      <div>
+        <h3 class="text-sm font-bold">Mission Photos</h3>
+        <p class="text-[11px] text-slate-400" id="photoGalleryModalCount"></p>
+      </div>
+      <button onclick="closePhotoGalleryModal()" aria-label="Close gallery"
+        class="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition">
+        <i class="fa-solid fa-x w-5 h-5"></i>
+      </button>
+    </div>
+    <div id="photoGalleryModalGrid"
+      class="max-w-7xl w-full mx-auto flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 content-start pb-6"></div>
+  </div>
+
   <!-- ================= GOOGLE PHOTOS LIGHTBOX MODAL ================= -->
   <div id="gLightboxModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
     <div class="h-16 px-4 sm:px-6 bg-slate-900/80 border-b border-slate-800/80 flex items-center justify-between text-white shrink-0 z-20">
