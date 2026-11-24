@@ -52,6 +52,7 @@ test('user can create a new meeting', function () {
         ->set('link', 'https://zoom.us/j/123456789')
         ->set('meeting_id', '123456789')
         ->set('passcode', 'SecretPass')
+        ->set('recording_link', 'https://youtu.be/recording123')
         ->call('saveMeeting')
         ->assertHasNoErrors();
 
@@ -67,6 +68,7 @@ test('user can create a new meeting', function () {
     $this->assertSame('https://zoom.us/j/123456789', $meeting->link);
     $this->assertSame('123456789', $meeting->meeting_id);
     $this->assertSame('SecretPass', $meeting->passcode);
+    $this->assertSame('https://youtu.be/recording123', $meeting->recording_link);
 });
 
 test('user can edit an existing meeting', function () {

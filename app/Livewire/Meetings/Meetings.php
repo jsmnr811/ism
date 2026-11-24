@@ -58,6 +58,8 @@ class Meetings extends Component
 
     public ?string $passcode = '';
 
+    public ?string $recording_link = '';
+
     public ?int $mission_id = null;
 
     /** @var array<int, array{title: string, description: string, url: string}>|null */
@@ -213,7 +215,7 @@ class Meetings extends Component
     {
         abort_if(! auth()->user()?->can('create meetings'), 403);
 
-        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'reportLinks', 'videoLinks', 'mission_id', 'editingId', 'showModal');
+        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'recording_link', 'reportLinks', 'videoLinks', 'mission_id', 'editingId', 'showModal');
         $this->type = 'technical_discussions';
         $activeMission = $this->activeMission;
         $this->mission_id = $activeMission?->id;
@@ -242,6 +244,7 @@ class Meetings extends Component
         $this->link = $meeting->link;
         $this->meeting_id = $meeting->meeting_id;
         $this->passcode = $meeting->passcode;
+        $this->recording_link = $meeting->recording_link;
         $this->mission_id = $meeting->mission_id;
         $this->reportLinks = $meeting->report_documents ?: [];
         $this->videoLinks = $meeting->video_documents ?: [];
@@ -258,7 +261,7 @@ class Meetings extends Component
 
         $meeting = Meeting::findOrFail($id);
 
-        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'reportLinks', 'videoLinks', 'mission_id', 'editingId', 'showModal');
+        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'recording_link', 'reportLinks', 'videoLinks', 'mission_id', 'editingId', 'showModal');
         $this->type = $meeting->type ?: 'technical_discussions';
         $this->title = __('Copy :title', ['title' => $meeting->title]);
         $this->description = '';
@@ -273,6 +276,7 @@ class Meetings extends Component
         $this->link = '';
         $this->meeting_id = '';
         $this->passcode = '';
+        $this->recording_link = '';
         $this->mission_id = $meeting->mission_id;
         $this->reportLinks = [];
         $this->videoLinks = [];
@@ -355,6 +359,11 @@ class Meetings extends Component
                 'string',
                 'max:255',
             ],
+            'recording_link' => [
+                'nullable',
+                'url',
+                'max:255',
+            ],
             'mission_id' => [
                 'nullable',
                 'exists:missions,id',
@@ -425,6 +434,7 @@ class Meetings extends Component
             'link' => $validated['link'],
             'meeting_id' => $validated['meeting_id'],
             'passcode' => $validated['passcode'],
+            'recording_link' => $validated['recording_link'],
             'reports' => $this->normalizedReports(),
             'video_links' => $this->normalizedVideoLinks(),
             'mission_id' => $validated['mission_id'],
@@ -443,7 +453,7 @@ class Meetings extends Component
                 ? __('Meeting updated.')
                 : __('Meeting created.')
         );
-        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'reportLinks', 'videoLinks', 'editingId', 'showModal');
+        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'recording_link', 'reportLinks', 'videoLinks', 'editingId', 'showModal');
     }
 
     /**
@@ -577,6 +587,6 @@ class Meetings extends Component
      */
     public function closeModal(): void
     {
-        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'reportLinks', 'videoLinks', 'mission_id', 'editingId', 'showModal');
+        $this->reset('title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'existingImage', 'removeImage', 'venue', 'link', 'meeting_id', 'passcode', 'recording_link', 'reportLinks', 'videoLinks', 'mission_id', 'editingId', 'showModal');
     }
 }

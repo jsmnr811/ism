@@ -26,11 +26,12 @@ use Illuminate\Support\Carbon;
  * @property int|null $mission_id
  * @property array|null $reports
  * @property array|null $video_links
+ * @property string|null $recording_link
  * @property string|null $report_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'venue', 'link', 'meeting_id', 'passcode', 'reports', 'video_links', 'report_name', 'mission_id'])]
+#[Fillable(['title', 'description', 'date', 'time_from', 'time_to', 'type', 'other_type', 'image', 'venue', 'link', 'meeting_id', 'passcode', 'reports', 'video_links', 'recording_link', 'report_name', 'mission_id'])]
 class Meeting extends Model
 {
     /** @use HasFactory<MeetingFactory> */

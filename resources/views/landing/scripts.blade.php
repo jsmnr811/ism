@@ -125,6 +125,7 @@
     const LAZY_SECTION_ANCHORS = {
       '#agenda-section': 'agenda',
       '#site-visits-section': 'site-visits',
+      '#recordings-section': 'recordings',
       '#registration-section': 'registration',
       '#gallery': 'gallery',
       '#reports-section': 'reports',

@@ -397,6 +397,15 @@
                         placeholder="{{ __('e.g., AbCdEf12') }}"
                     />
 
+                    <flux:input
+                        type="url"
+                        wire:model="recording_link"
+                        :label="__('Meeting Recording')"
+                        :error="$errors->first('recording_link')"
+                        placeholder="{{ __('e.g., https://youtu.be/...') }}"
+                        description="{{ __('Link to the recorded meeting. Recordings are listed on the landing page.') }}"
+                    />
+
                     <div>
                         <flux:label>{{ __('Reports') }}</flux:label>
                         @if (! empty($this->reportLinks))

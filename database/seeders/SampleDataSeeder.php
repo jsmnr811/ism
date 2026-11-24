@@ -20,8 +20,8 @@ class SampleDataSeeder extends Seeder
 
         $mission = Mission::create([
             'title' => 'Midterm Review and Fifth World Bank-Implementation Support Mission',
-            'start_date' => '2026-10-05',
-            'end_date' => '2026-10-23',
+            'start_date' => '2026-11-23',
+            'end_date' => '2026-11-30',
             'banner' => null,
             'agenda_link' => 'https://docs.google.com/spreadsheets/d/1snP9KLGu_bRl_Tp1dnQMem0-Mj0FJKDJrcCF0h3CLrI/edit?gid=1122830704#gid=1122830704',
             'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project',
@@ -33,7 +33,7 @@ class SampleDataSeeder extends Seeder
             [
                 'title' => 'Kick-off Meeting',
                 'description' => 'Opening session and presentation of the mission objectives, scope, and schedule.',
-                'date' => '2026-10-05',
+                'date' => '2026-11-23',
                 'time_from' => '09:00:00',
                 'time_to' => '12:00:00',
                 'type' => 'kick_off',
@@ -61,11 +61,12 @@ class SampleDataSeeder extends Seeder
                         'url' => 'https://youtu.be/5thWBISMKickoff2026',
                     ],
                 ],
+                'recording_link' => 'https://youtu.be/5thWBISMKickoff2026',
             ],
             [
                 'title' => 'Technical Discussions on PRDP Scale Up Components',
                 'description' => 'Review of I-BUILD and I-REAP implementation progress and issues.',
-                'date' => '2026-10-08',
+                'date' => '2026-11-24',
                 'time_from' => '13:00:00',
                 'time_to' => '16:30:00',
                 'type' => 'technical_discussions',
@@ -91,7 +92,7 @@ class SampleDataSeeder extends Seeder
             [
                 'title' => 'Site Visit Debriefing and Validation Workshop',
                 'description' => 'Consolidation of field validation findings across Luzon, Visayas, and Mindanao.',
-                'date' => '2026-10-15',
+                'date' => '2026-11-26',
                 'time_from' => '09:30:00',
                 'time_to' => '12:00:00',
                 'type' => 'technical_discussions',
@@ -112,7 +113,7 @@ class SampleDataSeeder extends Seeder
             [
                 'title' => 'Wrap-up Meeting and Aide Memoire Presentation',
                 'description' => 'Presentation of key findings, agreements, and next steps.',
-                'date' => '2026-10-23',
+                'date' => '2026-11-30',
                 'time_from' => '14:00:00',
                 'time_to' => '17:00:00',
                 'type' => 'wrap_up',
@@ -140,6 +141,7 @@ class SampleDataSeeder extends Seeder
                         'url' => 'https://youtu.be/5thWBISMWrapup2026',
                     ],
                 ],
+                'recording_link' => 'https://youtu.be/5thWBISMWrapup2026',
             ],
         ];
 
@@ -159,7 +161,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1AromaticRiceCSF2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/7c035ef9-d84f-431e-a89e-0ecc8d504a88',
-                'date' => '2026-10-09',
+                'date' => '2026-11-25',
             ],
             [
                 'sp_name' => 'Construction of Pangasinan Bangus Breeding and Hatchery',
@@ -169,7 +171,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1PangasinanBangusHatchery2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/92c5a896-cf94-486b-9edb-7fdb62a07ecd',
-                'date' => '2026-10-09',
+                'date' => '2026-11-25',
             ],
             [
                 'sp_name' => 'Rehabilitation/Upgrading of Cumadcad to Canjela Farm-to-Market Road',
@@ -179,7 +181,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1CumadcadCanjelaFMR2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/04c08896-7558-489d-925b-5a382e0f1218',
-                'date' => '2026-10-10',
+                'date' => '2026-11-26',
             ],
             [
                 'sp_name' => 'Pilinio Taro Production and Marketing Enterprise',
@@ -189,7 +191,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1PilinioTaroEnterprise2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/86def755-151f-4ae4-a72c-da30c860cd91',
-                'date' => '2026-10-11',
+                'date' => '2026-11-26',
             ],
             [
                 'sp_name' => 'Eastern Visayas Banana Processing and Marketing Enterprise',
@@ -199,7 +201,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1EVBananaProcessing2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/7de59252-646e-41f3-b118-c5dcd6414e65',
-                'date' => '2026-10-12',
+                'date' => '2026-11-27',
             ],
             [
                 'sp_name' => 'Baybay City Barangay Water System Development Project',
@@ -209,7 +211,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1BaybayWaterSystem2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/81a62474-e816-42a1-b8c0-4a0485f2bcd0',
-                'date' => '2026-10-12',
+                'date' => '2026-11-27',
             ],
             [
                 'sp_name' => 'Mangagoy Farmers Fisherfolks and Community Multi-Purpose Cooperative (MAFFISCO-MPC) Tuna Consolidation and Marketing with Cold Chain Facilities',
@@ -219,7 +221,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1MAFFISCOTuna2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/430cabeb-1fcb-4d8f-b230-39453c81aa89#basic-info',
-                'date' => '2026-10-13',
+                'date' => '2026-11-28',
             ],
             [
                 'sp_name' => 'Concreting of Kinabigtasan - Lindoy FMR with 1-unit Concrete Bridge',
@@ -229,7 +231,7 @@ class SampleDataSeeder extends Seeder
                 'funding_source' => 'scale_up',
                 'document_link' => 'https://drive.google.com/drive/folders/1KinabigtasanLindoyFMR2026',
                 'virtual_site_visit_link' => 'https://geomapping.da.gov.ph/prdp/project/profile/53ac877d-bebe-45ed-89f6-79717923a4e2',
-                'date' => '2026-10-13',
+                'date' => '2026-11-28',
             ],
         ];
 
@@ -257,7 +259,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09171234567',
                 'sex' => 'female',
                 'email' => 'maria.santos@example.com',
-                'attendance_dates' => ['2026-10-05', '2026-10-08', '2026-10-23'],
+                'attendance_dates' => ['2026-11-23', '2026-11-24', '2026-11-30'],
                 'attendance_mode' => ['onsite', 'onsite', 'onsite'],
             ],
             [
@@ -274,7 +276,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09182345678',
                 'sex' => 'male',
                 'email' => 'juan.delacruz@example.com',
-                'attendance_dates' => ['2026-10-06', '2026-10-09'],
+                'attendance_dates' => ['2026-11-24', '2026-11-25'],
                 'attendance_mode' => ['onsite', 'online'],
             ],
             [
@@ -291,7 +293,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09193456789',
                 'sex' => 'female',
                 'email' => 'ana.reyes@example.com',
-                'attendance_dates' => ['2026-10-07', '2026-10-15'],
+                'attendance_dates' => ['2026-11-25', '2026-11-26'],
                 'attendance_mode' => ['online', 'online'],
             ],
             [
@@ -308,7 +310,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09204567890',
                 'sex' => 'male',
                 'email' => 'robert.lim@example.com',
-                'attendance_dates' => ['2026-10-05', '2026-10-08', '2026-10-15', '2026-10-23'],
+                'attendance_dates' => ['2026-11-23', '2026-11-24', '2026-11-26', '2026-11-30'],
                 'attendance_mode' => ['onsite', 'online', 'online', 'onsite'],
             ],
             [
@@ -325,7 +327,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09215678901',
                 'sex' => 'female',
                 'email' => 'elena.garcia@example.com',
-                'attendance_dates' => ['2026-10-05', '2026-10-23'],
+                'attendance_dates' => ['2026-11-23', '2026-11-30'],
                 'attendance_mode' => ['online', 'online'],
             ],
             [
@@ -342,7 +344,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09226789012',
                 'sex' => 'male',
                 'email' => 'tomas.bautista@example.com',
-                'attendance_dates' => ['2026-10-09'],
+                'attendance_dates' => ['2026-11-25'],
                 'attendance_mode' => ['onsite'],
             ],
             [
@@ -359,7 +361,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09237890123',
                 'sex' => 'male',
                 'email' => 'pedro.villanueva@example.com',
-                'attendance_dates' => ['2026-10-05', '2026-10-23'],
+                'attendance_dates' => ['2026-11-23', '2026-11-30'],
                 'attendance_mode' => ['onsite', 'onsite'],
             ],
             [
@@ -376,7 +378,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09248901234',
                 'sex' => 'female',
                 'email' => 'grace.mendoza@example.com',
-                'attendance_dates' => ['2026-10-08', '2026-10-15'],
+                'attendance_dates' => ['2026-11-24', '2026-11-26'],
                 'attendance_mode' => ['online', 'online'],
             ],
             [
@@ -393,7 +395,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09259012345',
                 'sex' => 'male',
                 'email' => 'antonio.cruz@example.com',
-                'attendance_dates' => ['2026-10-05', '2026-10-23'],
+                'attendance_dates' => ['2026-11-23', '2026-11-30'],
                 'attendance_mode' => ['onsite', 'online'],
             ],
             [
@@ -410,7 +412,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09260123456',
                 'sex' => 'male',
                 'email' => 'carlos.tan@example.com',
-                'attendance_dates' => ['2026-10-09'],
+                'attendance_dates' => ['2026-11-25'],
                 'attendance_mode' => ['onsite'],
             ],
             [
@@ -427,7 +429,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09271234567',
                 'sex' => 'female',
                 'email' => 'liza.fernandez@example.com',
-                'attendance_dates' => ['2026-10-08'],
+                'attendance_dates' => ['2026-11-24'],
                 'attendance_mode' => ['online'],
             ],
             [
@@ -444,7 +446,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09282345678',
                 'sex' => 'male',
                 'email' => 'david.miller@example.com',
-                'attendance_dates' => ['2026-10-05', '2026-10-23'],
+                'attendance_dates' => ['2026-11-23', '2026-11-30'],
                 'attendance_mode' => ['online', 'online'],
             ],
             [
@@ -461,7 +463,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09293456789',
                 'sex' => 'female',
                 'email' => 'jocelyn.mercado@example.com',
-                'attendance_dates' => ['2026-10-12'],
+                'attendance_dates' => ['2026-11-27'],
                 'attendance_mode' => ['onsite'],
             ],
             [
@@ -478,7 +480,7 @@ class SampleDataSeeder extends Seeder
                 'contact_number' => '09304567890',
                 'sex' => 'male',
                 'email' => 'francis.abad@example.com',
-                'attendance_dates' => ['2026-10-13', '2026-10-15'],
+                'attendance_dates' => ['2026-11-28', '2026-11-26'],
                 'attendance_mode' => ['onsite', 'online'],
             ],
         ];

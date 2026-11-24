@@ -55,6 +55,15 @@
       <div x-html="html"></div>
     </div>
 
+    <div x-data="lazySection('recordings')" data-lazy-section="recordings">
+      <template x-if="!loaded">
+        <div class="flex items-center justify-center py-24 text-slate-300">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>
+      </template>
+      <div x-html="html"></div>
+    </div>
+
     <div x-data="lazySection('registration')" data-lazy-section="registration">
       <template x-if="!loaded">
         <div class="flex items-center justify-center py-24 text-slate-300">
