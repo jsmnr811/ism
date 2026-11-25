@@ -89,7 +89,7 @@
                     </div>
                   </div>
                   <a :href="rep.link" target="_blank" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 flex items-center gap-1.5 transition shrink-0">
-                    <i class="fa-solid fa-download w-3.5 h-3.5"></i> Download
+                    <i class="fa-solid fa-eye w-3.5 h-3.5"></i> View
                   </a>
                 </div>
               </template>
