@@ -1,14 +1,7 @@
 @if($registrationMission)
 <!-- ================= DELEGATE ACCREDITATION ================= -->
-<section id="registration-section" class="py-14 bg-slate-900/5 text-slate-900 border-b border-slate-200" x-data="delegateRegistration()">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-    <!-- Header -->
-    <div class="max-w-4xl mx-auto text-center mb-10">
-      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-        Mission Registration
-      </h2>
-    </div>
+<section id="registration-section" class="bg-slate-50 text-slate-900" x-data="delegateRegistration()">
+  <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
 
     <!-- Expanded Form Container (max-w-6xl) -->
     <div class="max-w-6xl mx-auto bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-900/5 overflow-hidden">
@@ -40,7 +33,7 @@
       </div>
 
       <!-- Form Content -->
-      <form id="missionRegForm" class="p-6 sm:p-10 space-y-8" novalidate @submit.prevent="submitForm()">
+      <form id="missionRegForm" class="p-5 sm:p-8 space-y-6" novalidate @submit.prevent="submitForm()">
         <input type="hidden" name="mission_id" value="{{ $registrationMission->id ?? '' }}" />
 
         <!-- SECTION 01: IDENTITY -->
@@ -277,7 +270,7 @@
         </div>
 
         <!-- SECTION 04: PRIVACY & SUBMIT -->
-        <div class="pt-6 border-t border-slate-200 space-y-5">
+        <div class="pt-5 sm:pt-6 border-t border-slate-200 space-y-5">
 
           <!-- R.A. 10173 Compliance Box -->
           <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs text-slate-600 space-y-2">
@@ -297,7 +290,6 @@
 
           <!-- Submit Button -->
           <div class="flex items-center justify-end">
-            @if($registrationMission)
             <button
               type="submit"
               :disabled="submitting"
@@ -319,25 +311,21 @@
                 </span>
               </template>
             </button>
-            @else
-            <button type="button" disabled class="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-slate-200 text-slate-400 text-xs font-mono font-bold tracking-wider uppercase cursor-not-allowed flex items-center justify-center gap-2">
-              <i class="fa-solid fa-lock text-[10px]"></i>
-              <span>Registration Offline</span>
-            </button>
-            @endif
           </div>
-
         </div>
-      </form>
 
-      <!-- Success State -->
-      <div id="regSuccessBox" class="hidden p-10 bg-emerald-50/50 border-t border-emerald-200 text-center space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200 font-mono font-bold text-lg">
-          ✓
+        <!-- Success State -->
+        <div id="regSuccessBox" class="hidden p-6 sm:p-8 bg-emerald-50/50 border-t border-emerald-200 text-center space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200 font-mono font-bold text-lg">
+            ✓
+          </div>
+          <h4 class="text-lg font-bold text-slate-900 font-mono tracking-tight" id="regAttendeeName">Registration Verified</h4>
+          <p class="text-sm text-slate-600 max-w-md mx-auto" id="regAttendeeDetails">You are successfully registered.</p>
+          <button type="button" onclick="closeRegistrationModal()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition">
+            <i class="fa-solid fa-check w-4 h-4"></i>
+            Done
+          </button>
         </div>
-        <h4 class="text-lg font-bold text-slate-900 font-mono tracking-tight" id="regAttendeeName">Registration Verified</h4>
-        <p class="text-sm text-slate-600 max-w-md mx-auto" id="regAttendeeDetails"></p>
-      </div>
 
     </div>
 

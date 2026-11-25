@@ -48,10 +48,10 @@
         <!-- Right Actions -->
         <div class="flex items-center gap-1.5 sm:gap-2.5">
           @if($registrationMission)
-          <a href="#registration-section" class="hidden sm:inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-lg shadow-md shadow-emerald-600/15 hover:shadow-lg hover:shadow-emerald-600/20 transition-all duration-200">
+          <button type="button" onclick="openRegistrationModal()" class="hidden sm:inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-lg shadow-md shadow-emerald-600/15 hover:shadow-lg hover:shadow-emerald-600/20 transition-all duration-200">
             <i class="fa-solid fa-user-plus w-3 h-3"></i>
             Register
-          </a>
+          </button>
           @endif
 
           <!-- Mobile Menu Toggle -->
@@ -102,10 +102,10 @@
 
 
           @if($registrationMission)
-          <a href="#registration-section" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">
+          <button type="button" onclick="openRegistrationModal()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-emerald-700 transition">
             <i class="fa-solid fa-user-plus w-4 h-4"></i>
             <span>Registration</span>
-          </a>
+          </button>
           @endif
 
           <a href="#gallery" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-emerald-700 hover:bg-emerald-50 transition">
@@ -131,10 +131,10 @@
 
         @if($registrationMission)
         <div class="mt-4 pt-4 border-t border-slate-100">
-          <a href="#registration-section" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/15 transition">
-            <i class="fa-solid fa-user-plus w-4 h-4"></i>
-            Register
-          </a>
+        <button type="button" onclick="openRegistrationModal()" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/15 transition">
+          <i class="fa-solid fa-user-plus w-4 h-4"></i>
+          Register
+        </button>
         </div>
         @endif
 

@@ -125,11 +125,83 @@
     const LAZY_SECTION_ANCHORS = {
       '#agenda-section': 'agenda',
       '#site-visits-section': 'site-visits',
-      '#registration-section': 'registration',
       '#gallery': 'gallery',
       '#reports-section': 'reports',
       '#recordings-section': 'recordings',
     };
+
+    function registrationModal() {
+      return {
+        open: false,
+        html: '',
+        loaded: false,
+        loading: false,
+        error: '',
+        show() {
+          this.open = true;
+          document.body.classList.add('overflow-hidden');
+          if (this.loaded) {
+            this.focusFirstField();
+          } else {
+            this.load();
+          }
+          this.$nextTick(() => {
+            document.getElementById('registrationModalBody')?.scrollTo({ top: 0 });
+          });
+        },
+        hide() {
+          this.open = false;
+          document.body.classList.remove('overflow-hidden');
+          this.loaded = false;
+          this.html = '';
+        },
+        async load() {
+          if (this.loading || this.loaded) return;
+          this.loading = true;
+          this.error = '';
+          try {
+            const response = await fetch(`{!! url('/landing/section') !!}/registration`, {
+              headers: {
+                'Accept': 'text/html',
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            });
+
+            if (!response.ok) throw new Error('Unable to load registration section.');
+
+            this.html = await response.text();
+            this.loaded = true;
+            this.focusFirstField();
+          } catch (error) {
+            console.error(error);
+            this.error = 'Unable to load the registration form. Please try again.';
+          } finally {
+            this.loading = false;
+          }
+        },
+        retry() {
+          this.loaded = false;
+          this.load();
+        },
+        focusFirstField() {
+          this.$nextTick(() => {
+            setTimeout(() => document.getElementById('reg_first_name')?.focus({ preventScroll: true }), 100);
+          });
+        }
+      };
+    }
+
+    function openRegistrationModal() {
+      const modal = document.getElementById('registrationModal');
+      const component = modal ? window.Alpine?.$data(modal) : null;
+      if (component) component.show();
+    }
+
+    function closeRegistrationModal() {
+      const modal = document.getElementById('registrationModal');
+      const component = modal ? window.Alpine?.$data(modal) : null;
+      if (component) component.hide();
+    }
 
     function lazySectionComponent(name) {
       const wrapper = document.querySelector(`[data-lazy-section="${name}"]`);

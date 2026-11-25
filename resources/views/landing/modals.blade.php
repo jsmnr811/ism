@@ -261,3 +261,55 @@
     </div>
   </div>
 
+  <!-- ================= MISSION REGISTRATION MODAL ================= -->
+  @if($registrationMission)
+  <div id="registrationModal" x-data="registrationModal()" x-show="open" x-cloak
+    @keydown.escape.window="hide()"
+    role="dialog" aria-modal="true" aria-labelledby="registrationModalTitle"
+    class="fixed inset-0 z-[70] flex items-stretch sm:items-center justify-center sm:p-4">
+
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+      x-transition.opacity.duration.200ms @click="hide()"></div>
+
+    <div x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 translate-y-4 sm:scale-95"
+      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+      x-transition:leave-end="opacity-0 translate-y-4 sm:scale-95"
+      class="relative w-full sm:max-w-6xl h-full sm:h-auto max-h-[100dvh] sm:max-h-[92vh] bg-white sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+
+      <div class="shrink-0 bg-slate-950 text-white px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <i class="fa-solid fa-user-plus w-4 h-4 text-emerald-400 shrink-0"></i>
+          <span id="registrationModalTitle" class="text-sm font-bold tracking-wide truncate">Mission Registration</span>
+        </div>
+        <button type="button" @click="hide()" aria-label="Close registration"
+          class="shrink-0 w-9 h-9 inline-flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition">
+          <i class="fa-solid fa-x w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="registrationModalBody" class="flex-1 overflow-y-auto overscroll-contain bg-slate-50">
+        <template x-if="!loaded && !error">
+          <div class="flex flex-col items-center justify-center gap-3 py-24 text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+            <p class="text-[11px] font-mono uppercase tracking-widest">Loading registration form</p>
+          </div>
+        </template>
+        <template x-if="error">
+          <div class="flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-500"></i>
+            <p class="text-sm text-slate-600" x-text="error"></p>
+            <button type="button" @click="retry()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+              Try again
+            </button>
+          </div>
+        </template>
+        <div x-html="html"></div>
+      </div>
+
+    </div>
+  </div>
+  @endif
+
