@@ -1629,31 +1629,67 @@
     function handleUploadDragOver(event) {
       event.preventDefault();
       event.stopPropagation();
-      document.getElementById('dropArea').classList.add('border-emerald-500', 'bg-emerald-50/30');
+      document.getElementById('dropArea')?.classList.add('border-emerald-500', 'bg-emerald-50/30');
+      document.getElementById('dropPreview')?.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-50/30');
     }
 
     function handleUploadDragLeave(event) {
       event.preventDefault();
       event.stopPropagation();
-      document.getElementById('dropArea').classList.remove('border-emerald-500', 'bg-emerald-50/30');
+      document.getElementById('dropArea')?.classList.remove('border-emerald-500', 'bg-emerald-50/30');
+      document.getElementById('dropPreview')?.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50/30');
     }
 
     function handleUploadDrop(event) {
       event.preventDefault();
       event.stopPropagation();
-      document.getElementById('dropArea').classList.remove('border-emerald-500', 'bg-emerald-50/30');
+      document.getElementById('dropArea')?.classList.remove('border-emerald-500', 'bg-emerald-50/30');
+      document.getElementById('dropPreview')?.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50/30');
       addPendingFiles(event.dataTransfer.files);
+    }
+
+    const MAX_UPLOAD_PHOTOS = Infinity;
+    const MAX_UPLOAD_FILE_BYTES = 50 * 1024 * 1024;
+
+    function formatUploadSize(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     }
 
     function addPendingFiles(fileList) {
       const files = Array.from(fileList || []).filter(file => file.type.startsWith('image/'));
-
       if (files.length === 0) {
-        showToast('Please select image files.', true);
+        showToast('Please select image files (JPG, PNG, or WEBP).', true);
         return;
       }
 
+      const remaining = MAX_UPLOAD_PHOTOS - pendingUploads.length;
+      if (remaining <= 0) {
+        showToast(`You can upload up to ${MAX_UPLOAD_PHOTOS} photos at a time.`, true);
+        return;
+      }
+
+      const accepted = [];
+      const skipped = [];
       files.forEach(file => {
+        if (accepted.length >= remaining) {
+          skipped.push(`${file.name} (limit reached)`);
+          return;
+        }
+        if (file.size > MAX_UPLOAD_FILE_BYTES) {
+          skipped.push(`${file.name} (over 50 MB)`);
+          return;
+        }
+        accepted.push(file);
+      });
+
+      if (skipped.length > 0) {
+        showToast(skipped[0] + (skipped.length > 1 ? ` (+${skipped.length - 1} more skipped)` : ''), true);
+      }
+
+      let loadedCount = 0;
+      accepted.forEach(file => {
         const reader = new FileReader();
         reader.onload = function(e) {
           pendingUploads.push({
@@ -1663,7 +1699,10 @@
             file: file,
             dataUrl: e.target.result
           });
-          renderPendingUploads();
+          loadedCount += 1;
+          if (loadedCount === accepted.length) {
+            renderPendingUploads();
+          }
         };
         reader.readAsDataURL(file);
       });
@@ -1677,29 +1716,51 @@
     function renderPendingUploads() {
       const grid = document.getElementById('previewGrid');
       const preview = document.getElementById('dropPreview');
+      const dropArea = document.getElementById('dropArea');
       const count = document.getElementById('previewCount');
-      const prompt = document.getElementById('dropPrompt');
+      const meta = document.getElementById('previewMeta');
+      const limitHint = document.getElementById('previewLimitHint');
+      const submitButton = document.getElementById('photoUploadSubmit');
 
       if (!grid) return;
 
       if (pendingUploads.length === 0) {
         grid.innerHTML = '';
         preview.classList.add('hidden');
-        prompt.classList.remove('hidden');
+        dropArea?.classList.remove('hidden');
+        if (limitHint) limitHint.classList.add('hidden');
+        if (submitButton) submitButton.innerHTML = '<i class="fa-solid fa-cloud-arrow-up w-3.5 h-3.5"></i><span>Publish to Stream</span>';
         return;
       }
 
-      prompt.classList.add('hidden');
+      dropArea?.classList.add('hidden');
       preview.classList.remove('hidden');
-      count.innerText = `${pendingUploads.length} photo${pendingUploads.length > 1 ? 's' : ''} selected`;
 
-      grid.innerHTML = pendingUploads.map(upload => `
-        <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-square">
-          <img src="${upload.dataUrl}" alt="${upload.name}" class="w-full h-full object-cover" />
+      const totalBytes = pendingUploads.reduce((sum, upload) => sum + upload.size, 0);
+      count.innerText = `${pendingUploads.length} photo${pendingUploads.length > 1 ? 's' : ''} ready to publish`;
+      if (meta) {
+        meta.innerText = `${formatUploadSize(totalBytes)} source • Optimized to ≤1 MB (max 2048px) after publishing.`;
+      }
+      if (limitHint) limitHint.classList.add('hidden');
+
+      if (submitButton) {
+        submitButton.innerHTML = `<i class="fa-solid fa-cloud-arrow-up w-3.5 h-3.5"></i><span>Publish ${pendingUploads.length} Photo${pendingUploads.length > 1 ? 's' : ''}</span>`;
+      }
+
+      grid.innerHTML = pendingUploads.map((upload, index) => `
+        <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+          <div class="aspect-[4/3] overflow-hidden bg-slate-100">
+            <img src="${upload.dataUrl}" alt="${upload.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+          </div>
+          <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-slate-900/70 text-white text-[10px] font-bold">${index + 1}</span>
           <button type="button" onclick="removePendingUpload('${upload.id}')"
-            class="absolute top-1.5 right-1.5 w-6 h-6 bg-slate-900/80 text-white rounded-full hover:bg-red-600 flex items-center justify-center transition opacity-0 group-hover:opacity-100 focus:opacity-100">
+            class="absolute top-1.5 right-1.5 w-7 h-7 bg-slate-900/75 text-white rounded-full hover:bg-red-600 flex items-center justify-center transition sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100" aria-label="Remove photo">
             <i class="fa-solid fa-xmark w-3 h-3"></i>
           </button>
+          <div class="px-2 py-1.5 border-t border-slate-100">
+            <p class="text-[10px] font-semibold text-slate-700 truncate" title="${upload.name}">${upload.name}</p>
+            <p class="text-[10px] font-medium text-emerald-600">${formatUploadSize(upload.size)}</p>
+          </div>
         </div>
       `).join('');
     }
@@ -1724,49 +1785,94 @@
       formData.append('caption', caption);
       formData.append('location', location);
 
-      const submitButton = document.querySelector('#publicUploadForm button[type="submit"]');
+      const submitButton = document.getElementById('photoUploadSubmit') || document.querySelector('#publicUploadForm button[type="submit"]');
+      const progressWrap = document.getElementById('uploadProgress');
+      const progressBar = document.getElementById('uploadProgressBar');
+      const progressPct = document.getElementById('uploadProgressPct');
+      const progressText = document.getElementById('uploadProgressText');
+      const count = pendingUploads.length;
+
       if (submitButton) {
         submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+        submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin w-3.5 h-3.5"></i><span>Publishing ${count} photo${count > 1 ? 's' : ''}...</span>`;
       }
 
-      fetch(document.getElementById('photoUploadEndpoint').value, {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': document.getElementById('photoUploadCsrf').value,
-            'Accept': 'application/json'
-          },
-          body: formData
-        })
-        .then(response => response.json().then(data => ({
-          ok: response.ok,
-          data
-        })))
-        .then(({
-          ok,
-          data
-        }) => {
-          if (!ok) {
-            throw new Error(data.message || 'Upload failed.');
-          }
+      progressWrap?.classList.remove('hidden');
+      if (progressBar) progressBar.style.width = '0%';
+      if (progressPct) progressPct.innerText = '0%';
+      if (progressText) progressText.innerText = `Uploading ${count} photo${count > 1 ? 's' : ''}…`;
 
-          const uploaded = Array.isArray(data.photos) ? data.photos : [];
-          photos.unshift(...uploaded);
+      const resetProgress = () => {
+        progressWrap?.classList.add('hidden');
+        if (progressBar) progressBar.style.width = '0%';
+      };
 
-          document.getElementById('publicUploadForm').reset();
-          closeUploadModal();
-          renderGooglePhotosStream();
-          showToast(data.message || 'Photo published! Visible to all mission delegates.');
-        })
-        .catch(error => {
-          showToast(error.message || 'Upload failed. Please try again.', true);
-        })
-        .finally(() => {
-          if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.innerHTML = 'Publish to Stream';
-          }
-        });
+      const restoreButton = () => {
+        if (!submitButton) return;
+        submitButton.disabled = false;
+        submitButton.innerHTML = pendingUploads.length > 0
+          ? `<i class="fa-solid fa-cloud-arrow-up w-3.5 h-3.5"></i><span>Publish ${pendingUploads.length} Photo${pendingUploads.length > 1 ? 's' : ''}</span>`
+          : '<i class="fa-solid fa-cloud-arrow-up w-3.5 h-3.5"></i><span>Publish to Stream</span>';
+      };
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', document.getElementById('photoUploadEndpoint').value, true);
+      xhr.setRequestHeader('X-CSRF-TOKEN', document.getElementById('photoUploadCsrf').value);
+      xhr.setRequestHeader('Accept', 'application/json');
+
+      xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        const pct = Math.min(99, Math.round((event.loaded / event.total) * 100));
+        if (progressBar) progressBar.style.width = `${pct}%`;
+        if (progressPct) progressPct.innerText = `${pct}%`;
+        if (pct >= 99 && progressText) progressText.innerText = 'Upload complete — optimizing photos…';
+      };
+
+      xhr.onload = () => {
+        let data = {};
+        try {
+          data = JSON.parse(xhr.responseText || '{}');
+        } catch (error) {
+          data = {};
+        }
+
+        if (xhr.status < 200 || xhr.status >= 300) {
+          const message = xhr.status === 413
+            ? 'Upload too large. Please reduce the number or size of photos.'
+            : (data.message
+              || (data.errors ? Object.values(data.errors).flat()[0] : null)
+              || 'Upload failed.');
+          showToast(message, true);
+          resetProgress();
+          restoreButton();
+          return;
+        }
+
+        if (progressBar) progressBar.style.width = '100%';
+        if (progressPct) progressPct.innerText = '100%';
+
+        const uploaded = Array.isArray(data.photos) ? data.photos : [];
+        photos.unshift(...uploaded);
+
+        document.getElementById('publicUploadForm').reset();
+        resetProgress();
+        closeUploadModal();
+        renderGooglePhotosStream();
+        showToast(data.message || 'Photo published! Visible to all mission delegates.');
+      };
+
+      xhr.onerror = () => {
+        showToast('Upload failed. Please check your connection and try again.', true);
+        resetProgress();
+        restoreButton();
+      };
+
+      xhr.onabort = () => {
+        resetProgress();
+        restoreButton();
+      };
+
+      xhr.send(formData);
     }
 
     // Clipboard Helper

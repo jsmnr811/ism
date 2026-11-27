@@ -17,10 +17,12 @@ use App\Models\MissionRegistration;
 use App\Models\SiteVisit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -259,8 +261,8 @@ class LandingPageController extends Controller
         }
 
         $validated = $request->validate([
-            'images' => ['required', 'array', 'min:1', 'max:20'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:15360'],
+            'images' => ['required', 'array', 'min:1'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:51200'],
             'caption' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
         ]);
@@ -268,7 +270,7 @@ class LandingPageController extends Controller
         $mission = $activeMission ?? $latestMission;
 
         $photos = collect($validated['images'])->map(function ($image) use ($mission, $validated) {
-            $path = $image->store('mission-photos', 'public');
+            $path = $this->storeOptimizedPhoto($image);
 
             $photo = MissionPhoto::create([
                 'mission_id' => $mission?->id,
@@ -297,6 +299,191 @@ class LandingPageController extends Controller
                 : count($photos).' photos published.',
             'photos' => $photos,
         ]);
+    }
+
+    /**
+     * Store an uploaded photo after re-encoding it to roughly 80% of its original
+     * byte size while keeping the highest quality that still fits the target, and
+     * stripping metadata. Falls back to storing the original file when compression
+     * is not possible.
+     */
+    protected function storeOptimizedPhoto(UploadedFile $file): string
+    {
+        $fallback = fn () => $file->store('mission-photos', 'public');
+
+        if (! class_exists(\Imagick::class)) {
+            return $fallback();
+        }
+
+        $originalPath = $file->getRealPath();
+        $originalSize = (int) $file->getSize();
+
+        if (! $originalPath || $originalSize <= 0) {
+            return $fallback();
+        }
+
+        $extension = match ($file->getMimeType()) {
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            default => 'jpg',
+        };
+
+        $format = match ($extension) {
+            'png' => 'png',
+            'webp' => 'webp',
+            default => 'jpeg',
+        };
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'mission-photo-');
+
+        if ($tempPath === false) {
+            return $fallback();
+        }
+
+        try {
+            $imagick = new \Imagick($originalPath);
+
+            if ($imagick->getNumberImages() > 1) {
+                $imagick->clear();
+
+                return $fallback();
+            }
+
+            if (method_exists($imagick, 'autoOrientImage')) {
+                $imagick->autoOrientImage();
+            } else {
+                $this->autoOrient($imagick);
+            }
+
+            $imagick->stripImage();
+
+            // Downscale large photos so the stored copy stays web-friendly.
+            $maxDimension = 2048;
+            $width = $imagick->getImageWidth();
+            $height = $imagick->getImageHeight();
+            $longEdge = max($width, $height);
+
+            if ($longEdge > $maxDimension) {
+                $scale = $maxDimension / $longEdge;
+                $imagick->resizeImage(
+                    (int) round($width * $scale),
+                    (int) round($height * $scale),
+                    \Imagick::FILTER_LANCZOS,
+                    1
+                );
+            }
+
+            // PNGs are re-encoded to WebP; keep the others in their original format.
+            $outputFormat = $extension === 'png' ? 'webp' : $format;
+            $outputExtension = $outputFormat === 'jpeg' ? 'jpg' : $outputFormat;
+
+            $imagick->setImageFormat($outputFormat);
+            $imagick->setImageCompression(
+                $outputFormat === 'webp' ? \Imagick::COMPRESSION_WEBP : \Imagick::COMPRESSION_JPEG
+            );
+
+            // Every image is capped at ~1 MB and never grows beyond 80% of the
+            // original, so large camera photos do not stay in the multi-MB range.
+            $targetSize = (int) min(1048576, floor($originalSize * 0.8));
+
+            $low = 55;
+            $high = 92;
+            $bestQuality = null;
+
+            while ($low <= $high) {
+                $quality = intdiv($low + $high, 2);
+                $imagick->setImageCompressionQuality($quality);
+                $imagick->writeImage($tempPath);
+                clearstatcache(true, $tempPath);
+
+                if ((int) filesize($tempPath) <= $targetSize) {
+                    $bestQuality = $quality;
+                    $low = $quality + 1;
+                } else {
+                    $high = $quality - 1;
+                }
+            }
+
+            $quality = $bestQuality ?? 55;
+            $imagick->setImageCompressionQuality($quality);
+            $imagick->writeImage($tempPath);
+            clearstatcache(true, $tempPath);
+
+            // Guard against encoder size variance: step quality down until the
+            // file fits the target (never below the quality floor).
+            while ((int) filesize($tempPath) > $targetSize && $quality > 45) {
+                $quality--;
+                $imagick->setImageCompressionQuality($quality);
+                $imagick->writeImage($tempPath);
+                clearstatcache(true, $tempPath);
+            }
+
+            $extension = $outputExtension;
+
+            clearstatcache(true, $tempPath);
+
+            // Do not store an "optimized" file that ends up larger than the original.
+            if ((int) filesize($tempPath) >= $originalSize) {
+                $imagick->clear();
+
+                return $fallback();
+            }
+
+            $imagick->clear();
+
+            $contents = file_get_contents($tempPath);
+
+            if ($contents === false) {
+                return $fallback();
+            }
+
+            $storedPath = 'mission-photos/'.Str::uuid().'.'.$extension;
+            Storage::disk('public')->put($storedPath, $contents);
+
+            return $storedPath;
+        } catch (\Throwable $exception) {
+            Log::warning('Mission photo optimization failed; storing original.', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return $fallback();
+        } finally {
+            if (is_file($tempPath)) {
+                @unlink($tempPath);
+            }
+        }
+    }
+
+    /**
+     * Rotate/flip the image to match its EXIF orientation before metadata is removed.
+     */
+    protected function autoOrient(\Imagick $imagick): void
+    {
+        switch ($imagick->getImageOrientation()) {
+            case \Imagick::ORIENTATION_TOPRIGHT:
+                $imagick->flopImage();
+                break;
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                $imagick->rotateImage('white', 180);
+                break;
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
+                $imagick->flipImage();
+                break;
+            case \Imagick::ORIENTATION_LEFTTOP:
+                $imagick->transposeImage();
+                break;
+            case \Imagick::ORIENTATION_RIGHTTOP:
+                $imagick->rotateImage('white', 90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
+                $imagick->transverseImage();
+                break;
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
+                $imagick->rotateImage('white', -90);
+                break;
+        }
+
+        $imagick->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
     }
 
     /**

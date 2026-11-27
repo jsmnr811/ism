@@ -188,72 +188,98 @@
 
   <!-- ================= UNAUTHENTICATED PARTICIPANT PHOTO UPLOAD MODAL ================= -->
   <div id="gUploadModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl border border-slate-200 my-8">
-      <div class="p-5 px-6 border-b border-slate-100 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-image w-5 h-5 text-emerald-600"></i>
-          <h3 class="font-bold text-base text-slate-900">Upload to Mission Photo Stream</h3>
+    <div class="bg-white rounded-3xl max-w-4xl w-full overflow-hidden shadow-2xl border border-slate-200 my-8">
+      <div class="p-5 px-6 border-b border-slate-100 flex items-center justify-between gap-4">
+        <div class="flex items-center space-x-2 min-w-0">
+          <i class="fa-solid fa-image w-5 h-5 text-emerald-600 shrink-0"></i>
+          <div class="min-w-0">
+            <h3 class="font-bold text-base text-slate-900">Upload to Mission Photo Stream</h3>
+            <p class="text-[11px] text-slate-400">Share field photos with mission delegates</p>
+          </div>
         </div>
-        <button onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-700">
-          <i class="fa-solid fa-x w-5 h-5"></i>
+        <button onclick="closeUploadModal()" aria-label="Close upload modal" class="shrink-0 w-9 h-9 inline-flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+          <i class="fa-solid fa-x w-4 h-4"></i>
         </button>
       </div>
 
       <form id="publicUploadForm" class="p-6 space-y-5" onsubmit="event.preventDefault(); handleNewPhotoUpload();">
         <input type="hidden" id="photoUploadEndpoint" value="{{ route('landing.photos') }}" />
         <input type="hidden" id="photoUploadCsrf" value="{{ csrf_token() }}" />
-        <div
-          id="dropArea"
+        <input type="file" id="fileInput" accept="image/*" multiple class="hidden" onchange="handleFileInputPreview(event)" />
+
+        <div id="dropArea"
           onclick="document.getElementById('fileInput').click()"
           ondragover="handleUploadDragOver(event)"
           ondragleave="handleUploadDragLeave(event)"
           ondrop="handleUploadDrop(event)"
-          class="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50 hover:bg-emerald-50/20 transition relative">
-          <input
-            type="file"
-            id="fileInput"
-            accept="image/*"
-            multiple
-            class="hidden"
-            onchange="handleFileInputPreview(event)" />
-          <div id="dropPrompt" class="space-y-2">
-            <div class="w-12 h-12 rounded-full bg-white text-emerald-600 shadow flex items-center justify-center mx-auto">
-              <i class="fa-solid fa-cloud-arrow-up w-6 h-6"></i>
+          class="group border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-8 text-center cursor-pointer bg-slate-50 hover:bg-emerald-50/30 transition relative">
+          <div id="dropPrompt" class="space-y-3">
+            <div class="w-14 h-14 rounded-2xl bg-white text-emerald-600 shadow-sm border border-slate-100 flex items-center justify-center mx-auto group-hover:scale-105 transition">
+              <i class="fa-solid fa-cloud-arrow-up w-7 h-7"></i>
             </div>
-            <p class="text-xs font-bold text-slate-800">Select photos from device</p>
-            <p class="text-[11px] text-slate-400">JPG, PNG, WEBP • Select or drop several at once (No login required)</p>
+            <div>
+              <p class="text-sm font-bold text-slate-800">Drop photos here or click to browse</p>
+              <p class="text-[11px] text-slate-400 mt-1">JPG, PNG, WEBP • Photos are optimized to web size after uploading</p>
+            </div>
           </div>
         </div>
 
-        <div id="dropPreview" class="hidden">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-[11px] font-semibold text-slate-600" id="previewCount"></span>
-            <button type="button" onclick="event.stopPropagation(); clearUploadFile();" class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-lg transition">
-              <i class="fa-solid fa-trash w-3 h-3"></i>
-              Remove all
-            </button>
+        <div id="dropPreview" class="hidden space-y-3"
+          ondragover="handleUploadDragOver(event)"
+          ondragleave="handleUploadDragLeave(event)"
+          ondrop="handleUploadDrop(event)">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-slate-800" id="previewCount"></p>
+              <p class="text-[11px] text-slate-500" id="previewMeta">Sizes shown are originals. Each photo is optimized to ≤1 MB (max 2048px) after publishing.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="document.getElementById('fileInput').click()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 transition">
+                <i class="fa-solid fa-plus w-3 h-3"></i>
+                Add more
+              </button>
+              <button type="button" onclick="clearUploadFile();" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 transition">
+                <i class="fa-solid fa-trash w-3 h-3"></i>
+                Remove all
+              </button>
+            </div>
           </div>
-          <div id="previewGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+
+          <div id="previewGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[360px] overflow-y-auto pr-1"></div>
+          <p id="previewLimitHint" class="hidden text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2"></p>
         </div>
 
-        <div>
-          <label for="upCaption" class="block text-xs font-semibold text-slate-700 mb-1">Caption / Field Activity <span class="font-normal text-slate-400">(optional)</span></label>
-          <input type="text" id="upCaption" placeholder="Core drill test on Station 05+100" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
+        <div id="uploadProgress" class="hidden space-y-2">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600">
+            <span id="uploadProgressText">Uploading photos…</span>
+            <span id="uploadProgressPct">0%</span>
+          </div>
+          <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+            <div id="uploadProgressBar" class="h-full w-0 bg-emerald-500 transition-all duration-150"></div>
+          </div>
+          <p class="text-[11px] text-slate-400">Large batches can take a while. Please keep this window open.</p>
         </div>
 
-        <div>
-          <label for="upLocation" class="block text-xs font-semibold text-slate-700 mb-1">Location Tag <span class="font-normal text-slate-400">(optional)</span></label>
-          <input type="text" id="upLocation" placeholder="Balingasag, Misamis Oriental" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="upCaption" class="block text-xs font-semibold text-slate-700 mb-1">Caption / Field Activity <span class="font-normal text-slate-400">(optional)</span></label>
+            <input type="text" id="upCaption" placeholder="Core drill test on Station 05+100" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
+          </div>
+          <div>
+            <label for="upLocation" class="block text-xs font-semibold text-slate-700 mb-1">Location Tag <span class="font-normal text-slate-400">(optional)</span></label>
+            <input type="text" id="upLocation" placeholder="Balingasag, Misamis Oriental" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-emerald-600 outline-none" />
+          </div>
         </div>
 
-        <div class="pt-3 flex items-center justify-between gap-2">
+        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <p class="text-[11px] text-slate-400">
             <i class="fa-solid fa-circle-info w-3 h-3 mr-1"></i>Caption and location apply to all selected photos.
           </p>
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center justify-end space-x-2">
             <button type="button" onclick="closeUploadModal()" class="px-4 py-2 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
-            <button type="submit" class="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20">
-              Publish to Stream
+            <button type="submit" id="photoUploadSubmit" class="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 disabled:opacity-60 disabled:cursor-not-allowed transition inline-flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up w-3.5 h-3.5"></i>
+              <span>Publish to Stream</span>
             </button>
           </div>
         </div>
