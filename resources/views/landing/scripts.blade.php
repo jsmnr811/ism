@@ -1258,7 +1258,7 @@
                   this.submitError = body.message || 'Registration failed. Please check your inputs and try again.';
                 }
 
-                showToast(this.submitError);
+                showToast(this.submitError, true);
 
                 this.$nextTick(() => this.scrollToFirstError());
               }
@@ -1266,7 +1266,7 @@
             .catch(error => {
               console.error(error);
               this.submitError = 'Registration failed. Please try again.';
-              showToast(this.submitError);
+              showToast(this.submitError, true);
             })
             .finally(() => {
               this.submitting = false;
@@ -1649,7 +1649,7 @@
       const files = Array.from(fileList || []).filter(file => file.type.startsWith('image/'));
 
       if (files.length === 0) {
-        showToast('Please select image files.');
+        showToast('Please select image files.', true);
         return;
       }
 
@@ -1712,7 +1712,7 @@
 
     function handleNewPhotoUpload() {
       if (pendingUploads.length === 0) {
-        showToast("Please select at least one photo to upload.");
+        showToast("Please select at least one photo to upload.", true);
         return;
       }
 
@@ -1759,7 +1759,7 @@
           showToast(data.message || 'Photo published! Visible to all mission delegates.');
         })
         .catch(error => {
-          showToast(error.message || 'Upload failed. Please try again.');
+          showToast(error.message || 'Upload failed. Please try again.', true);
         })
         .finally(() => {
           if (submitButton) {
@@ -1781,10 +1781,25 @@
     }
 
     // Toast Box
-    function showToast(msg) {
+    function showToast(msg, isError = false) {
       const box = document.getElementById('toastBox');
       const text = document.getElementById('toastMsg');
+      const inner = document.getElementById('toastBoxInner');
+      const icon = document.getElementById('toastIcon');
       if (!box || !text) return;
+
+      if (isError) {
+        inner?.classList.remove('bg-govnavy-950', 'border-slate-800');
+        inner?.classList.add('bg-red-950', 'border-red-800');
+        icon?.classList.remove('fa-circle-check', 'text-emerald-400');
+        icon?.classList.add('fa-circle-exclamation', 'text-red-400');
+      } else {
+        inner?.classList.remove('bg-red-950', 'border-red-800');
+        inner?.classList.add('bg-govnavy-950', 'border-slate-800');
+        icon?.classList.remove('fa-circle-exclamation', 'text-red-400');
+        icon?.classList.add('fa-circle-check', 'text-emerald-400');
+      }
+
       text.innerText = msg;
       box.classList.remove('translate-y-28', 'opacity-0');
       box.classList.add('translate-y-0', 'opacity-100');
