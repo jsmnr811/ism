@@ -19,7 +19,7 @@
   </footer>
 
   <!-- Toast Box -->
-  <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
+  <div id="toastBox" class="fixed bottom-5 right-5 z-[100] transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
     <div class="bg-govnavy-950 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-3 text-xs border border-slate-800">
       <i class="fa-solid fa-circle-check w-4 h-4 text-emerald-400"></i>
       <span id="toastMsg">Action completed.</span>
