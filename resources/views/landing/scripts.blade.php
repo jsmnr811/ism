@@ -782,6 +782,8 @@
 
         visibleItems.forEach(sp => {
           const hasPhotos = Array.isArray(sp.images) && sp.images.length > 0;
+          const hasVirtualLink = !!sp.virtual_site_visit_link && sp.virtual_site_visit_link !== '#';
+          const hasDocLink = !!sp.document_link && sp.document_link !== '#';
           const card = document.createElement('div');
           card.className = "bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between h-full";
           card.innerHTML = `
@@ -798,7 +800,9 @@
                 </p>
                 ${sp.date ? `<span class="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-calendar w-3 h-3"></i>${formatDate(sp.date)}</span>` : ''}
               </div>
-              <a href="${sp.document_link || '#'}" target="_blank" rel="noopener" class="block text-sm font-bold text-slate-900 line-clamp-2 hover:text-emerald-700 hover:underline">${sp.sp_name}</a>
+              ${hasDocLink
+                ? `<a href="${sp.document_link}" target="_blank" rel="noopener" class="block text-sm font-bold text-slate-900 line-clamp-2 hover:text-emerald-700 hover:underline">${sp.sp_name}</a>`
+                : `<p class="block text-sm font-bold text-slate-900 line-clamp-2">${sp.sp_name}</p>`}
               ${sp.description ? `<p class="text-xs text-slate-600 line-clamp-2">${sp.description}</p>` : ''}
               <div class="flex flex-wrap items-center gap-1.5 pt-1">
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">${sp.component}</span>
@@ -806,18 +810,21 @@
                 ${sp.funding_source ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-coins w-3 h-3"></i>${sp.funding_source}</span>` : ''}
               </div>
             </div>
+            ${(hasPhotos || hasVirtualLink || hasDocLink) ? `
             <div class="p-5 pt-0 flex flex-wrap items-center justify-end gap-2">
               ${hasPhotos ? `
               <button onclick="openGeotagModal(${sp.id})" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-images w-3.5 h-3.5"></i> Inspect AGT Photos
               </button>` : ''}
-              <a href="${sp.virtual_site_visit_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-[11px] font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
+              ${hasVirtualLink ? `
+              <a href="${sp.virtual_site_visit_link}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-[11px] font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-arrow-up-right-from-square w-3.5 h-3.5"></i> Inspect Site
-              </a>
-              <a href="${sp.document_link || '#'}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-sm">
+              </a>` : ''}
+              ${hasDocLink ? `
+              <a href="${sp.document_link}" target="_blank" rel="noopener" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-id-card w-3.5 h-3.5"></i> SP Profile & Documents
-              </a>
-            </div>
+              </a>` : ''}
+            </div>` : ''}
           `;
           grid.appendChild(card);
         });
