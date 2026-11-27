@@ -259,8 +259,8 @@ class LandingPageController extends Controller
         }
 
         $validated = $request->validate([
-            'images' => ['required', 'array', 'min:1', 'max:10'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'images' => ['required', 'array', 'min:1', 'max:20'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'caption' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
         ]);
